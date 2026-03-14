@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Mobile Tools">
+    <title>Mobile Tools</title>
+
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="assets/favicon.ico">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container" id="app">
+        <!-- МЕНЮ -->
+        <div class="page active" id="page-menu">
+            <div class="header">
+                <h2>📱 Инструменты</h2>
+            </div>
+            <div class="menu-grid">
+                <button class="menu-btn" onclick="showPage('page-weather')">☁️ Погода</button>
+                <button class="menu-btn" onclick="showPage('page-time')">⏰ Мировое время</button>
+                <button class="menu-btn" onclick="showPage('page-calendar')">📅 Календарь</button>
+                <button class="menu-btn" onclick="showPage('page-converter')">🔄 Конвертер</button>
+                <button class="menu-btn" onclick="showPage('page-calc')">🧮 Калькулятор</button>
+                <button class="menu-btn" onclick="showPage('page-text')">📝 Анализ текста</button>
+                <button class="menu-btn" onclick="showPage('page-currency')">💱 Конвертер валют</button>
+                <button class="menu-btn" onclick="exitApp()">🚪 Выход</button>
+            </div>
+        </div>
+
+        <!-- ПОГОДА -->
+        <div class="page" id="page-weather">
+            <div class="header">
+                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
+                <h2>Погода</h2>
+            </div>
+
+            <div class="card">
+                <div class="location-row">
+                    <span class="metric-icon">📍</span>
+                    <span class="location-text" id="coord">Определение...</span>
+                </div>
+                <div class="location-row">
+                    <span class="metric-icon">🏠</span>
+                    <span class="location-text" id="address">Определение...</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="location-row">
+                    <span class="metric-icon">🕐</span>
+                    <span class="location-text" id="time">--:--:--</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="metric-row" id="weather">
+                    <div class="metric-item">
+                        <span class="metric-icon">🌡️</span>
+                        <span><span class="metric-value" id="temp">--</span><span class="metric-unit">°C</span></span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-icon">💧</span>
+                        <span><span class="metric-value" id="humidity">--</span><span class="metric-unit">%</span></span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-icon">💨</span>
+                        <span><span class="metric-value" id="wind">--</span><span class="metric-unit">km/h</span></span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-icon">☀️</span>
+                        <span><span class="metric-value" id="sunrise">--:--</span></span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-icon">🌙</span>
+                        <span><span class="metric-value" id="sunset">--:--</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="update-time" id="timestamp"></div>
+            </div>
+        </div>
+
+        <!-- МИРОВОЕ ВРЕМЯ -->
+        <div class="page" id="page-time">
+            <div class="header">
+                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
+                <h2>Мировое время</h2>
+            </div>
+
+            <div class="card">
+                <div class="row">
+                    <button class="primary time-format-btn" onclick="toggleTimeFormat()" id="time-format-btn">24ч</button>
+                    <select id="timezone-select" onchange="updateWorldTime()" class="flex-1">
+                        <option value="local">Локальное</option>
+                        <option value="UTC">UTC</option>
+                        <option value="America/New_York">Нью-Йорк</option>
+                        <option value="Europe/London">Лондон</option>
+                        <option value="Europe/Moscow">Москва</option>
+                        <option value="Asia/Dubai">Дубай</option>
+                        <option value="Asia/Bangkok">Бангкок</option>
+                        <option value="Asia/Tokyo">Токио</option>
+                    </select>
+                </div>
+                <div class="result result-large center" id="world-time">--:--:--</div>
+                <div class="small-text center" id="unix-time">Unix: --</div>
+            </div>
+        </div>
+
+        <!-- КАЛЕНДАРЬ -->
+        <div class="page" id="page-calendar">
+            <div class="header">
+                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
+                <h2>Календарь</h2>
+            </div>
+
+            <div class="card">
+                <div class="calendar-title" id="calendar-month-year"></div>
+                <div class="calendar-grid" id="calendar-days"></div>
+            </div>
+
+            <div class="card">
+                <h3>Разница дат</h3>
+
+                <div class="date-time-grid">
+                    <div class="date-time-block">
+                        <label class="small-text" for="date1">Дата 1</label>
+                        <input type="date" id="date1" value="2025-01-01" onchange="calcDateDiff()">
+                    </div>
+                    <div class="time-pair">
+                        <div>
+                            <label class="small-text" for="time1h">Часы</label>
+                            <input type="number" id="time1h" min="0" max="23" value="0" onchange="calcDateDiff()" oninput="calcDateDiff()">
+                        </div>
+                        <div>
+                            <label class="small-text" for="time1m">Минуты</label>
+                            <input type="number" id="time1m" min="0" max="59" value="0" onchange="calcDateDiff()" oninput="calcDateDiff()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="date-time-grid">
+                    <div class="date-time-block">
+                        <label class="small-text" for="date2">Дата 2</label>
+                        <input type="date" id="date2" value="2025-12-31" onchange="calcDateDiff()">
+                    </div>
+                    <div class="time-pair">
+                        <div>
+                            <label class="small-text" for="time2h">Часы</label>
+                            <input type="number" id="time2h" min="0" max="23" value="0" onchange="calcDateDiff()" oninput="calcDateDiff()">
+                        </div>
+                        <div>
+                            <label class="small-text" for="time2m">Минуты</label>
+                            <input type="number" id="time2m" min="0" max="59" value="0" onchange="calcDateDiff()" oninput="calcDateDiff()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <button class="primary flex-1" onclick="calcDateDiff()">Рассчитать</button>
+                    <button onclick="swapDates()" class="icon-btn">⇄</button>
+                </div>
+
+                <div class="row checkbox-row">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="date-inclusive" onchange="calcDateDiff()">
+                        <span class="small-text">Включая обе даты</span>
+                    </label>
+                </div>
+
+                <div class="result" id="date-diff">--</div>
+            </div>
+        </div>
+
+        <!-- КОНВЕРТЕР ЕДИНИЦ -->
+        <div class="page" id="page-converter">
+            <div class="header">
+                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
+                <h2>Конвертер</h2>
+            </div>
+
+            <div class="card">
+                <select id="conv-type" onchange="updateConvUnits()">
+                    <option value="length">Длина</option>
+                    <option value="area">Площадь</option>
+                    <option value="volume">Объём</option>
+                    <option value="weight">Вес</option>
+                    <option value="speed">Скорость</option>
+                    <option value="temperature">Температура</option>
+                </select>
+
+                <input type="number" id="conv-val" value="1" oninput="convertUnit()">
+
+                <div class="converter-row">
+                    <select id="conv-from" onchange="convertUnit()"></select>
+                    <button onclick="swapConvUnits()" class="icon-btn">⇄</button>
+                    <select id="conv-to" onchange="convertUnit()"></select>
+                </div>
+
+                <div class="result" id="conv-result">= 1</div>
+            </div>
+        </div>
+
+        <!-- КАЛЬКУЛЯТОР -->
+        <div class="page" id="page-calc">
+            <div class="header">
+                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
+                <h2>Калькулятор</h2>
+            </div>
+
+            <div class="card">
+                <div class="result result-large right" id="calc-display">0</div>
+                <div class="calc-buttons">
+                    <div class="calc-btn" onclick="calcInput('7')">7</div>
+                    <div class="calc-btn" onclick="calcInput('8')">8</div>
+                    <div class="calc-btn" onclick="calcInput('9')">9</div>
+                    <div class="calc-btn operator" onclick="calcInput('/')">÷</div>
+
+                    <div class="calc-btn" onclick="calcInput('4')">4</div>
+                    <div class="calc-btn" onclick="calcInput('5')">5</div>
+                    <div class="calc-btn" onclick="calcInput('6')">6</div>
+                    <div class="calc-btn operator" onclick="calcInput('*')">×</div>
+
+                    <div class="calc-btn" onclick="calcInput('1')">1</div>
+                    <div class="calc-btn" onclick="calcInput('2')">2</div>
+                    <div class="calc-btn" onclick="calcInput('3')">3</div>
+                    <div class="calc-btn operator" onclick="calcInput('-')">−</div>
+
+                    <div class="calc-btn" onclick="calcInput('0')">0</div>
+                    <div class="calc-btn" onclick="calcInput('.')">.</div>
+                    <div class="calc-btn" onclick="calcClear()">C</div>
+                    <div class="calc-btn operator" onclick="calcInput('+')">+</div>
+
+                    <div class="calc-btn equals calc-equals" onclick="calcEquals()">=</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- АНАЛИЗ ТЕКСТА -->
+        <div class="page" id="page-text">
+            <div class="header">
+                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
+                <h2>Анализ текста</h2>
+            </div>
+
+            <div class="card">
+                <textarea id="text-input" rows="8" placeholder="Введите текст..." oninput="analyzeText()"></textarea>
+                <div class="small-text text-analysis" id="text-analysis">
+                    Строк:0 Символов:0 UTF-8 0KB Макс.строка:0 Слов:0 Пробелов:0
+                </div>
+            </div>
+        </div>
+
+        <!-- КОНВЕРТЕР ВАЛЮТ -->
+        <div class="page" id="page-currency">
+            <div class="header">
+                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
+                <h2>Конвертер валют</h2>
+            </div>
+
+            <div class="card">
+                <input type="number" id="cur-amount" value="1" oninput="convertCurrency()">
+
+                <div class="converter-row currency-layout">
+                    <select id="cur-from" onchange="convertCurrency()">
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="RUB" selected>RUB</option>
+                        <option value="GBP">GBP</option>
+                        <option value="JPY">JPY</option>
+                    </select>
+
+                    <button onclick="swapCurrencyUnits()" class="icon-btn">⇄</button>
+
+                    <select id="cur-to" onchange="convertCurrency()">
+                        <option value="USD" selected>USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="RUB">RUB</option>
+                        <option value="GBP">GBP</option>
+                        <option value="JPY">JPY</option>
+                    </select>
+                </div>
+
+                <div class="result" id="cur-result">= 1 USD</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle">🌙</button>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
