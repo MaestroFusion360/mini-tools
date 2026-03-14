@@ -1,3 +1,4 @@
+
 * {
     margin: 0;
     padding: 0;
@@ -47,6 +48,7 @@ body {
 .container {
     max-width: 480px;
     width: 100%;
+    padding-bottom: 96px;
 }
 
 .page {
@@ -66,6 +68,10 @@ body {
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
     transition: background-color var(--transition), border-color var(--transition);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: visible;
 }
 
 .menu-grid {
@@ -189,7 +195,10 @@ h3 {
     margin-top: 12px;
 }
 
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
     font-size: 15px;
     border-radius: 12px;
     border: 1px solid var(--border);
@@ -200,7 +209,9 @@ input, select, textarea, button {
     transition: all var(--transition);
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
@@ -218,13 +229,13 @@ button.primary:hover {
     background: var(--accent-hover);
 }
 
-
-
 .row > * {
     min-width: 0;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
     max-width: 100%;
     min-width: 0;
 }
@@ -235,6 +246,7 @@ input[type="range"] {
     border: none;
     background: transparent;
 }
+
 .row {
     display: flex;
     gap: 8px;
@@ -255,7 +267,7 @@ input[type="range"] {
     background: var(--bg-tertiary);
     padding: 16px;
     border-radius: 12px;
-    margin: 12px 0;
+    margin: 0;
     font-size: 16px;
     word-break: break-word;
     border: 1px solid var(--border);
@@ -366,11 +378,11 @@ input[type="checkbox"] {
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     gap: 8px;
     align-items: center;
-    margin-top: 8px;
+    margin-top: 0;
 }
 
 .currency-layout {
-    margin-top: 12px;
+    margin-top: 0;
 }
 
 .icon-btn {
@@ -426,8 +438,8 @@ input[type="checkbox"] {
 
 .floating-actions {
     position: fixed;
-    bottom: 20px;
     right: 20px;
+    bottom: max(20px, env(safe-area-inset-bottom));
     display: flex;
     gap: 10px;
     z-index: 1000;
@@ -500,6 +512,9 @@ textarea {
 
 .converter-presets {
     margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .preset-chip {
@@ -561,13 +576,12 @@ textarea {
     border-bottom: none;
 }
 
-
 .converter-precision-row {
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 6px 10px;
     align-items: center;
-    margin-top: 8px;
+    margin-top: 0;
 }
 
 .converter-precision-row label {
@@ -582,11 +596,6 @@ textarea {
     justify-self: end;
 }
 
-.converter-presets {
-    display: flex;
-    flex-wrap: wrap;
-}
-
 .calc-mode-row > #calc-mode-btn {
     flex: 1;
     min-width: 0;
@@ -594,4 +603,9 @@ textarea {
 
 .calc-mode-row > .icon-btn {
     width: auto;
+}
+
+#page-converter .card,
+#page-currency .card {
+    overflow: visible;
 }

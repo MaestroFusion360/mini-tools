@@ -1,36 +1,61 @@
 # Mobile Tools
 
-Многофункциональное PWA-приложение с набором полезных утилит: погода, время, календарь, улучшенные конвертеры, инженерный калькулятор, анализ текста и курсы валют.
+A multifunctional PWA that bundles several everyday utilities into one lightweight app: weather, world time, calendar, unit conversion, calculator, text analysis, and currency conversion.
 
-## Что улучшено
+## Features
 
-- ✅ Расширен **конвертер единиц**:
-  - добавлены категории `давление` и `энергия`;
-  - добавлены дополнительные единицы (`морская миля`, `Mach` и др.);
-  - добавлены быстрые пресеты пересчёта;
-  - добавлен ползунок точности результата.
-- ✅ Переработан **калькулятор**:
-  - базовый + инженерный режим;
-  - функции `sin/cos/tan`, `sqrt`, `ln`, `log`, `n!`;
-  - поддержка `π`, `e`, степеней, процентов, скобок;
-  - история вычислений и кнопка удаления последнего символа.
-- ✅ Усилена стабильность:
-  - безопасная обработка ошибок сетевых API;
-  - защита от невалидных выражений калькулятора.
+- Weather by geolocation, including address lookup and sunrise/sunset times
+- World time with 24-hour / 12-hour format toggle
+- Calendar with detailed date difference calculation
+- Unit converter with multiple measurement categories
+- Calculator with basic and scientific modes
+- Text analysis: lines, words, characters, bytes, spaces, and longest line
+- Currency converter with online rate refresh
+- Light and dark theme with saved preferences
+- Language toggle (English / Russian)
+- PWA support with offline caching of static assets
 
-## Возможности
+## Unit Converter
 
-- 🌦 Погода по геолокации + адрес + время рассвета/заката.
-- 🌍 Мировое время с переключением формата 24/12.
-- 📅 Календарь и подробная разница между датами.
-- 🔁 Конвертер физических величин.
-- 🧮 Калькулятор (базовый и инженерный).
-- 📝 Анализ текста (строки, слова, символы, байты, пробелы).
-- 💱 Конвертер валют.
-- 🌗 Светлая/тёмная тема с сохранением.
-- 📲 PWA-режим с offline-кэшем статических ресурсов.
+The unit converter includes:
 
-## Технологии
+- Length
+- Area
+- Volume
+- Weight
+- Speed
+- Temperature
+- Pressure
+- Energy
+
+It also provides:
+
+- additional units such as nautical mile and Mach
+- quick conversion presets
+- adjustable result precision
+
+## Calculator
+
+The calculator supports:
+
+- basic and scientific modes
+- `sin`, `cos`, `tan`
+- `sqrt`, `ln`, `log`
+- factorial `n!`
+- constants `π` and `e`
+- powers, percentages, and parentheses
+- calculation history
+- backspace for deleting the last entered character
+
+## Stability
+
+The app includes:
+
+- safer handling of network/API errors
+- fallback behavior when external services are unavailable
+- basic validation for calculator expressions
+
+## Tech Stack
 
 - HTML5
 - CSS3
@@ -38,47 +63,46 @@
 - Service Worker API
 - Web App Manifest
 
-## Быстрый запуск
+## Quick Start
 
-> Для работы сервис-воркера запускайте проект через HTTP-сервер.
+> Run the project through an HTTP server so the service worker can work correctly.
 
 ### Python
 
 ```bash
 python3 -m http.server 8000
-```
 
-Открыть: <http://localhost:8000>
+Open: http://localhost:8000
 
-### Node.js
+Node.js
 
-```bash
 npx serve .
-```
 
-## Структура
+Project Structure
 
-```text
 mini-tools/
-├── index.html               # UI и страницы инструментов
-├── styles.css               # стили и адаптивность
-├── scripts.js               # бизнес-логика инструментов
-├── sw.js                    # Service Worker
+├── index.html               # main UI and tool pages
+├── styles.css               # styles and responsive layout
+├── scripts.js               # application logic
+├── sw.js                    # service worker
 ├── manifest.webmanifest     # PWA manifest
-└── assets/                  # иконки
-```
+└── assets/                  # icons
 
-## Внешние API
+External APIs
 
-Приложение использует публичные сервисы:
+The app uses public services:
 
-- Open-Meteo — погодные данные.
-- Nominatim (OpenStreetMap) — обратное геокодирование.
-- WorldTimeAPI — текущее время.
-- ExchangeRate-API — курсы валют.
+Open-Meteo — weather data
 
-Если сеть/сервис недоступны, приложение использует fallback-сценарии и не ломает интерфейс.
+Nominatim (OpenStreetMap) — reverse geocoding
 
-## Лицензия
+WorldTimeAPI — current time
 
-См. файл [LICENSE](LICENSE).
+ExchangeRate-API — currency exchange rates
+
+
+If a network request fails or a service is unavailable, the app falls back gracefully instead of breaking the interface.
+
+License
+
+See [LICENSE](LICENSE.md)
