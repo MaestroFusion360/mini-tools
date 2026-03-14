@@ -467,3 +467,66 @@ textarea {
         max-width: 600px;
     }
 }
+
+.converter-presets {
+    margin-top: 10px;
+}
+
+.preset-chip {
+    width: auto;
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-tertiary);
+    cursor: pointer;
+}
+
+.calc-expression-preview {
+    margin-bottom: 8px;
+}
+
+.calc-mode-row {
+    margin-bottom: 10px;
+}
+
+.calc-btn.utility {
+    background: var(--bg-secondary);
+    font-weight: 600;
+}
+
+.calc-btn.scientific {
+    display: none;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 15px;
+}
+
+.calc-scientific .calc-btn.scientific {
+    display: block;
+}
+
+.calc-history-title {
+    margin-top: 12px;
+}
+
+.calc-history {
+    margin-top: 6px;
+    max-height: 120px;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px;
+    background: var(--bg-tertiary);
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.calc-history-item {
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--border);
+}
+
+.calc-history-item:last-child {
+    border-bottom: none;
+}

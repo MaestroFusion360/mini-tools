@@ -30,8 +30,11 @@ function loadTheme() {
 
 // ================== НАВИГАЦИЯ ==================
 function showPage(id) {
+    const nextPage = document.getElementById(id);
+    if (!nextPage) return;
+
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    nextPage.classList.add('active');
     localStorage.setItem('lastPage', id);
 }
 
@@ -111,6 +114,7 @@ function setLocationError(message) {
 async function loadAddress(lat, lon) {
     try {
         const addrRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ru`);
+        if (!addrRes.ok) throw new Error('Address request failed');
         const addr = await addrRes.json();
         const a = addr.address || {};
         const parts = [];
@@ -131,7 +135,12 @@ async function loadAddress(lat, lon) {
 async function loadWeather(lat, lon) {
     try {
         const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&daily=sunrise,sunset&timezone=auto`);
+        if (!wRes.ok) throw new Error('Weather request failed');
         const w = await wRes.json();
+
+        if (!w.current || !w.daily?.sunrise?.length || !w.daily?.sunset?.length) {
+            throw new Error('Weather payload is incomplete');
+        }
 
         document.getElementById('temp').textContent = w.current.temperature_2m;
         document.getElementById('humidity').textContent = w.current.relative_humidity_2m;
@@ -156,6 +165,7 @@ async function loadWeather(lat, lon) {
 async function loadCurrentTime() {
     try {
         const tRes = await fetch('https://worldtimeapi.org/api/ip');
+        if (!tRes.ok) throw new Error('Time request failed');
         const t = await tRes.json();
         const d = new Date(t.datetime);
 
@@ -362,25 +372,58 @@ function calcDateDiff() {
 
 // ================== КОНВЕРТЕР ЕДИНИЦ ==================
 const unitLabels = {
-    length: { m: 'м', km: 'км', cm: 'см', mm: 'мм', in: 'дюйм', ft: 'фут', yd: 'ярд', mile: 'миля' },
-    area: { m2: 'м²', km2: 'км²', cm2: 'см²', mm2: 'мм²', ft2: 'ft²', yd2: 'yd²', acre: 'acre', ha: 'га' },
+    length: { m: 'м', km: 'км', cm: 'см', mm: 'мм', in: 'дюйм', ft: 'фут', yd: 'ярд', mile: 'миля', nmi: 'мор. миля' },
+    area: { m2: 'м²', km2: 'км²', cm2: 'см²', mm2: 'мм²', ft2: 'ft²', yd2: 'yd²', acre: 'акр', ha: 'га' },
     volume: { l: 'л', ml: 'мл', m3: 'м³', cm3: 'см³', gal: 'gal', qt: 'qt' },
     weight: { kg: 'кг', g: 'г', mg: 'мг', t: 'т', lb: 'lb', oz: 'oz' },
-    speed: { 'm/s': 'м/с', 'km/h': 'км/ч', mph: 'mph', knot: 'уз' },
-    temperature: { C: '°C', F: '°F', K: 'K' }
+    speed: { 'm/s': 'м/с', 'km/h': 'км/ч', mph: 'mph', knot: 'уз', mach: 'Mach' },
+    temperature: { C: '°C', F: '°F', K: 'K' },
+    pressure: { pa: 'Па', kpa: 'кПа', bar: 'бар', atm: 'атм', psi: 'psi', mmhg: 'мм рт. ст.' },
+    energy: { j: 'Дж', kj: 'кДж', cal: 'кал', kcal: 'ккал', wh: 'Вт⋅ч', kwh: 'кВт⋅ч' }
 };
 
 const unitData = {
-    length: { m: 1, km: 0.001, cm: 100, mm: 1000, in: 39.3700787402, ft: 3.280839895, yd: 1.0936132983, mile: 0.0006213711922 },
+    length: { m: 1, km: 0.001, cm: 100, mm: 1000, in: 39.3700787402, ft: 3.280839895, yd: 1.0936132983, mile: 0.0006213711922, nmi: 0.000539956803 },
     area: { m2: 1, km2: 0.000001, cm2: 10000, mm2: 1000000, ft2: 10.763910417, yd2: 1.195990046, acre: 0.000247105381, ha: 0.0001 },
     volume: { l: 1, ml: 1000, m3: 0.001, cm3: 1000, gal: 0.2641720524, qt: 1.0566882094 },
     weight: { kg: 1, g: 1000, mg: 1000000, t: 0.001, lb: 2.2046226218, oz: 35.27396195 },
-    speed: { 'm/s': 1, 'km/h': 3.6, mph: 2.2369362921, knot: 1.9438444924 },
-    temperature: { C: 'C', F: 'F', K: 'K' }
+    speed: { 'm/s': 1, 'km/h': 3.6, mph: 2.2369362921, knot: 1.9438444924, mach: 0.0029154519 },
+    temperature: { C: 'C', F: 'F', K: 'K' },
+    pressure: { pa: 1, kpa: 0.001, bar: 0.00001, atm: 0.0000098692326672, psi: 0.00014503773773, mmhg: 0.007500616827 },
+    energy: { j: 1, kj: 0.001, cal: 0.23900573614, kcal: 0.00023900573614, wh: 0.00027777777778, kwh: 2.7777777778e-7 }
+};
+
+const converterPresets = {
+    length: [['m', 'ft'], ['km', 'mile'], ['mile', 'km']],
+    area: [['m2', 'ft2'], ['ha', 'acre']],
+    volume: [['l', 'gal'], ['m3', 'l']],
+    weight: [['kg', 'lb'], ['g', 'oz']],
+    speed: [['km/h', 'm/s'], ['mph', 'km/h']],
+    temperature: [['C', 'F'], ['F', 'C'], ['C', 'K']],
+    pressure: [['bar', 'psi'], ['atm', 'mmhg']],
+    energy: [['kj', 'kcal'], ['kwh', 'kj']]
 };
 
 function unitText(type, key) {
     return `${key} (${unitLabels[type][key] || key})`;
+}
+
+function renderConverterPresets(type) {
+    const holder = document.getElementById('conv-presets');
+    holder.innerHTML = '';
+
+    (converterPresets[type] || []).forEach(([from, to]) => {
+        const btn = document.createElement('button');
+        btn.className = 'preset-chip';
+        btn.type = 'button';
+        btn.textContent = `${unitLabels[type][from] || from} → ${unitLabels[type][to] || to}`;
+        btn.onclick = () => {
+            document.getElementById('conv-from').value = from;
+            document.getElementById('conv-to').value = to;
+            convertUnit();
+        };
+        holder.appendChild(btn);
+    });
 }
 
 function updateConvUnits() {
@@ -402,11 +445,14 @@ function updateConvUnits() {
         volume: ['l', 'gal'],
         weight: ['kg', 'lb'],
         speed: ['km/h', 'm/s'],
-        temperature: ['C', 'F']
+        temperature: ['C', 'F'],
+        pressure: ['bar', 'psi'],
+        energy: ['kj', 'kcal']
     };
 
     fromSel.value = defaults[type][0];
     toSel.value = defaults[type][1];
+    renderConverterPresets(type);
     convertUnit();
 }
 
@@ -417,15 +463,15 @@ function swapConvUnits() {
     convertUnit();
 }
 
-function formatSmart(n) {
+function formatSmart(n, precision = 6) {
     if (!isFinite(n)) return '0';
     const abs = Math.abs(n);
 
     if (abs === 0) return '0';
-    if (abs >= 1000000 || abs < 0.000001) return n.toExponential(6);
-    if (abs >= 1000) return n.toLocaleString('ru-RU', { maximumFractionDigits: 4 });
-    if (abs >= 1) return n.toLocaleString('ru-RU', { maximumFractionDigits: 6 });
-    return n.toLocaleString('ru-RU', { maximumFractionDigits: 8 });
+    if (abs >= 1000000 || abs < 0.000001) return n.toExponential(Math.min(precision, 8));
+    if (abs >= 1000) return n.toLocaleString('ru-RU', { maximumFractionDigits: precision });
+    if (abs >= 1) return n.toLocaleString('ru-RU', { maximumFractionDigits: precision });
+    return n.toLocaleString('ru-RU', { maximumFractionDigits: Math.min(precision + 2, 12) });
 }
 
 function convertUnit() {
@@ -433,6 +479,9 @@ function convertUnit() {
     const from = document.getElementById('conv-from').value;
     const to = document.getElementById('conv-to').value;
     const val = parseFloat(document.getElementById('conv-val').value) || 0;
+    const precision = parseInt(document.getElementById('conv-precision').value, 10) || 6;
+
+    document.getElementById('conv-precision-value').textContent = precision;
 
     let res;
 
@@ -450,33 +499,134 @@ function convertUnit() {
         res = base * unitData[type][to];
     }
 
+    const reverseRate = val !== 0 ? res / val : null;
+
     document.getElementById('conv-result').innerHTML =
-        `${formatSmart(val)} ${unitLabels[type][from] || from}<br>= ${formatSmart(res)} ${unitLabels[type][to] || to}`;
+        `${formatSmart(val, precision)} ${unitLabels[type][from] || from}<br>` +
+        `= ${formatSmart(res, precision)} ${unitLabels[type][to] || to}` +
+        (reverseRate !== null
+            ? `<br><span class="small-text">Курс: 1 ${unitLabels[type][from] || from} = ${formatSmart(reverseRate, precision)} ${unitLabels[type][to] || to}</span>`
+            : '');
 }
 
 // ================== КАЛЬКУЛЯТОР ==================
 let calcVal = '0';
+let calcScientificMode = false;
+const calcAllowed = /^[\d+\-*/().,%\s]*$/;
+const calcHistory = [];
+
+function renderCalcDisplay() {
+    document.getElementById('calc-display').textContent = calcVal;
+    document.getElementById('calc-expression-preview').textContent = `Выражение: ${calcVal}`;
+}
+
+function renderCalcHistory() {
+    const el = document.getElementById('calc-history');
+
+    if (!calcHistory.length) {
+        el.textContent = 'Пока пусто';
+        return;
+    }
+
+    el.innerHTML = calcHistory
+        .slice(-10)
+        .reverse()
+        .map(item => `<div class="calc-history-item">${item}</div>`)
+        .join('');
+}
+
+function toggleCalcMode() {
+    calcScientificMode = !calcScientificMode;
+    document.getElementById('calc-mode-btn').textContent = calcScientificMode
+        ? 'Режим: Инженерный'
+        : 'Режим: Базовый';
+
+    document.querySelector('.calc-buttons').classList.toggle('calc-scientific', calcScientificMode);
+}
 
 function calcInput(ch) {
-    if (calcVal === '0' && ch !== '.') calcVal = ch;
-    else calcVal += ch;
+    if (calcVal === '0' && !['.', '**', '%'].includes(ch)) {
+        calcVal = ch;
+    } else {
+        calcVal += ch;
+    }
 
-    document.getElementById('calc-display').textContent = calcVal;
+    renderCalcDisplay();
+}
+
+function calcBackspace() {
+    calcVal = calcVal.length > 1 ? calcVal.slice(0, -1) : '0';
+    renderCalcDisplay();
 }
 
 function calcClear() {
     calcVal = '0';
-    document.getElementById('calc-display').textContent = calcVal;
+    renderCalcDisplay();
 }
 
-function calcEquals() {
+function factorial(n) {
+    if (!Number.isInteger(n) || n < 0 || n > 170) throw new Error('Factorial range');
+
+    let res = 1;
+    for (let i = 2; i <= n; i++) res *= i;
+    return res;
+}
+
+function calcFunction(fn) {
     try {
-        calcVal = Function(`"use strict"; return (${calcVal})`)().toString();
+        const current = Number(calcEquals(true));
+
+        let result;
+        if (fn === 'sin') result = Math.sin(current * Math.PI / 180);
+        else if (fn === 'cos') result = Math.cos(current * Math.PI / 180);
+        else if (fn === 'tan') result = Math.tan(current * Math.PI / 180);
+        else if (fn === 'sqrt') result = Math.sqrt(current);
+        else if (fn === 'ln') result = Math.log(current);
+        else if (fn === 'log') result = Math.log10(current);
+        else if (fn === 'fact') result = factorial(current);
+        else throw new Error('Unknown function');
+
+        if (!Number.isFinite(result)) throw new Error('Non-finite result');
+        const exprLabel = `${fn}(${current})`;
+        calcVal = result.toString();
+        calcHistory.push(`${exprLabel} = ${calcVal}`);
+        renderCalcHistory();
     } catch {
         calcVal = '0';
     }
 
-    document.getElementById('calc-display').textContent = calcVal;
+    renderCalcDisplay();
+}
+
+function calcEquals(returnOnly = false) {
+    let resultText = '0';
+
+    try {
+        let expr = calcVal.replace(/\s+/g, '');
+
+        if (!expr || !calcAllowed.test(expr)) throw new Error('Invalid input');
+        expr = expr.replace(/(\d+(?:\.\d+)?)%/g, '($1/100)');
+
+        const openBrackets = (expr.match(/\(/g) || []).length;
+        const closeBrackets = (expr.match(/\)/g) || []).length;
+        if (openBrackets !== closeBrackets) throw new Error('Unbalanced brackets');
+
+        const result = Function(`"use strict"; return (${expr})`)();
+        if (!Number.isFinite(result)) throw new Error('Non-finite result');
+
+        resultText = result.toString();
+
+        if (!returnOnly) {
+            calcHistory.push(`${calcVal} = ${resultText}`);
+            calcVal = resultText;
+            renderCalcHistory();
+        }
+    } catch {
+        if (!returnOnly) calcVal = '0';
+    }
+
+    if (!returnOnly) renderCalcDisplay();
+    return resultText;
 }
 
 // ================== АНАЛИЗ ТЕКСТА ==================
@@ -490,7 +640,7 @@ function analyzeText() {
     const maxLine = Math.max(...lines.map(l => l.length), 0);
 
     document.getElementById('text-analysis').innerHTML =
-        `Строк:${lines.length} Символов:${chars} UTF-8 ${(bytes / 1024).toFixed(2)}KB Макс.строка:${maxLine} Слов:${words} Пробелов:${spaces}`;
+        `Строк: ${lines.length} · Символов: ${chars} · UTF-8: ${(bytes / 1024).toFixed(2)} KB · Макс. строка: ${maxLine} · Слов: ${words} · Пробелов: ${spaces}`;
 }
 
 // ================== КОНВЕРТЕР ВАЛЮТ ==================
@@ -499,9 +649,12 @@ let rates = { USD: 1, EUR: 0.92, RUB: 92.5, GBP: 0.79, JPY: 151.5 };
 async function loadRates() {
     try {
         const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        if (!r.ok) throw new Error('Rates request failed');
         const d = await r.json();
         if (d && d.rates) rates = d.rates;
-    } catch {}
+    } catch (e) {
+        console.warn('Rates loading failed, fallback to built-in rates:', e);
+    }
 
     convertCurrency();
 }
@@ -543,6 +696,8 @@ window.onload = function () {
 
     renderCalendar();
     calcDateDiff();
+    renderCalcDisplay();
+    renderCalcHistory();
     updateConvUnits();
     loadRates();
     updateWorldTime();

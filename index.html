@@ -195,15 +195,25 @@
                     <option value="weight">Вес</option>
                     <option value="speed">Скорость</option>
                     <option value="temperature">Температура</option>
+                    <option value="pressure">Давление</option>
+                    <option value="energy">Энергия</option>
                 </select>
 
                 <input type="number" id="conv-val" value="1" oninput="convertUnit()">
+
+                <div class="row">
+                    <label class="small-text" for="conv-precision">Точность</label>
+                    <input type="range" id="conv-precision" min="2" max="12" value="6" oninput="convertUnit()">
+                    <span class="small-text" id="conv-precision-value">6</span>
+                </div>
 
                 <div class="converter-row">
                     <select id="conv-from" onchange="convertUnit()"></select>
                     <button onclick="swapConvUnits()" class="icon-btn">⇄</button>
                     <select id="conv-to" onchange="convertUnit()"></select>
                 </div>
+
+                <div class="row converter-presets" id="conv-presets"></div>
 
                 <div class="result" id="conv-result">= 1</div>
             </div>
@@ -218,7 +228,20 @@
 
             <div class="card">
                 <div class="result result-large right" id="calc-display">0</div>
+
+                <div class="small-text" id="calc-expression-preview">Выражение: 0</div>
+
+                <div class="row calc-mode-row">
+                    <button class="primary" id="calc-mode-btn" onclick="toggleCalcMode()">Режим: Базовый</button>
+                    <button onclick="calcBackspace()" class="icon-btn">⌫</button>
+                </div>
+
                 <div class="calc-buttons">
+                    <div class="calc-btn utility" onclick="calcInput('(')">(</div>
+                    <div class="calc-btn utility" onclick="calcInput(')')">)</div>
+                    <div class="calc-btn utility" onclick="calcInput('%')">%</div>
+                    <div class="calc-btn" onclick="calcClear()">C</div>
+
                     <div class="calc-btn" onclick="calcInput('7')">7</div>
                     <div class="calc-btn" onclick="calcInput('8')">8</div>
                     <div class="calc-btn" onclick="calcInput('9')">9</div>
@@ -236,11 +259,29 @@
 
                     <div class="calc-btn" onclick="calcInput('0')">0</div>
                     <div class="calc-btn" onclick="calcInput('.')">.</div>
-                    <div class="calc-btn" onclick="calcClear()">C</div>
+                    <div class="calc-btn" onclick="calcInput('**')">xʸ</div>
                     <div class="calc-btn operator" onclick="calcInput('+')">+</div>
+
+                    <div class="calc-btn scientific" onclick="calcFunction('sin')">sin</div>
+                    <div class="calc-btn scientific" onclick="calcFunction('cos')">cos</div>
+                    <div class="calc-btn scientific" onclick="calcFunction('tan')">tan</div>
+                    <div class="calc-btn scientific" onclick="calcFunction('sqrt')">√</div>
+
+                    <div class="calc-btn scientific" onclick="calcFunction('ln')">ln</div>
+                    <div class="calc-btn scientific" onclick="calcFunction('log')">log</div>
+                    <div class="calc-btn scientific" onclick="calcFunction('fact')">n!</div>
+                    <div class="calc-btn scientific" onclick="calcInput('Math.PI')">π</div>
+
+                    <div class="calc-btn scientific" onclick="calcInput('Math.E')">e</div>
+                    <div class="calc-btn scientific" onclick="calcInput('1/')">1/x</div>
+                    <div class="calc-btn scientific" onclick="calcInput('**2')">x²</div>
+                    <div class="calc-btn scientific" onclick="calcInput('**3')">x³</div>
 
                     <div class="calc-btn equals calc-equals" onclick="calcEquals()">=</div>
                 </div>
+
+                <div class="small-text calc-history-title">История</div>
+                <div class="calc-history" id="calc-history">Пока пусто</div>
             </div>
         </div>
 
