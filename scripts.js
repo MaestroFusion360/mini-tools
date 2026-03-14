@@ -28,6 +28,111 @@ function loadTheme() {
     }
 }
 
+
+
+// ================== I18N ==================
+const i18n = {
+    en: {
+        back: '← Back',
+        tools: '📱 Tools',
+        weather: '☁️ Weather',
+        worldTime: '⏰ World Time',
+        calendar: '📅 Calendar',
+        converter: '🔄 Converter',
+        calculator: '🧮 Calculator',
+        textAnalysis: '📝 Text Analysis',
+        currency: '💱 Currency',
+        exit: '🚪 Exit',
+        useNow: 'Use current local date/time as Date 1',
+        includeBoth: 'Include both dates',
+        precision: 'Precision',
+        refreshServer: '↻ Refresh rates from server',
+        calcModeBasic: 'Mode: Basic',
+        calcModeScientific: 'Mode: Scientific',
+        textPlaceholder: 'Type text...'
+    },
+    ru: {
+        back: '← Назад',
+        tools: '📱 Инструменты',
+        weather: '☁️ Погода',
+        worldTime: '⏰ Мировое время',
+        calendar: '📅 Календарь',
+        converter: '🔄 Конвертер',
+        calculator: '🧮 Калькулятор',
+        textAnalysis: '📝 Анализ текста',
+        currency: '💱 Конвертер валют',
+        exit: '🚪 Выход',
+        useNow: 'Использовать текущие локальные дату/время как Дата 1',
+        includeBoth: 'Включая обе даты',
+        precision: 'Точность',
+        refreshServer: '↻ Обновить курсы с сервера',
+        calcModeBasic: 'Режим: Базовый',
+        calcModeScientific: 'Режим: Инженерный',
+        textPlaceholder: 'Введите текст...'
+    }
+};
+
+let currentLang = localStorage.getItem('lang') || 'en';
+
+function getLocale() {
+    return currentLang === 'ru' ? 'ru-RU' : 'en-US';
+}
+
+function t(key) {
+    return i18n[currentLang]?.[key] || i18n.en[key] || key;
+}
+
+function applyTranslations() {
+    const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    };
+
+    document.documentElement.lang = currentLang;
+    setText('title-tools', t('tools'));
+    setText('menu-weather', t('weather'));
+    setText('menu-time', t('worldTime'));
+    setText('menu-calendar', t('calendar'));
+    setText('menu-converter', t('converter'));
+    setText('menu-calc', t('calculator'));
+    setText('menu-text', t('textAnalysis'));
+    setText('menu-currency', t('currency'));
+    setText('menu-exit', t('exit'));
+
+    document.querySelectorAll('[data-i18n="back-btn"]').forEach(btn => btn.textContent = t('back'));
+    setText('title-weather', currentLang === 'ru' ? 'Погода' : 'Weather');
+    setText('title-time', currentLang === 'ru' ? 'Мировое время' : 'World Time');
+    setText('title-calendar', currentLang === 'ru' ? 'Календарь' : 'Calendar');
+    setText('calendar-diff-title', currentLang === 'ru' ? 'Разница дат' : 'Date Difference');
+    setText('title-converter', currentLang === 'ru' ? 'Конвертер' : 'Converter');
+    setText('title-calc', currentLang === 'ru' ? 'Калькулятор' : 'Calculator');
+    setText('title-text', currentLang === 'ru' ? 'Анализ текста' : 'Text Analysis');
+    setText('title-currency', currentLang === 'ru' ? 'Конвертер валют' : 'Currency Converter');
+    setText('use-now-label', t('useNow'));
+    setText('date-inclusive-label', t('includeBoth'));
+    setText('conv-precision-label', t('precision'));
+    setText('cur-refresh-btn', t('refreshServer'));
+
+    const placeholder = document.getElementById('text-input');
+    if (placeholder) placeholder.placeholder = t('textPlaceholder');
+
+    const langBtn = document.getElementById('lang-toggle');
+    if (langBtn) langBtn.textContent = currentLang === 'ru' ? '🇷🇺' : '🇺🇸';
+
+    toggleCalcMode(false);
+    updateWorldTime();
+    renderCalendar();
+    calcDateDiff();
+    syncBaseDateWithNow();
+    analyzeText();
+}
+
+function toggleLanguage() {
+    currentLang = currentLang === 'ru' ? 'en' : 'ru';
+    localStorage.setItem('lang', currentLang);
+    applyTranslations();
+}
+
 // ================== НАВИГАЦИЯ ==================
 function showPage(id) {
     const nextPage = document.getElementById(id);
@@ -46,7 +151,7 @@ function loadLastPage() {
 }
 
 function exitApp() {
-    if (confirm('Закрыть приложение?')) {
+    if (confirm(currentLang === 'ru' ? 'Закрыть приложение?' : 'Close app?')) {
         window.close();
     }
 }
@@ -113,7 +218,7 @@ function setLocationError(message) {
 
 async function loadAddress(lat, lon) {
     try {
-        const addrRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ru`);
+        const addrRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=${currentLang}`);
         if (!addrRes.ok) throw new Error('Address request failed');
         const addr = await addrRes.json();
         const a = addr.address || {};
@@ -146,13 +251,13 @@ async function loadWeather(lat, lon) {
         document.getElementById('humidity').textContent = w.current.relative_humidity_2m;
         document.getElementById('wind').textContent = w.current.wind_speed_10m;
 
-        document.getElementById('sunrise').textContent = new Date(w.daily.sunrise[0]).toLocaleTimeString('ru-RU', {
+        document.getElementById('sunrise').textContent = new Date(w.daily.sunrise[0]).toLocaleTimeString(getLocale(), {
             hour: '2-digit',
             minute: '2-digit',
             hour12: false
         });
 
-        document.getElementById('sunset').textContent = new Date(w.daily.sunset[0]).toLocaleTimeString('ru-RU', {
+        document.getElementById('sunset').textContent = new Date(w.daily.sunset[0]).toLocaleTimeString(getLocale(), {
             hour: '2-digit',
             minute: '2-digit',
             hour12: false
@@ -218,7 +323,7 @@ function updateWorldTime() {
     });
 
     document.getElementById('world-time').textContent = timeStr;
-    document.getElementById('unix-time').textContent = `Unix: ${Math.floor(now.getTime() / 1000)}`;
+    document.getElementById('unix-time').textContent = `${currentLang === 'ru' ? 'Unix' : 'Unix'}: ${Math.floor(now.getTime() / 1000)}`;
 }
 
 // ================== КАЛЕНДАРЬ ==================
@@ -229,20 +334,13 @@ function renderCalendar() {
     const today = now.getDate();
 
     document.getElementById('calendar-month-year').textContent =
-        now.toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
+        now.toLocaleString(getLocale(), { month: 'long', year: 'numeric' });
 
     const firstDay = new Date(year, month, 1).getDay();
     const lastDate = new Date(year, month + 1, 0).getDate();
 
-    let html = `
-        <div class="calendar-day weekday">Вс</div>
-        <div class="calendar-day weekday">Пн</div>
-        <div class="calendar-day weekday">Вт</div>
-        <div class="calendar-day weekday">Ср</div>
-        <div class="calendar-day weekday">Чт</div>
-        <div class="calendar-day weekday">Пт</div>
-        <div class="calendar-day weekday">Сб</div>
-    `;
+    const weekdays = currentLang === 'ru' ? ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    let html = weekdays.map(day => `<div class=\"calendar-day weekday\">${day}</div>`).join('');
 
     for (let i = 0; i < firstDay; i++) {
         html += `<div class="calendar-day empty"></div>`;
@@ -303,11 +401,11 @@ function diffYMD(start, end) {
 }
 
 function formatWeekday(date) {
-    return date.toLocaleDateString('ru-RU', { weekday: 'long' });
+    return date.toLocaleDateString(getLocale(), { weekday: 'long' });
 }
 
 function formatTime(date) {
-    return date.toLocaleTimeString('ru-RU', {
+    return date.toLocaleTimeString(getLocale(), {
         hour: '2-digit',
         minute: '2-digit',
         hour12: false
@@ -327,9 +425,29 @@ function swapDates() {
     [time1m.value, time2m.value] = [time2m.value, time1m.value];
 
     calcDateDiff();
+    syncBaseDateWithNow();
+}
+
+function syncBaseDateWithNow() {
+    const useNow = document.getElementById('date-use-now')?.checked;
+    const ids = ['date1', 'time1h', 'time1m'];
+
+    if (useNow) {
+        const now = new Date();
+        const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        document.getElementById('date1').value = localDate;
+        document.getElementById('time1h').value = now.getHours();
+        document.getElementById('time1m').value = now.getMinutes();
+    }
+
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = !!useNow;
+    });
 }
 
 function calcDateDiff() {
+    syncBaseDateWithNow();
     const d1 = getDateTime('date1', 'time1h', 'time1m');
     const d2 = getDateTime('date2', 'time2h', 'time2m');
 
@@ -359,19 +477,21 @@ function calcDateDiff() {
         new Date(end.getFullYear(), end.getMonth(), end.getDate())
     );
 
-    const relation = sign >= 0 ? 'от первой до второй' : 'от второй до первой';
+    const relation = sign >= 0
+        ? (currentLang === 'ru' ? 'от первой до второй' : 'from first to second')
+        : (currentLang === 'ru' ? 'от второй до первой' : 'from second to first');
 
     document.getElementById('date-diff').innerHTML =
-        `${totalDays} дн ${hours} ч ${minutes} мин<br>` +
-        `${totalWeeks} нед ${remDays} дн<br>` +
-        `${ymd.y} г ${ymd.m} мес ${ymd.d} дн<br>` +
+        `${totalDays} ${currentLang === 'ru' ? 'дн' : 'days'} ${hours} ${currentLang === 'ru' ? 'ч' : 'h'} ${minutes} ${currentLang === 'ru' ? 'мин' : 'min'}<br>` +
+        `${totalWeeks} ${currentLang === 'ru' ? 'нед' : 'weeks'} ${remDays} ${currentLang === 'ru' ? 'дн' : 'days'}<br>` +
+        `${ymd.y} ${currentLang === 'ru' ? 'г' : 'y'} ${ymd.m} ${currentLang === 'ru' ? 'мес' : 'mo'} ${ymd.d} ${currentLang === 'ru' ? 'дн' : 'days'}<br>` +
         `${formatWeekday(d1)} ${formatTime(d1)} → ${formatWeekday(d2)} ${formatTime(d2)}<br>` +
         `${relation}<br>` +
-        `Всего минут: ${totalMinutes.toLocaleString('ru-RU')}`;
+        `${currentLang === 'ru' ? 'Всего минут' : 'Total minutes'}: ${totalMinutes.toLocaleString(getLocale())}`;
 }
 
 // ================== КОНВЕРТЕР ЕДИНИЦ ==================
-const unitLabels = {
+let unitLabels = {
     length: { m: 'м', km: 'км', cm: 'см', mm: 'мм', in: 'дюйм', ft: 'фут', yd: 'ярд', mile: 'миля', nmi: 'мор. миля' },
     area: { m2: 'м²', km2: 'км²', cm2: 'см²', mm2: 'мм²', ft2: 'ft²', yd2: 'yd²', acre: 'акр', ha: 'га' },
     volume: { l: 'л', ml: 'мл', m3: 'м³', cm3: 'см³', gal: 'gal', qt: 'qt' },
@@ -382,7 +502,7 @@ const unitLabels = {
     energy: { j: 'Дж', kj: 'кДж', cal: 'кал', kcal: 'ккал', wh: 'Вт⋅ч', kwh: 'кВт⋅ч' }
 };
 
-const unitData = {
+let unitData = {
     length: { m: 1, km: 0.001, cm: 100, mm: 1000, in: 39.3700787402, ft: 3.280839895, yd: 1.0936132983, mile: 0.0006213711922, nmi: 0.000539956803 },
     area: { m2: 1, km2: 0.000001, cm2: 10000, mm2: 1000000, ft2: 10.763910417, yd2: 1.195990046, acre: 0.000247105381, ha: 0.0001 },
     volume: { l: 1, ml: 1000, m3: 0.001, cm3: 1000, gal: 0.2641720524, qt: 1.0566882094 },
@@ -393,7 +513,7 @@ const unitData = {
     energy: { j: 1, kj: 0.001, cal: 0.23900573614, kcal: 0.00023900573614, wh: 0.00027777777778, kwh: 2.7777777778e-7 }
 };
 
-const converterPresets = {
+let converterPresets = {
     length: [['m', 'ft'], ['km', 'mile'], ['mile', 'km']],
     area: [['m2', 'ft2'], ['ha', 'acre']],
     volume: [['l', 'gal'], ['m3', 'l']],
@@ -455,6 +575,7 @@ function updateConvUnits() {
     renderConverterPresets(type);
     convertUnit();
 }
+
 
 function swapConvUnits() {
     const fromSel = document.getElementById('conv-from');
@@ -535,11 +656,11 @@ function renderCalcHistory() {
         .join('');
 }
 
-function toggleCalcMode() {
-    calcScientificMode = !calcScientificMode;
+function toggleCalcMode(toggle = true) {
+    if (toggle) calcScientificMode = !calcScientificMode;
     document.getElementById('calc-mode-btn').textContent = calcScientificMode
-        ? 'Режим: Инженерный'
-        : 'Режим: Базовый';
+        ? t('calcModeScientific')
+        : t('calcModeBasic');
 
     document.querySelector('.calc-buttons').classList.toggle('calc-scientific', calcScientificMode);
 }
@@ -640,20 +761,37 @@ function analyzeText() {
     const maxLine = Math.max(...lines.map(l => l.length), 0);
 
     document.getElementById('text-analysis').innerHTML =
-        `Строк: ${lines.length} · Символов: ${chars} · UTF-8: ${(bytes / 1024).toFixed(2)} KB · Макс. строка: ${maxLine} · Слов: ${words} · Пробелов: ${spaces}`;
+        (currentLang === 'ru'
+            ? `Строк: ${lines.length} · Символов: ${chars} · UTF-8: ${(bytes / 1024).toFixed(2)} KB · Макс. строка: ${maxLine} · Слов: ${words} · Пробелов: ${spaces}`
+            : `Lines: ${lines.length} · Characters: ${chars} · UTF-8: ${(bytes / 1024).toFixed(2)} KB · Max line: ${maxLine} · Words: ${words} · Spaces: ${spaces}`);
 }
 
 // ================== КОНВЕРТЕР ВАЛЮТ ==================
 let rates = { USD: 1, EUR: 0.92, RUB: 92.5, GBP: 0.79, JPY: 151.5 };
 
-async function loadRates() {
+async function loadRates(manual = false) {
+    const status = document.getElementById('cur-data-status');
+    if (manual && status) {
+        status.textContent = currentLang === 'ru' ? 'Обновление курсов...' : 'Refreshing rates...';
+    }
+
     try {
         const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
         if (!r.ok) throw new Error('Rates request failed');
         const d = await r.json();
         if (d && d.rates) rates = d.rates;
+
+        if (status) {
+            status.textContent = (currentLang === 'ru' ? 'Курсы обновлены: ' : 'Rates updated: ') +
+                new Date().toLocaleTimeString(getLocale(), { hour12: false });
+        }
     } catch (e) {
         console.warn('Rates loading failed, fallback to built-in rates:', e);
+        if (status) {
+            status.textContent = currentLang === 'ru'
+                ? 'Ошибка обновления, используются локальные курсы'
+                : 'Refresh failed, using built-in rates';
+        }
     }
 
     convertCurrency();
@@ -691,11 +829,13 @@ function registerServiceWorker() {
 // ================== ИНИЦИАЛИЗАЦИЯ ==================
 window.onload = function () {
     loadTheme();
+    applyTranslations();
     loadTimeFormat();
     loadLastPage();
 
     renderCalendar();
     calcDateDiff();
+    syncBaseDateWithNow();
     renderCalcDisplay();
     renderCalcHistory();
     updateConvUnits();
@@ -705,4 +845,7 @@ window.onload = function () {
     registerServiceWorker();
 
     setInterval(updateWorldTime, 1000);
+    setInterval(() => {
+        if (document.getElementById('date-use-now')?.checked) calcDateDiff();
+    }, 60000);
 };

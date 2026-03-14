@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
@@ -20,25 +20,25 @@
         <!-- МЕНЮ -->
         <div class="page active" id="page-menu">
             <div class="header">
-                <h2>📱 Инструменты</h2>
+                <h2 id="title-tools">📱 Tools</h2>
             </div>
             <div class="menu-grid">
-                <button class="menu-btn" onclick="showPage('page-weather')">☁️ Погода</button>
-                <button class="menu-btn" onclick="showPage('page-time')">⏰ Мировое время</button>
-                <button class="menu-btn" onclick="showPage('page-calendar')">📅 Календарь</button>
-                <button class="menu-btn" onclick="showPage('page-converter')">🔄 Конвертер</button>
-                <button class="menu-btn" onclick="showPage('page-calc')">🧮 Калькулятор</button>
-                <button class="menu-btn" onclick="showPage('page-text')">📝 Анализ текста</button>
-                <button class="menu-btn" onclick="showPage('page-currency')">💱 Конвертер валют</button>
-                <button class="menu-btn" onclick="exitApp()">🚪 Выход</button>
+                <button class="menu-btn" onclick="showPage('page-weather')" id="menu-weather">☁️ Weather</button>
+                <button class="menu-btn" onclick="showPage('page-time')" id="menu-time">⏰ World Time</button>
+                <button class="menu-btn" onclick="showPage('page-calendar')" id="menu-calendar">📅 Calendar</button>
+                <button class="menu-btn" onclick="showPage('page-converter')" id="menu-converter">🔄 Converter</button>
+                <button class="menu-btn" onclick="showPage('page-calc')" id="menu-calc">🧮 Calculator</button>
+                <button class="menu-btn" onclick="showPage('page-text')" id="menu-text">📝 Text Analysis</button>
+                <button class="menu-btn" onclick="showPage('page-currency')" id="menu-currency">💱 Currency</button>
+                <button class="menu-btn" onclick="exitApp()" id="menu-exit">🚪 Exit</button>
             </div>
         </div>
 
         <!-- ПОГОДА -->
         <div class="page" id="page-weather">
             <div class="header">
-                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
-                <h2>Погода</h2>
+                <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
+                <h2 id="title-weather">Weather</h2>
             </div>
 
             <div class="card">
@@ -92,8 +92,8 @@
         <!-- МИРОВОЕ ВРЕМЯ -->
         <div class="page" id="page-time">
             <div class="header">
-                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
-                <h2>Мировое время</h2>
+                <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
+                <h2 id="title-time">World Time</h2>
             </div>
 
             <div class="card">
@@ -118,8 +118,8 @@
         <!-- КАЛЕНДАРЬ -->
         <div class="page" id="page-calendar">
             <div class="header">
-                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
-                <h2>Календарь</h2>
+                <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
+                <h2 id="title-calendar">Calendar</h2>
             </div>
 
             <div class="card">
@@ -128,7 +128,12 @@
             </div>
 
             <div class="card">
-                <h3>Разница дат</h3>
+                <h3 id="calendar-diff-title">Date Difference</h3>
+
+                <label class="checkbox-label" id="use-now-wrap">
+                    <input type="checkbox" id="date-use-now" checked onchange="calcDateDiff()">
+                    <span class="small-text" id="use-now-label">Use current local date/time as Date 1</span>
+                </label>
 
                 <div class="date-time-grid">
                     <div class="date-time-block">
@@ -172,7 +177,7 @@
                 <div class="row checkbox-row">
                     <label class="checkbox-label">
                         <input type="checkbox" id="date-inclusive" onchange="calcDateDiff()">
-                        <span class="small-text">Включая обе даты</span>
+                        <span class="small-text" id="date-inclusive-label">Include both dates</span>
                     </label>
                 </div>
 
@@ -183,8 +188,8 @@
         <!-- КОНВЕРТЕР ЕДИНИЦ -->
         <div class="page" id="page-converter">
             <div class="header">
-                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
-                <h2>Конвертер</h2>
+                <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
+                <h2 id="title-converter">Converter</h2>
             </div>
 
             <div class="card">
@@ -201,7 +206,7 @@
 
                 <input type="number" id="conv-val" value="1" oninput="convertUnit()">
 
-                <div class="row">
+                <div class="converter-precision-row">
                     <label class="small-text" for="conv-precision">Точность</label>
                     <input type="range" id="conv-precision" min="2" max="12" value="6" oninput="convertUnit()">
                     <span class="small-text" id="conv-precision-value">6</span>
@@ -222,8 +227,8 @@
         <!-- КАЛЬКУЛЯТОР -->
         <div class="page" id="page-calc">
             <div class="header">
-                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
-                <h2>Калькулятор</h2>
+                <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
+                <h2 id="title-calc">Calculator</h2>
             </div>
 
             <div class="card">
@@ -232,7 +237,7 @@
                 <div class="small-text" id="calc-expression-preview">Выражение: 0</div>
 
                 <div class="row calc-mode-row">
-                    <button class="primary" id="calc-mode-btn" onclick="toggleCalcMode()">Режим: Базовый</button>
+                    <button class="primary" id="calc-mode-btn" onclick="toggleCalcMode()">Mode: Basic</button>
                     <button onclick="calcBackspace()" class="icon-btn">⌫</button>
                 </div>
 
@@ -288,12 +293,12 @@
         <!-- АНАЛИЗ ТЕКСТА -->
         <div class="page" id="page-text">
             <div class="header">
-                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
-                <h2>Анализ текста</h2>
+                <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
+                <h2 id="title-text">Text Analysis</h2>
             </div>
 
             <div class="card">
-                <textarea id="text-input" rows="8" placeholder="Введите текст..." oninput="analyzeText()"></textarea>
+                <textarea id="text-input" rows="8" placeholder="Type text..." oninput="analyzeText()"></textarea>
                 <div class="small-text text-analysis" id="text-analysis">
                     Строк:0 Символов:0 UTF-8 0KB Макс.строка:0 Слов:0 Пробелов:0
                 </div>
@@ -303,12 +308,17 @@
         <!-- КОНВЕРТЕР ВАЛЮТ -->
         <div class="page" id="page-currency">
             <div class="header">
-                <button class="back-btn" onclick="showPage('page-menu')">← Назад</button>
-                <h2>Конвертер валют</h2>
+                <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
+                <h2 id="title-currency">Currency Converter</h2>
             </div>
 
             <div class="card">
                 <input type="number" id="cur-amount" value="1" oninput="convertCurrency()">
+
+                <div class="row">
+                    <button class="primary" id="cur-refresh-btn" onclick="loadRates(true)">↻ Refresh rates from server</button>
+                </div>
+                <div class="small-text" id="cur-data-status"></div>
 
                 <div class="converter-row currency-layout">
                     <select id="cur-from" onchange="convertCurrency()">
@@ -335,7 +345,10 @@
         </div>
     </div>
 
-    <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle">🌙</button>
+    <div class="floating-actions">
+        <button class="lang-toggle" onclick="toggleLanguage()" id="lang-toggle" title="Language">🇺🇸</button>
+        <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle">🌙</button>
+    </div>
 
     <script src="scripts.js"></script>
 </body>
