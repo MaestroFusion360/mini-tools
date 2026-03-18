@@ -1,15 +1,23 @@
 // ================== THEME & LOCALSTORAGE ==================
+function setThemeToggleIcon(isDark) {
+    const toggle = document.getElementById('theme-toggle');
+    if (!toggle) return;
+
+    const iconName = isDark ? 'i-sun' : 'i-moon';
+    const iconAlt = isDark ? 'Light mode' : 'Dark mode';
+    toggle.innerHTML = `<svg class="icon-svg theme-toggle-icon" aria-label="${iconAlt}"><use href="#${iconName}"></use></svg>`;
+}
+
 function toggleTheme() {
     const body = document.body;
-    const toggle = document.getElementById('theme-toggle');
 
     if (body.classList.contains('dark')) {
         body.classList.remove('dark');
-        toggle.textContent = '🌙';
+        setThemeToggleIcon(false);
         localStorage.setItem('theme', 'light');
     } else {
         body.classList.add('dark');
-        toggle.textContent = '☀️';
+        setThemeToggleIcon(true);
         localStorage.setItem('theme', 'dark');
     }
 }
@@ -17,25 +25,23 @@ function toggleTheme() {
 function loadTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     const body = document.body;
-    const toggle = document.getElementById('theme-toggle');
 
     if (savedTheme === 'dark') {
         body.classList.add('dark');
-        toggle.textContent = '☀️';
+        setThemeToggleIcon(true);
     } else {
         body.classList.remove('dark');
-        toggle.textContent = '🌙';
+        setThemeToggleIcon(false);
     }
 }
 
 
 
-// ================== I18N ==================
 const i18n = {
     en: {
         back: '← Back',
-        tools: '📱 Tools',
-        weather: '☁️ Weather',
+        tools: 'Tools',
+        weather: 'Weather',
         weatherTitle: 'Weather',
         weatherNow: 'Current Weather',
         weatherSun: 'Sun',
@@ -66,24 +72,24 @@ const i18n = {
         presetDubai: 'Dubai',
         presetBangkok: 'Bangkok',
         presetTokyo: 'Tokyo',
-        worldTime: '⏰ World Time',
+        worldTime: 'World Time',
         worldTimeTitle: 'World Time',
-        calendar: '📅 Calendar',
+        calendar: 'Calendar',
         calendarTitle: 'Calendar',
         calendarDiffTitle: 'Date Difference',
         calendarPrev: 'Previous month',
         calendarNext: 'Next month',
         calendarToday: 'Current month',
         yearLabel: 'Year',
-        converter: '🔄 Converter',
+        converter: 'Converter',
         converterTitle: 'Converter',
-        calculator: '🧮 Calculator',
+        calculator: 'Calculator',
         calculatorTitle: 'Calculator',
-        textAnalysis: '📝 Text Analysis',
+        textAnalysis: 'Text Analysis',
         textAnalysisTitle: 'Text Analysis',
-        currency: '💱 Currency',
+        currency: 'Currency',
         currencyTitle: 'Currency Converter',
-        exit: '🚪 Exit',
+        exit: 'Exit',
         useNow: 'Use current local date/time as Date 1',
         includeBoth: 'Include both dates',
         precision: 'Precision',
@@ -138,8 +144,8 @@ const i18n = {
     },
     ru: {
         back: '← Назад',
-        tools: '📱 Инструменты',
-        weather: '☁️ Погода',
+        tools: 'Инструменты',
+        weather: 'Погода',
         weatherTitle: 'Погода',
         weatherNow: 'Погода сейчас',
         weatherSun: 'Солнце',
@@ -170,24 +176,24 @@ const i18n = {
         presetDubai: 'Дубай',
         presetBangkok: 'Бангкок',
         presetTokyo: 'Токио',
-        worldTime: '⏰ Мировое время',
+        worldTime: 'Мировое время',
         worldTimeTitle: 'Мировое время',
-        calendar: '📅 Календарь',
+        calendar: 'Календарь',
         calendarTitle: 'Календарь',
         calendarDiffTitle: 'Разница дат',
         calendarPrev: 'Предыдущий месяц',
         calendarNext: 'Следующий месяц',
         calendarToday: 'Текущий месяц',
         yearLabel: 'Год',
-        converter: '🔄 Конвертер',
+        converter: 'Конвертер',
         converterTitle: 'Конвертер',
-        calculator: '🧮 Калькулятор',
+        calculator: 'Калькулятор',
         calculatorTitle: 'Калькулятор',
-        textAnalysis: '📝 Анализ текста',
+        textAnalysis: 'Анализ текста',
         textAnalysisTitle: 'Анализ текста',
-        currency: '💱 Конвертер валют',
+        currency: 'Конвертер валют',
         currencyTitle: 'Конвертер валют',
-        exit: '🚪 Выход',
+        exit: 'Выход',
         useNow: 'Использовать текущие локальные дату/время как Дата 1',
         includeBoth: 'Включая обе даты',
         precision: 'Точность',
@@ -277,7 +283,7 @@ function applyTranslations() {
     };
 
     document.documentElement.lang = currentLang;
-    setText('title-tools', t('tools'));
+    setText('title-tools-text', t('tools'));
     setText('menu-weather', t('weather'));
     setText('menu-time', t('worldTime'));
     setText('menu-calendar', t('calendar'));
@@ -355,7 +361,7 @@ function applyTranslations() {
 
     const langBtn = document.getElementById('lang-toggle');
     if (langBtn) {
-        langBtn.textContent = currentLang === 'ru' ? '🇷🇺' : '🇺🇸';
+        langBtn.textContent = currentLang === 'ru' ? '🇷🇺' : '🇬🇧';
         langBtn.title = currentLang === 'ru' ? 'Язык' : 'Language';
     }
 
@@ -793,7 +799,7 @@ function renderCalendar() {
     const firstDay = new Date(year, month, 1).getDay();
     const lastDate = new Date(year, month + 1, 0).getDate();
 
-    const weekdays = currentLang === 'ru' ? ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const weekdays = currentLang === 'ru' ? ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     let html = weekdays.map(day => `<div class=\"calendar-day weekday\">${day}</div>`).join('');
 
     for (let i = 0; i < firstDay; i++) {
@@ -1394,3 +1400,4 @@ function initApp() {
 }
 
 window.addEventListener('load', initApp);
+
