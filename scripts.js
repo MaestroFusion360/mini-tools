@@ -1,4 +1,4 @@
-// ================== ТЕМА И LOCALSTORAGE ==================
+// ================== THEME & LOCALSTORAGE ==================
 function toggleTheme() {
     const body = document.body;
     const toggle = document.getElementById('theme-toggle');
@@ -36,12 +36,53 @@ const i18n = {
         back: '← Back',
         tools: '📱 Tools',
         weather: '☁️ Weather',
+        weatherTitle: 'Weather',
+        weatherNow: 'Current Weather',
+        weatherSun: 'Sun',
+        sunrise: 'Sunrise',
+        sunset: 'Sunset',
+        weatherManualLabel: 'Use manual coordinates',
+        latitude: 'Latitude',
+        longitude: 'Longitude',
+        applyCoordinates: 'Apply coordinates',
+        manualCoordsInvalid: 'Invalid coordinates',
+        manualCoordsHint: 'Enter latitude (-90..90) and longitude (-180..180)',
+        favoritesTitle: 'Favorite coordinates',
+        presetsTitle: 'City presets',
+        addFavorite: 'Add',
+        removeFavorite: 'Remove',
+        noFavorites: 'No favorites yet',
+        favoriteNamePrompt: 'Favorite name',
+        favoriteLatPrompt: 'Latitude (-90..90)',
+        favoriteLonPrompt: 'Longitude (-180..180)',
+        favoriteRemovePrompt: 'Enter favorite number to remove',
+        favoriteSaved: 'Favorite saved',
+        favoriteRemoved: 'Favorite removed',
+        favoriteInvalid: 'Invalid favorite data',
+        presetSaintPetersburg: 'Saint Petersburg',
+        presetNewYork: 'New York',
+        presetLondon: 'London',
+        presetMoscow: 'Moscow',
+        presetDubai: 'Dubai',
+        presetBangkok: 'Bangkok',
+        presetTokyo: 'Tokyo',
         worldTime: '⏰ World Time',
+        worldTimeTitle: 'World Time',
         calendar: '📅 Calendar',
+        calendarTitle: 'Calendar',
+        calendarDiffTitle: 'Date Difference',
+        calendarPrev: 'Previous month',
+        calendarNext: 'Next month',
+        calendarToday: 'Current month',
+        yearLabel: 'Year',
         converter: '🔄 Converter',
+        converterTitle: 'Converter',
         calculator: '🧮 Calculator',
+        calculatorTitle: 'Calculator',
         textAnalysis: '📝 Text Analysis',
+        textAnalysisTitle: 'Text Analysis',
         currency: '💱 Currency',
+        currencyTitle: 'Currency Converter',
         exit: '🚪 Exit',
         useNow: 'Use current local date/time as Date 1',
         includeBoth: 'Include both dates',
@@ -49,18 +90,103 @@ const i18n = {
         refreshServer: '↻ Refresh rates from server',
         calcModeBasic: 'Mode: Basic',
         calcModeScientific: 'Mode: Scientific',
-        textPlaceholder: 'Type text...'
+        textPlaceholder: 'Type text...',
+        closeAppConfirm: 'Close app?',
+        geoUnsupported: 'Geolocation is not supported',
+        geoDenied: 'Geolocation access is blocked in browser',
+        geoNoAccess: 'No location access',
+        geoCoordFail: 'Failed to detect coordinates',
+        geoTimeout: 'Geolocation timeout',
+        geoError: 'Geolocation error',
+        geoCheckPermissions: 'Check browser permissions and GPS',
+        addressNotFound: 'Address not found',
+        addressUnavailable: 'Address unavailable',
+        updatedAt: 'Updated',
+        unixLabel: 'Unix',
+        localTimezone: 'Local',
+        date1: 'Date 1',
+        date2: 'Date 2',
+        hours: 'Hours',
+        minutes: 'Minutes',
+        calculate: 'Calculate',
+        length: 'Length',
+        area: 'Area',
+        volume: 'Volume',
+        weight: 'Weight',
+        speed: 'Speed',
+        temperature: 'Temperature',
+        pressure: 'Pressure',
+        energy: 'Energy',
+        calcExpression: 'Expression',
+        calcHistoryTitle: 'History',
+        calcEmptyHistory: 'No history yet',
+        relationForward: 'from first to second',
+        relationReverse: 'from second to first',
+        dayShort: 'days',
+        hourShort: 'h',
+        minShort: 'min',
+        weekShort: 'weeks',
+        yearShort: 'y',
+        monthShort: 'mo',
+        totalMinutes: 'Total minutes',
+        rateLabel: 'Rate',
+        timeFormat24: '24h',
+        timeFormat12: '12h',
+        ratesRefreshing: 'Refreshing rates...',
+        ratesUpdated: 'Rates updated',
+        ratesFallback: 'Refresh failed, using built-in rates'
     },
     ru: {
         back: '← Назад',
         tools: '📱 Инструменты',
         weather: '☁️ Погода',
+        weatherTitle: 'Погода',
+        weatherNow: 'Погода сейчас',
+        weatherSun: 'Солнце',
+        sunrise: 'Восход',
+        sunset: 'Закат',
+        weatherManualLabel: 'Ввести координаты вручную',
+        latitude: 'Широта',
+        longitude: 'Долгота',
+        applyCoordinates: 'Применить координаты',
+        manualCoordsInvalid: 'Некорректные координаты',
+        manualCoordsHint: 'Введите широту (-90..90) и долготу (-180..180)',
+        favoritesTitle: 'Избранные координаты',
+        presetsTitle: 'Пресеты городов',
+        addFavorite: 'Добавить',
+        removeFavorite: 'Удалить',
+        noFavorites: 'Пока нет избранного',
+        favoriteNamePrompt: 'Название точки',
+        favoriteLatPrompt: 'Широта (-90..90)',
+        favoriteLonPrompt: 'Долгота (-180..180)',
+        favoriteRemovePrompt: 'Введите номер точки для удаления',
+        favoriteSaved: 'Точка сохранена',
+        favoriteRemoved: 'Точка удалена',
+        favoriteInvalid: 'Некорректные данные точки',
+        presetSaintPetersburg: 'Санкт-Петербург',
+        presetNewYork: 'Нью-Йорк',
+        presetLondon: 'Лондон',
+        presetMoscow: 'Москва',
+        presetDubai: 'Дубай',
+        presetBangkok: 'Бангкок',
+        presetTokyo: 'Токио',
         worldTime: '⏰ Мировое время',
+        worldTimeTitle: 'Мировое время',
         calendar: '📅 Календарь',
+        calendarTitle: 'Календарь',
+        calendarDiffTitle: 'Разница дат',
+        calendarPrev: 'Предыдущий месяц',
+        calendarNext: 'Следующий месяц',
+        calendarToday: 'Текущий месяц',
+        yearLabel: 'Год',
         converter: '🔄 Конвертер',
+        converterTitle: 'Конвертер',
         calculator: '🧮 Калькулятор',
+        calculatorTitle: 'Калькулятор',
         textAnalysis: '📝 Анализ текста',
+        textAnalysisTitle: 'Анализ текста',
         currency: '💱 Конвертер валют',
+        currencyTitle: 'Конвертер валют',
         exit: '🚪 Выход',
         useNow: 'Использовать текущие локальные дату/время как Дата 1',
         includeBoth: 'Включая обе даты',
@@ -68,7 +194,51 @@ const i18n = {
         refreshServer: '↻ Обновить курсы с сервера',
         calcModeBasic: 'Режим: Базовый',
         calcModeScientific: 'Режим: Инженерный',
-        textPlaceholder: 'Введите текст...'
+        textPlaceholder: 'Введите текст...',
+        closeAppConfirm: 'Закрыть приложение?',
+        geoUnsupported: 'Геолокация не поддерживается',
+        geoDenied: 'Доступ к геолокации запрещён в браузере',
+        geoNoAccess: 'Нет доступа к местоположению',
+        geoCoordFail: 'Не удалось определить координаты',
+        geoTimeout: 'Истекло время ожидания геолокации',
+        geoError: 'Ошибка геолокации',
+        geoCheckPermissions: 'Проверь разрешение браузера и GPS',
+        addressNotFound: 'Адрес не найден',
+        addressUnavailable: 'Адрес недоступен',
+        updatedAt: 'Обновлено',
+        unixLabel: 'Unix',
+        localTimezone: 'Локальное',
+        date1: 'Дата 1',
+        date2: 'Дата 2',
+        hours: 'Часы',
+        minutes: 'Минуты',
+        calculate: 'Рассчитать',
+        length: 'Длина',
+        area: 'Площадь',
+        volume: 'Объём',
+        weight: 'Вес',
+        speed: 'Скорость',
+        temperature: 'Температура',
+        pressure: 'Давление',
+        energy: 'Энергия',
+        calcExpression: 'Выражение',
+        calcHistoryTitle: 'История',
+        calcEmptyHistory: 'Пока пусто',
+        relationForward: 'от первой до второй',
+        relationReverse: 'от второй до первой',
+        dayShort: 'дн',
+        hourShort: 'ч',
+        minShort: 'мин',
+        weekShort: 'нед',
+        yearShort: 'г',
+        monthShort: 'мес',
+        totalMinutes: 'Всего минут',
+        rateLabel: 'Курс',
+        timeFormat24: '24ч',
+        timeFormat12: '12ч',
+        ratesRefreshing: 'Обновление курсов...',
+        ratesUpdated: 'Курсы обновлены',
+        ratesFallback: 'Ошибка обновления, используются локальные курсы'
     }
 };
 
@@ -78,8 +248,26 @@ function getLocale() {
     return currentLang === 'ru' ? 'ru-RU' : 'en-US';
 }
 
+function formatDateTime(date, options = {}) {
+    return date.toLocaleString(getLocale(), { hour12: false, ...options }).replace(',', '');
+}
+
+function formatNumber(value, options = {}) {
+    return value.toLocaleString(getLocale(), options);
+}
+
 function t(key) {
     return i18n[currentLang]?.[key] || i18n.en[key] || key;
+}
+
+function setLabelText(forId, value) {
+    const label = document.querySelector(`label[for="${forId}"]`);
+    if (label) label.textContent = value;
+}
+
+function setSelectOptionText(selectId, value, text) {
+    const option = document.querySelector(`#${selectId} option[value="${value}"]`);
+    if (option) option.textContent = text;
 }
 
 function applyTranslations() {
@@ -100,24 +288,76 @@ function applyTranslations() {
     setText('menu-exit', t('exit'));
 
     document.querySelectorAll('[data-i18n="back-btn"]').forEach(btn => btn.textContent = t('back'));
-    setText('title-weather', currentLang === 'ru' ? 'Погода' : 'Weather');
-    setText('title-time', currentLang === 'ru' ? 'Мировое время' : 'World Time');
-    setText('title-calendar', currentLang === 'ru' ? 'Календарь' : 'Calendar');
-    setText('calendar-diff-title', currentLang === 'ru' ? 'Разница дат' : 'Date Difference');
-    setText('title-converter', currentLang === 'ru' ? 'Конвертер' : 'Converter');
-    setText('title-calc', currentLang === 'ru' ? 'Калькулятор' : 'Calculator');
-    setText('title-text', currentLang === 'ru' ? 'Анализ текста' : 'Text Analysis');
-    setText('title-currency', currentLang === 'ru' ? 'Конвертер валют' : 'Currency Converter');
+    setText('title-weather', t('weatherTitle'));
+    setText('weather-main-title', t('weatherNow'));
+    setText('weather-sun-title', t('weatherSun'));
+    setText('sunrise-label', t('sunrise'));
+    setText('sunset-label', t('sunset'));
+    setText('weather-manual-label', t('weatherManualLabel'));
+    setText('weather-lat-label', t('latitude'));
+    setText('weather-lon-label', t('longitude'));
+    setText('weather-apply-btn', t('applyCoordinates'));
+    setText('weather-fav-title', t('favoritesTitle'));
+    setText('weather-fav-add-btn', '+');
+    setText('weather-fav-remove-btn', '-');
+    setText('weather-presets-title', t('presetsTitle'));
+    setText('title-time', t('worldTimeTitle'));
+    setText('title-calendar', t('calendarTitle'));
+    setText('calendar-diff-title', t('calendarDiffTitle'));
+    setText('calendar-today-btn', t('calendarToday'));
+    setText('title-converter', t('converterTitle'));
+    setText('title-calc', t('calculatorTitle'));
+    setText('title-text', t('textAnalysisTitle'));
+    setText('title-currency', t('currencyTitle'));
     setText('use-now-label', t('useNow'));
     setText('date-inclusive-label', t('includeBoth'));
-    setText('conv-precision-label', t('precision'));
     setText('cur-refresh-btn', t('refreshServer'));
+    setLabelText('conv-precision', t('precision'));
+    setLabelText('date1', t('date1'));
+    setLabelText('date2', t('date2'));
+    setLabelText('date1-year', t('yearLabel'));
+    setLabelText('date2-year', t('yearLabel'));
+    setLabelText('time1h', t('hours'));
+    setLabelText('time2h', t('hours'));
+    setLabelText('time1m', t('minutes'));
+    setLabelText('time2m', t('minutes'));
+
+    const calcBtn = document.querySelector('button[onclick="calcDateDiff()"]');
+    if (calcBtn) calcBtn.textContent = t('calculate');
+
+    setSelectOptionText('conv-type', 'length', t('length'));
+    setSelectOptionText('conv-type', 'area', t('area'));
+    setSelectOptionText('conv-type', 'volume', t('volume'));
+    setSelectOptionText('conv-type', 'weight', t('weight'));
+    setSelectOptionText('conv-type', 'speed', t('speed'));
+    setSelectOptionText('conv-type', 'temperature', t('temperature'));
+    setSelectOptionText('conv-type', 'pressure', t('pressure'));
+    setSelectOptionText('conv-type', 'energy', t('energy'));
+
+    setSelectOptionText('timezone-select', 'local', t('localTimezone'));
+    setSelectOptionText('timezone-select', 'America/New_York', currentLang === 'ru' ? 'Нью-Йорк' : 'New York');
+    setSelectOptionText('timezone-select', 'Europe/London', currentLang === 'ru' ? 'Лондон' : 'London');
+    setSelectOptionText('timezone-select', 'Europe/Moscow', currentLang === 'ru' ? 'Москва' : 'Moscow');
+    setSelectOptionText('timezone-select', 'Asia/Dubai', currentLang === 'ru' ? 'Дубай' : 'Dubai');
+    setSelectOptionText('timezone-select', 'Asia/Bangkok', currentLang === 'ru' ? 'Бангкок' : 'Bangkok');
+    setSelectOptionText('timezone-select', 'Asia/Tokyo', currentLang === 'ru' ? 'Токио' : 'Tokyo');
+
+    const historyTitle = document.querySelector('.calc-history-title');
+    if (historyTitle) historyTitle.textContent = t('calcHistoryTitle');
+
+    const prevBtn = document.getElementById('calendar-prev-btn');
+    const nextBtn = document.getElementById('calendar-next-btn');
+    if (prevBtn) prevBtn.title = t('calendarPrev');
+    if (nextBtn) nextBtn.title = t('calendarNext');
 
     const placeholder = document.getElementById('text-input');
     if (placeholder) placeholder.placeholder = t('textPlaceholder');
 
     const langBtn = document.getElementById('lang-toggle');
-    if (langBtn) langBtn.textContent = currentLang === 'ru' ? '🇷🇺' : '🇺🇸';
+    if (langBtn) {
+        langBtn.textContent = currentLang === 'ru' ? '🇷🇺' : '🇺🇸';
+        langBtn.title = currentLang === 'ru' ? 'Язык' : 'Language';
+    }
 
     toggleCalcMode(false);
     updateWorldTime();
@@ -125,6 +365,8 @@ function applyTranslations() {
     calcDateDiff();
     syncBaseDateWithNow();
     analyzeText();
+    renderWeatherFavorites();
+    renderWeatherPresets();
 }
 
 function toggleLanguage() {
@@ -133,7 +375,7 @@ function toggleLanguage() {
     applyTranslations();
 }
 
-// ================== НАВИГАЦИЯ ==================
+// ================== NAVIGATION ==================
 function showPage(id) {
     const nextPage = document.getElementById(id);
     if (!nextPage) return;
@@ -151,17 +393,229 @@ function loadLastPage() {
 }
 
 function exitApp() {
-    if (confirm(currentLang === 'ru' ? 'Закрыть приложение?' : 'Close app?')) {
+    if (confirm(t('closeAppConfirm'))) {
         window.close();
     }
 }
 
-// ================== ПОГОДА ==================
+// ================== WEATHER ==================
+const WEATHER_MODE_KEY = 'weatherManualMode';
+const WEATHER_MANUAL_LAT_KEY = 'weatherManualLat';
+const WEATHER_MANUAL_LON_KEY = 'weatherManualLon';
+const WEATHER_FAVORITES_KEY = 'weatherFavorites';
+let weatherCurrentCoords = null;
+const WEATHER_CITY_PRESETS = [
+    { labelKey: 'presetSaintPetersburg', lat: 59.9343, lon: 30.3351 },
+    { labelKey: 'presetNewYork', lat: 40.7128, lon: -74.0060 },
+    { labelKey: 'presetLondon', lat: 51.5074, lon: -0.1278 },
+    { labelKey: 'presetMoscow', lat: 55.7558, lon: 37.6173 },
+    { labelKey: 'presetDubai', lat: 25.2048, lon: 55.2708 },
+    { labelKey: 'presetBangkok', lat: 13.7563, lon: 100.5018 },
+    { labelKey: 'presetTokyo', lat: 35.6762, lon: 139.6503 }
+];
+
+function setCoordText(lat, lon) {
+    document.getElementById('coord').textContent = `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
+}
+
+function setWeatherManualUI(manual) {
+    const latInput = document.getElementById('weather-lat');
+    const lonInput = document.getElementById('weather-lon');
+    const applyBtn = document.getElementById('weather-apply-btn');
+
+    if (latInput) latInput.disabled = !manual;
+    if (lonInput) lonInput.disabled = !manual;
+    if (applyBtn) applyBtn.disabled = !manual;
+}
+
+function getWeatherFavorites() {
+    try {
+        const raw = localStorage.getItem(WEATHER_FAVORITES_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter(item =>
+            item &&
+            typeof item.name === 'string' &&
+            Number.isFinite(item.lat) &&
+            Number.isFinite(item.lon)
+        );
+    } catch {
+        return [];
+    }
+}
+
+function saveWeatherFavorites(items) {
+    localStorage.setItem(WEATHER_FAVORITES_KEY, JSON.stringify(items));
+}
+
+function renderWeatherFavorites() {
+    const holder = document.getElementById('weather-favorites-list');
+    if (!holder) return;
+
+    const favorites = getWeatherFavorites();
+    if (!favorites.length) {
+        holder.innerHTML = `<span class="small-text">${t('noFavorites')}</span>`;
+        return;
+    }
+
+    holder.innerHTML = '';
+    favorites.forEach((item, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'weather-fav-chip';
+        btn.textContent = `${idx + 1}. ${item.name}`;
+        btn.title = `${item.lat.toFixed(4)}, ${item.lon.toFixed(4)}`;
+        btn.onclick = async () => {
+            const toggle = document.getElementById('weather-manual-toggle');
+            if (toggle) toggle.checked = true;
+            localStorage.setItem(WEATHER_MODE_KEY, '1');
+            setWeatherManualUI(true);
+            document.getElementById('weather-lat').value = String(item.lat);
+            document.getElementById('weather-lon').value = String(item.lon);
+            await applyManualCoordinates();
+        };
+        holder.appendChild(btn);
+    });
+}
+
+function renderWeatherPresets() {
+    const holder = document.getElementById('weather-presets-list');
+    if (!holder) return;
+
+    holder.innerHTML = '';
+    WEATHER_CITY_PRESETS.forEach(item => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'weather-fav-chip';
+        btn.textContent = t(item.labelKey);
+        btn.title = `${item.lat.toFixed(4)}, ${item.lon.toFixed(4)}`;
+        btn.onclick = async () => {
+            const toggle = document.getElementById('weather-manual-toggle');
+            if (toggle) toggle.checked = true;
+            localStorage.setItem(WEATHER_MODE_KEY, '1');
+            setWeatherManualUI(true);
+            document.getElementById('weather-lat').value = String(item.lat);
+            document.getElementById('weather-lon').value = String(item.lon);
+            await applyManualCoordinates();
+        };
+        holder.appendChild(btn);
+    });
+}
+
+function addCurrentCoordinateToFavorites() {
+    if (!weatherCurrentCoords) {
+        alert(t('manualCoordsHint'));
+        return;
+    }
+
+    const { lat, lon } = weatherCurrentCoords;
+    const favorites = getWeatherFavorites();
+    const exists = favorites.some(item => Math.abs(item.lat - lat) < 0.000001 && Math.abs(item.lon - lon) < 0.000001);
+    if (exists) {
+        renderWeatherFavorites();
+        return;
+    }
+
+    favorites.push({ name: `${lat.toFixed(4)}, ${lon.toFixed(4)}`, lat, lon });
+    saveWeatherFavorites(favorites);
+    renderWeatherFavorites();
+    alert(t('favoriteSaved'));
+}
+
+function removeFavoriteCoordinateDialog() {
+    const favorites = getWeatherFavorites();
+    if (!favorites.length) {
+        alert(t('noFavorites'));
+        return;
+    }
+
+    const list = favorites.map((item, idx) => `${idx + 1}. ${item.name} (${item.lat.toFixed(4)}, ${item.lon.toFixed(4)})`).join('\n');
+    const value = prompt(`${t('favoriteRemovePrompt')}:\n${list}`, '1');
+    if (value === null) return;
+
+    const idx = parseInt(value, 10) - 1;
+    if (!Number.isInteger(idx) || idx < 0 || idx >= favorites.length) {
+        alert(t('favoriteInvalid'));
+        return;
+    }
+
+    favorites.splice(idx, 1);
+    saveWeatherFavorites(favorites);
+    renderWeatherFavorites();
+    alert(t('favoriteRemoved'));
+}
+
+function getManualCoords() {
+    const latInput = document.getElementById('weather-lat');
+    const lonInput = document.getElementById('weather-lon');
+    if (!latInput || !lonInput) return null;
+
+    const lat = Number(String(latInput.value).replace(',', '.'));
+    const lon = Number(String(lonInput.value).replace(',', '.'));
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return null;
+
+    return { lat, lon };
+}
+
+function loadWeatherSettings() {
+    const toggle = document.getElementById('weather-manual-toggle');
+    const latInput = document.getElementById('weather-lat');
+    const lonInput = document.getElementById('weather-lon');
+    if (!toggle || !latInput || !lonInput) return;
+
+    const manual = localStorage.getItem(WEATHER_MODE_KEY) === '1';
+    toggle.checked = manual;
+    latInput.value = localStorage.getItem(WEATHER_MANUAL_LAT_KEY) || '';
+    lonInput.value = localStorage.getItem(WEATHER_MANUAL_LON_KEY) || '';
+    setWeatherManualUI(manual);
+}
+
+async function refreshWeatherByCoordinates(lat, lon) {
+    weatherCurrentCoords = { lat, lon };
+    setCoordText(lat, lon);
+    await loadAddress(lat, lon);
+    await loadWeather(lat, lon);
+    updateTimestamp();
+}
+
+function toggleWeatherManualMode() {
+    const toggle = document.getElementById('weather-manual-toggle');
+    if (!toggle) return;
+
+    const manual = !!toggle.checked;
+    localStorage.setItem(WEATHER_MODE_KEY, manual ? '1' : '0');
+    setWeatherManualUI(manual);
+
+    if (manual) applyManualCoordinates();
+    else initWeather();
+}
+
+async function applyManualCoordinates() {
+    const coords = getManualCoords();
+    if (!coords) {
+        document.getElementById('coord').textContent = t('manualCoordsInvalid');
+        document.getElementById('address').textContent = t('manualCoordsHint');
+        return;
+    }
+
+    localStorage.setItem(WEATHER_MANUAL_LAT_KEY, String(coords.lat));
+    localStorage.setItem(WEATHER_MANUAL_LON_KEY, String(coords.lon));
+    await refreshWeatherByCoordinates(coords.lat, coords.lon);
+}
+
 async function initWeather() {
     updateTimestamp();
+    loadCurrentTime();
+
+    const manual = document.getElementById('weather-manual-toggle')?.checked;
+    if (manual) {
+        await applyManualCoordinates();
+        return;
+    }
 
     if (!('geolocation' in navigator)) {
-        setLocationError('Геолокация не поддерживается');
+        setLocationError(t('geoUnsupported'));
         return;
     }
 
@@ -170,7 +624,7 @@ async function initWeather() {
             const status = await navigator.permissions.query({ name: 'geolocation' });
 
             if (status.state === 'denied') {
-                setLocationError('Доступ к геолокации запрещён в браузере');
+                setLocationError(t('geoDenied'));
                 return;
             }
         }
@@ -183,21 +637,17 @@ async function initWeather() {
             const lat = pos.coords.latitude;
             const lon = pos.coords.longitude;
 
-            document.getElementById('coord').textContent = `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
-
-            await loadAddress(lat, lon);
-            await loadWeather(lat, lon);
-            updateTimestamp();
+            await refreshWeatherByCoordinates(lat, lon);
         },
         (err) => {
             if (err.code === 1) {
-                setLocationError('Нет доступа к местоположению');
+                setLocationError(t('geoNoAccess'));
             } else if (err.code === 2) {
-                setLocationError('Не удалось определить координаты');
+                setLocationError(t('geoCoordFail'));
             } else if (err.code === 3) {
-                setLocationError('Истекло время ожидания геолокации');
+                setLocationError(t('geoTimeout'));
             } else {
-                setLocationError('Ошибка геолокации');
+                setLocationError(t('geoError'));
             }
             console.warn('Geolocation error:', err);
         },
@@ -208,12 +658,11 @@ async function initWeather() {
         }
     );
 
-    loadCurrentTime();
 }
 
 function setLocationError(message) {
     document.getElementById('coord').textContent = message;
-    document.getElementById('address').textContent = 'Проверь разрешение браузера и GPS';
+    document.getElementById('address').textContent = t('geoCheckPermissions');
 }
 
 async function loadAddress(lat, lon) {
@@ -231,9 +680,9 @@ async function loadAddress(lat, lon) {
         if (a.state) parts.push(a.state);
         if (a.country) parts.push(a.country);
 
-        document.getElementById('address').textContent = parts.join(', ') || 'Адрес не найден';
+        document.getElementById('address').textContent = parts.join(', ') || t('addressNotFound');
     } catch {
-        document.getElementById('address').textContent = 'Адрес недоступен';
+        document.getElementById('address').textContent = t('addressUnavailable');
     }
 }
 
@@ -274,7 +723,7 @@ async function loadCurrentTime() {
         const t = await tRes.json();
         const d = new Date(t.datetime);
 
-        document.getElementById('time').textContent = d.toLocaleString('ru-RU', {
+        document.getElementById('time').textContent = formatDateTime(d, {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
@@ -282,24 +731,24 @@ async function loadCurrentTime() {
             minute: '2-digit',
             second: '2-digit',
             hour12: false
-        }).replace(',', '');
+        });
     } catch {
         const d = new Date();
-        document.getElementById('time').textContent = d.toLocaleString('ru-RU', { hour12: false }).replace(',', '');
+        document.getElementById('time').textContent = formatDateTime(d);
     }
 }
 
 function updateTimestamp() {
     document.getElementById('timestamp').textContent =
-        'Обновлено: ' + new Date().toLocaleString('ru-RU', { hour12: false });
+        `${t('updatedAt')}: ${formatDateTime(new Date())}`;
 }
 
-// ================== МИРОВОЕ ВРЕМЯ ==================
+// ================== WORLD TIME ==================
 let time24h = true;
 
 function toggleTimeFormat() {
     time24h = !time24h;
-    document.getElementById('time-format-btn').textContent = time24h ? '24ч' : '12ч';
+    document.getElementById('time-format-btn').textContent = time24h ? t('timeFormat24') : t('timeFormat12');
     localStorage.setItem('timeFormat', time24h ? '24' : '12');
     updateWorldTime();
 }
@@ -308,8 +757,8 @@ function loadTimeFormat() {
     const savedFormat = localStorage.getItem('timeFormat');
     if (savedFormat === '12') {
         time24h = false;
-        document.getElementById('time-format-btn').textContent = '12ч';
     }
+    document.getElementById('time-format-btn').textContent = time24h ? t('timeFormat24') : t('timeFormat12');
 }
 
 function updateWorldTime() {
@@ -317,24 +766,29 @@ function updateWorldTime() {
     const now = new Date();
     const opts = tz === 'local' ? {} : { timeZone: tz };
 
-    const timeStr = now.toLocaleTimeString(time24h ? 'ru-RU' : 'en-US', {
+    const timeStr = now.toLocaleTimeString(getLocale(), {
         ...opts,
         hour12: !time24h
     });
 
     document.getElementById('world-time').textContent = timeStr;
-    document.getElementById('unix-time').textContent = `${currentLang === 'ru' ? 'Unix' : 'Unix'}: ${Math.floor(now.getTime() / 1000)}`;
+    document.getElementById('unix-time').textContent = `${t('unixLabel')}: ${Math.floor(now.getTime() / 1000)}`;
 }
 
-// ================== КАЛЕНДАРЬ ==================
+// ================== CALENDAR ==================
+const CALENDAR_START_YEAR = 1970;
+const CALENDAR_END_YEAR = 2100;
+let calendarViewDate = new Date();
+
 function renderCalendar() {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
+    const year = calendarViewDate.getFullYear();
+    const month = calendarViewDate.getMonth();
+    const isCurrentMonth = now.getFullYear() === year && now.getMonth() === month;
     const today = now.getDate();
 
     document.getElementById('calendar-month-year').textContent =
-        now.toLocaleString(getLocale(), { month: 'long', year: 'numeric' });
+        new Date(year, month, 1).toLocaleString(getLocale(), { month: 'long', year: 'numeric' });
 
     const firstDay = new Date(year, month, 1).getDay();
     const lastDate = new Date(year, month + 1, 0).getDate();
@@ -347,15 +801,82 @@ function renderCalendar() {
     }
 
     for (let d = 1; d <= lastDate; d++) {
-        const cls = d === today ? 'calendar-day today' : 'calendar-day';
+        const cls = isCurrentMonth && d === today ? 'calendar-day today' : 'calendar-day';
         html += `<div class="${cls}">${d}</div>`;
     }
 
     document.getElementById('calendar-days').innerHTML = html;
 }
 
+function changeCalendarMonth(delta) {
+    calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() + delta, 1);
+    renderCalendar();
+}
+
+function goToCurrentMonth() {
+    const now = new Date();
+    calendarViewDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    renderCalendar();
+}
+
 function daysInMonth(year, month) {
     return new Date(year, month + 1, 0).getDate();
+}
+
+function parseDateInputValue(dateId) {
+    const value = document.getElementById(dateId).value;
+    if (!value) return null;
+    const [y, m, d] = value.split('-').map(Number);
+    if (!y || !m || !d) return null;
+    return { year: y, month: m, day: d };
+}
+
+function fillYearSelect(selectId, selectedYear) {
+    const sel = document.getElementById(selectId);
+    if (!sel) return;
+
+    const prevValue = sel.value;
+    sel.innerHTML = '';
+    for (let year = CALENDAR_END_YEAR; year >= CALENDAR_START_YEAR; year--) {
+        const option = new Option(String(year), String(year));
+        sel.add(option);
+    }
+
+    const value = String(selectedYear || prevValue || new Date().getFullYear());
+    if (sel.querySelector(`option[value="${value}"]`)) {
+        sel.value = value;
+    }
+}
+
+function syncYearSelectWithDate(dateId, yearSelectId) {
+    const parsed = parseDateInputValue(dateId);
+    if (!parsed) return;
+    const yearSel = document.getElementById(yearSelectId);
+    if (yearSel) yearSel.value = String(parsed.year);
+}
+
+function setDateYear(dateId, yearSelectId) {
+    const dateEl = document.getElementById(dateId);
+    const yearSel = document.getElementById(yearSelectId);
+    const parsed = parseDateInputValue(dateId);
+    if (!dateEl || !yearSel || !parsed) return;
+
+    const targetYear = parseInt(yearSel.value, 10);
+    if (!Number.isFinite(targetYear)) return;
+
+    const monthIndex = parsed.month - 1;
+    const maxDay = daysInMonth(targetYear, monthIndex);
+    const safeDay = Math.min(parsed.day, maxDay);
+
+    dateEl.value = `${targetYear}-${String(parsed.month).padStart(2, '0')}-${String(safeDay).padStart(2, '0')}`;
+    syncYearSelectWithDate(dateId, yearSelectId);
+}
+
+function initDateYearSelects() {
+    fillYearSelect('date1-year');
+    fillYearSelect('date2-year');
+    syncYearSelectWithDate('date1', 'date1-year');
+    syncYearSelectWithDate('date2', 'date2-year');
 }
 
 function clampNumber(id, min, max) {
@@ -423,6 +944,8 @@ function swapDates() {
     [date1.value, date2.value] = [date2.value, date1.value];
     [time1h.value, time2h.value] = [time2h.value, time1h.value];
     [time1m.value, time2m.value] = [time2m.value, time1m.value];
+    syncYearSelectWithDate('date1', 'date1-year');
+    syncYearSelectWithDate('date2', 'date2-year');
 
     calcDateDiff();
     syncBaseDateWithNow();
@@ -430,7 +953,7 @@ function swapDates() {
 
 function syncBaseDateWithNow() {
     const useNow = document.getElementById('date-use-now')?.checked;
-    const ids = ['date1', 'time1h', 'time1m'];
+    const ids = ['date1', 'date1-year', 'time1h', 'time1m'];
 
     if (useNow) {
         const now = new Date();
@@ -438,6 +961,7 @@ function syncBaseDateWithNow() {
         document.getElementById('date1').value = localDate;
         document.getElementById('time1h').value = now.getHours();
         document.getElementById('time1m').value = now.getMinutes();
+        syncYearSelectWithDate('date1', 'date1-year');
     }
 
     ids.forEach(id => {
@@ -477,29 +1001,39 @@ function calcDateDiff() {
         new Date(end.getFullYear(), end.getMonth(), end.getDate())
     );
 
-    const relation = sign >= 0
-        ? (currentLang === 'ru' ? 'от первой до второй' : 'from first to second')
-        : (currentLang === 'ru' ? 'от второй до первой' : 'from second to first');
+    const relation = sign >= 0 ? t('relationForward') : t('relationReverse');
 
     document.getElementById('date-diff').innerHTML =
-        `${totalDays} ${currentLang === 'ru' ? 'дн' : 'days'} ${hours} ${currentLang === 'ru' ? 'ч' : 'h'} ${minutes} ${currentLang === 'ru' ? 'мин' : 'min'}<br>` +
-        `${totalWeeks} ${currentLang === 'ru' ? 'нед' : 'weeks'} ${remDays} ${currentLang === 'ru' ? 'дн' : 'days'}<br>` +
-        `${ymd.y} ${currentLang === 'ru' ? 'г' : 'y'} ${ymd.m} ${currentLang === 'ru' ? 'мес' : 'mo'} ${ymd.d} ${currentLang === 'ru' ? 'дн' : 'days'}<br>` +
+        `${totalDays} ${t('dayShort')} ${hours} ${t('hourShort')} ${minutes} ${t('minShort')}<br>` +
+        `${totalWeeks} ${t('weekShort')} ${remDays} ${t('dayShort')}<br>` +
+        `${ymd.y} ${t('yearShort')} ${ymd.m} ${t('monthShort')} ${ymd.d} ${t('dayShort')}<br>` +
         `${formatWeekday(d1)} ${formatTime(d1)} → ${formatWeekday(d2)} ${formatTime(d2)}<br>` +
         `${relation}<br>` +
-        `${currentLang === 'ru' ? 'Всего минут' : 'Total minutes'}: ${totalMinutes.toLocaleString(getLocale())}`;
+        `${t('totalMinutes')}: ${totalMinutes.toLocaleString(getLocale())}`;
 }
 
-// ================== КОНВЕРТЕР ЕДИНИЦ ==================
+// ================== UNIT CONVERTER ==================
 let unitLabels = {
-    length: { m: 'м', km: 'км', cm: 'см', mm: 'мм', in: 'дюйм', ft: 'фут', yd: 'ярд', mile: 'миля', nmi: 'мор. миля' },
-    area: { m2: 'м²', km2: 'км²', cm2: 'см²', mm2: 'мм²', ft2: 'ft²', yd2: 'yd²', acre: 'акр', ha: 'га' },
-    volume: { l: 'л', ml: 'мл', m3: 'м³', cm3: 'см³', gal: 'gal', qt: 'qt' },
-    weight: { kg: 'кг', g: 'г', mg: 'мг', t: 'т', lb: 'lb', oz: 'oz' },
-    speed: { 'm/s': 'м/с', 'km/h': 'км/ч', mph: 'mph', knot: 'уз', mach: 'Mach' },
-    temperature: { C: '°C', F: '°F', K: 'K' },
-    pressure: { pa: 'Па', kpa: 'кПа', bar: 'бар', atm: 'атм', psi: 'psi', mmhg: 'мм рт. ст.' },
-    energy: { j: 'Дж', kj: 'кДж', cal: 'кал', kcal: 'ккал', wh: 'Вт⋅ч', kwh: 'кВт⋅ч' }
+    en: {
+        length: { m: 'm', km: 'km', cm: 'cm', mm: 'mm', in: 'inch', ft: 'ft', yd: 'yd', mile: 'mile', nmi: 'nautical mile' },
+        area: { m2: 'm²', km2: 'km²', cm2: 'cm²', mm2: 'mm²', ft2: 'ft²', yd2: 'yd²', acre: 'acre', ha: 'ha' },
+        volume: { l: 'l', ml: 'ml', m3: 'm³', cm3: 'cm³', gal: 'gal', qt: 'qt' },
+        weight: { kg: 'kg', g: 'g', mg: 'mg', t: 't', lb: 'lb', oz: 'oz' },
+        speed: { 'm/s': 'm/s', 'km/h': 'km/h', mph: 'mph', knot: 'knot', mach: 'Mach' },
+        temperature: { C: '°C', F: '°F', K: 'K' },
+        pressure: { pa: 'Pa', kpa: 'kPa', bar: 'bar', atm: 'atm', psi: 'psi', mmhg: 'mmHg' },
+        energy: { j: 'J', kj: 'kJ', cal: 'cal', kcal: 'kcal', wh: 'Wh', kwh: 'kWh' }
+    },
+    ru: {
+        length: { m: 'м', km: 'км', cm: 'см', mm: 'мм', in: 'дюйм', ft: 'фут', yd: 'ярд', mile: 'миля', nmi: 'мор. миля' },
+        area: { m2: 'м²', km2: 'км²', cm2: 'см²', mm2: 'мм²', ft2: 'ft²', yd2: 'yd²', acre: 'акр', ha: 'га' },
+        volume: { l: 'л', ml: 'мл', m3: 'м³', cm3: 'см³', gal: 'gal', qt: 'qt' },
+        weight: { kg: 'кг', g: 'г', mg: 'мг', t: 'т', lb: 'lb', oz: 'oz' },
+        speed: { 'm/s': 'м/с', 'km/h': 'км/ч', mph: 'mph', knot: 'уз', mach: 'Mach' },
+        temperature: { C: '°C', F: '°F', K: 'K' },
+        pressure: { pa: 'Па', kpa: 'кПа', bar: 'бар', atm: 'атм', psi: 'psi', mmhg: 'мм рт. ст.' },
+        energy: { j: 'Дж', kj: 'кДж', cal: 'кал', kcal: 'ккал', wh: 'Вт⋅ч', kwh: 'кВт⋅ч' }
+    }
 };
 
 let unitData = {
@@ -525,7 +1059,8 @@ let converterPresets = {
 };
 
 function unitText(type, key) {
-    return `${key} (${unitLabels[type][key] || key})`;
+    const labels = unitLabels[currentLang]?.[type] || unitLabels.en[type] || {};
+    return `${key} (${labels[key] || key})`;
 }
 
 function renderConverterPresets(type) {
@@ -533,10 +1068,11 @@ function renderConverterPresets(type) {
     holder.innerHTML = '';
 
     (converterPresets[type] || []).forEach(([from, to]) => {
+        const labels = unitLabels[currentLang]?.[type] || unitLabels.en[type] || {};
         const btn = document.createElement('button');
         btn.className = 'preset-chip';
         btn.type = 'button';
-        btn.textContent = `${unitLabels[type][from] || from} → ${unitLabels[type][to] || to}`;
+        btn.textContent = `${labels[from] || from} → ${labels[to] || to}`;
         btn.onclick = () => {
             document.getElementById('conv-from').value = from;
             document.getElementById('conv-to').value = to;
@@ -590,9 +1126,9 @@ function formatSmart(n, precision = 6) {
 
     if (abs === 0) return '0';
     if (abs >= 1000000 || abs < 0.000001) return n.toExponential(Math.min(precision, 8));
-    if (abs >= 1000) return n.toLocaleString('ru-RU', { maximumFractionDigits: precision });
-    if (abs >= 1) return n.toLocaleString('ru-RU', { maximumFractionDigits: precision });
-    return n.toLocaleString('ru-RU', { maximumFractionDigits: Math.min(precision + 2, 12) });
+    if (abs >= 1000) return formatNumber(n, { maximumFractionDigits: precision });
+    if (abs >= 1) return formatNumber(n, { maximumFractionDigits: precision });
+    return formatNumber(n, { maximumFractionDigits: Math.min(precision + 2, 12) });
 }
 
 function convertUnit() {
@@ -621,16 +1157,17 @@ function convertUnit() {
     }
 
     const reverseRate = val !== 0 ? res / val : null;
+    const labels = unitLabels[currentLang]?.[type] || unitLabels.en[type] || {};
 
     document.getElementById('conv-result').innerHTML =
-        `${formatSmart(val, precision)} ${unitLabels[type][from] || from}<br>` +
-        `= ${formatSmart(res, precision)} ${unitLabels[type][to] || to}` +
+        `${formatSmart(val, precision)} ${labels[from] || from}<br>` +
+        `= ${formatSmart(res, precision)} ${labels[to] || to}` +
         (reverseRate !== null
-            ? `<br><span class="small-text">Курс: 1 ${unitLabels[type][from] || from} = ${formatSmart(reverseRate, precision)} ${unitLabels[type][to] || to}</span>`
+            ? `<br><span class="small-text">${t('rateLabel')}: 1 ${labels[from] || from} = ${formatSmart(reverseRate, precision)} ${labels[to] || to}</span>`
             : '');
 }
 
-// ================== КАЛЬКУЛЯТОР ==================
+// ================== CALCULATOR ==================
 let calcVal = '0';
 let calcScientificMode = false;
 const calcAllowed = /^[\d+\-*/().,%\s]*$/;
@@ -638,14 +1175,14 @@ const calcHistory = [];
 
 function renderCalcDisplay() {
     document.getElementById('calc-display').textContent = calcVal;
-    document.getElementById('calc-expression-preview').textContent = `Выражение: ${calcVal}`;
+    document.getElementById('calc-expression-preview').textContent = `${t('calcExpression')}: ${calcVal}`;
 }
 
 function renderCalcHistory() {
     const el = document.getElementById('calc-history');
 
     if (!calcHistory.length) {
-        el.textContent = 'Пока пусто';
+        el.textContent = t('calcEmptyHistory');
         return;
     }
 
@@ -693,19 +1230,24 @@ function factorial(n) {
     return res;
 }
 
+const calcFunctionHandlers = {
+    sin: value => Math.sin(value * Math.PI / 180),
+    cos: value => Math.cos(value * Math.PI / 180),
+    tan: value => Math.tan(value * Math.PI / 180),
+    sqrt: value => Math.sqrt(value),
+    ln: value => Math.log(value),
+    log: value => Math.log10(value),
+    fact: value => factorial(value)
+};
+
 function calcFunction(fn) {
     try {
         const current = Number(calcEquals(true));
 
-        let result;
-        if (fn === 'sin') result = Math.sin(current * Math.PI / 180);
-        else if (fn === 'cos') result = Math.cos(current * Math.PI / 180);
-        else if (fn === 'tan') result = Math.tan(current * Math.PI / 180);
-        else if (fn === 'sqrt') result = Math.sqrt(current);
-        else if (fn === 'ln') result = Math.log(current);
-        else if (fn === 'log') result = Math.log10(current);
-        else if (fn === 'fact') result = factorial(current);
-        else throw new Error('Unknown function');
+        const handler = calcFunctionHandlers[fn];
+        if (!handler) throw new Error('Unknown function');
+
+        const result = handler(current);
 
         if (!Number.isFinite(result)) throw new Error('Non-finite result');
         const exprLabel = `${fn}(${current})`;
@@ -750,7 +1292,7 @@ function calcEquals(returnOnly = false) {
     return resultText;
 }
 
-// ================== АНАЛИЗ ТЕКСТА ==================
+// ================== TEXT ANALYSIS ==================
 function analyzeText() {
     const t = document.getElementById('text-input').value;
     const lines = t.split('\n');
@@ -766,13 +1308,13 @@ function analyzeText() {
             : `Lines: ${lines.length} · Characters: ${chars} · UTF-8: ${(bytes / 1024).toFixed(2)} KB · Max line: ${maxLine} · Words: ${words} · Spaces: ${spaces}`);
 }
 
-// ================== КОНВЕРТЕР ВАЛЮТ ==================
+// ================== CURRENCY CONVERTER ==================
 let rates = { USD: 1, EUR: 0.92, RUB: 92.5, GBP: 0.79, JPY: 151.5 };
 
 async function loadRates(manual = false) {
     const status = document.getElementById('cur-data-status');
     if (manual && status) {
-        status.textContent = currentLang === 'ru' ? 'Обновление курсов...' : 'Refreshing rates...';
+        status.textContent = t('ratesRefreshing');
     }
 
     try {
@@ -782,15 +1324,13 @@ async function loadRates(manual = false) {
         if (d && d.rates) rates = d.rates;
 
         if (status) {
-            status.textContent = (currentLang === 'ru' ? 'Курсы обновлены: ' : 'Rates updated: ') +
+            status.textContent = `${t('ratesUpdated')}: ` +
                 new Date().toLocaleTimeString(getLocale(), { hour12: false });
         }
     } catch (e) {
         console.warn('Rates loading failed, fallback to built-in rates:', e);
         if (status) {
-            status.textContent = currentLang === 'ru'
-                ? 'Ошибка обновления, используются локальные курсы'
-                : 'Refresh failed, using built-in rates';
+            status.textContent = t('ratesFallback');
         }
     }
 
@@ -817,18 +1357,21 @@ function convertCurrency() {
 
 // ================== PWA ==================
 function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js').catch(err => {
-                console.warn('SW registration failed:', err);
-            });
-        });
-    }
+    if (!('serviceWorker' in navigator)) return;
+
+    navigator.serviceWorker.register('./sw.js').catch(err => {
+        console.warn('SW registration failed:', err);
+    });
 }
 
-// ================== ИНИЦИАЛИЗАЦИЯ ==================
-window.onload = function () {
+// ================== INITIALIZATION ==================
+const WORLD_TIME_INTERVAL_MS = 1000;
+const DATE_DIFF_SYNC_INTERVAL_MS = 60000;
+
+function initApp() {
     loadTheme();
+    loadWeatherSettings();
+    initDateYearSelects();
     applyTranslations();
     loadTimeFormat();
     loadLastPage();
@@ -844,8 +1387,10 @@ window.onload = function () {
     initWeather();
     registerServiceWorker();
 
-    setInterval(updateWorldTime, 1000);
+    setInterval(updateWorldTime, WORLD_TIME_INTERVAL_MS);
     setInterval(() => {
         if (document.getElementById('date-use-now')?.checked) calcDateDiff();
-    }, 60000);
-};
+    }, DATE_DIFF_SYNC_INTERVAL_MS);
+}
+
+window.addEventListener('load', initApp);

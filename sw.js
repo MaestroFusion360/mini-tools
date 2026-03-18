@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mobile-tools-v3';
+const CACHE_NAME = 'mobile-tools-v4';
 
 const PRECACHE_URLS = [
     './',

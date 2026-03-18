@@ -17,7 +17,7 @@
 </head>
 <body>
     <div class="container" id="app">
-        <!-- МЕНЮ -->
+        <!-- MENU -->
         <div class="page active" id="page-menu">
             <div class="header">
                 <h2 id="title-tools">📱 Tools</h2>
@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <!-- ПОГОДА -->
+        <!-- WEATHER -->
         <div class="page" id="page-weather">
             <div class="header">
                 <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
@@ -50,46 +50,85 @@
                     <span class="metric-icon">🏠</span>
                     <span class="location-text" id="address">Определение...</span>
                 </div>
+                <label class="checkbox-label weather-manual-toggle-wrap">
+                    <input type="checkbox" id="weather-manual-toggle" onchange="toggleWeatherManualMode()">
+                    <span class="small-text" id="weather-manual-label">Use manual coordinates</span>
+                </label>
+                <div class="weather-manual-grid">
+                    <div>
+                        <label class="small-text" for="weather-lat" id="weather-lat-label">Latitude</label>
+                        <input type="number" id="weather-lat" step="0.0001" min="-90" max="90" placeholder="52.3509">
+                    </div>
+                    <div>
+                        <label class="small-text" for="weather-lon" id="weather-lon-label">Longitude</label>
+                        <input type="number" id="weather-lon" step="0.0001" min="-180" max="180" placeholder="4.9352">
+                    </div>
+                </div>
+                <button class="primary" id="weather-apply-btn" onclick="applyManualCoordinates()">Apply coordinates</button>
             </div>
 
             <div class="card">
-                <div class="location-row">
+                <div class="weather-fav-header">
+                    <h3 class="weather-group-title" id="weather-fav-title">Favorite coordinates</h3>
+                    <div class="weather-fav-actions">
+                        <button class="icon-btn" id="weather-fav-add-btn" onclick="addCurrentCoordinateToFavorites()">+</button>
+                        <button class="icon-btn" id="weather-fav-remove-btn" onclick="removeFavoriteCoordinateDialog()">-</button>
+                    </div>
+                </div>
+                <div class="weather-favorites-list" id="weather-favorites-list"></div>
+                <h3 class="weather-group-title" id="weather-presets-title">City presets</h3>
+                <div class="weather-presets-list" id="weather-presets-list"></div>
+            </div>
+
+            <div class="card">
+                <div class="weather-groups" id="weather">
+                    <section class="weather-group">
+                        <h3 class="weather-group-title" id="weather-main-title">Погода сейчас</h3>
+                        <div class="metric-row weather-main">
+                            <div class="metric-item">
+                                <span class="metric-icon">🌡️</span>
+                                <span><span class="metric-value" id="temp">--</span><span class="metric-unit">°C</span></span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-icon">💧</span>
+                                <span><span class="metric-value" id="humidity">--</span><span class="metric-unit">%</span></span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-icon">💨</span>
+                                <span><span class="metric-value" id="wind">--</span><span class="metric-unit">km/h</span></span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="weather-group">
+                        <h3 class="weather-group-title" id="weather-sun-title">Солнце</h3>
+                        <div class="metric-row weather-sun">
+                            <div class="metric-item metric-item-sun">
+                                <span class="metric-icon">☀️</span>
+                                <span>
+                                    <span class="metric-caption" id="sunrise-label">Восход</span>
+                                    <span class="metric-value" id="sunrise">--:--</span>
+                                </span>
+                            </div>
+                            <div class="metric-item metric-item-sun">
+                                <span class="metric-icon">🌙</span>
+                                <span>
+                                    <span class="metric-caption" id="sunset-label">Закат</span>
+                                    <span class="metric-value" id="sunset">--:--</span>
+                                </span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="location-row weather-time-row">
                     <span class="metric-icon">🕐</span>
                     <span class="location-text" id="time">--:--:--</span>
                 </div>
-            </div>
-
-            <div class="card">
-                <div class="metric-row" id="weather">
-                    <div class="metric-item">
-                        <span class="metric-icon">🌡️</span>
-                        <span><span class="metric-value" id="temp">--</span><span class="metric-unit">°C</span></span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-icon">💧</span>
-                        <span><span class="metric-value" id="humidity">--</span><span class="metric-unit">%</span></span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-icon">💨</span>
-                        <span><span class="metric-value" id="wind">--</span><span class="metric-unit">km/h</span></span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-icon">☀️</span>
-                        <span><span class="metric-value" id="sunrise">--:--</span></span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-icon">🌙</span>
-                        <span><span class="metric-value" id="sunset">--:--</span></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
                 <div class="update-time" id="timestamp"></div>
             </div>
         </div>
 
-        <!-- МИРОВОЕ ВРЕМЯ -->
+        <!-- WORLD TIME -->
         <div class="page" id="page-time">
             <div class="header">
                 <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
@@ -115,7 +154,7 @@
             </div>
         </div>
 
-        <!-- КАЛЕНДАРЬ -->
+        <!-- CALENDAR -->
         <div class="page" id="page-calendar">
             <div class="header">
                 <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
@@ -123,7 +162,12 @@
             </div>
 
             <div class="card">
-                <div class="calendar-title" id="calendar-month-year"></div>
+                <div class="calendar-toolbar">
+                    <button class="icon-btn calendar-nav-btn" id="calendar-prev-btn" onclick="changeCalendarMonth(-1)">←</button>
+                    <div class="calendar-title" id="calendar-month-year"></div>
+                    <button class="icon-btn calendar-nav-btn" id="calendar-next-btn" onclick="changeCalendarMonth(1)">→</button>
+                </div>
+                <button class="calendar-today-btn" id="calendar-today-btn" onclick="goToCurrentMonth()">Today</button>
                 <div class="calendar-grid" id="calendar-days"></div>
             </div>
 
@@ -138,16 +182,20 @@
                 <div class="date-time-grid">
                     <div class="date-time-block">
                         <label class="small-text" for="date1">Дата 1</label>
-                        <input type="date" id="date1" value="2025-01-01" onchange="calcDateDiff()">
-                    </div>
-                    <div class="time-pair">
-                        <div>
-                            <label class="small-text" for="time1h">Часы</label>
-                            <input type="number" id="time1h" min="0" max="23" value="0" onchange="calcDateDiff()" oninput="calcDateDiff()">
+                        <div class="date-input-grid">
+                            <input type="date" id="date1" value="2025-01-01" onchange="syncYearSelectWithDate('date1', 'date1-year'); calcDateDiff()">
+                            <select id="date1-year" onchange="setDateYear('date1', 'date1-year'); calcDateDiff()"></select>
                         </div>
-                        <div>
-                            <label class="small-text" for="time1m">Минуты</label>
-                            <input type="number" id="time1m" min="0" max="59" value="0" onchange="calcDateDiff()" oninput="calcDateDiff()">
+                        <label class="small-text" for="date1-year">Год</label>
+                        <div class="time-pair">
+                            <div>
+                                <label class="small-text" for="time1h">Часы</label>
+                                <input type="number" id="time1h" min="0" max="23" value="0" onchange="calcDateDiff()" oninput="calcDateDiff()">
+                            </div>
+                            <div>
+                                <label class="small-text" for="time1m">Минуты</label>
+                                <input type="number" id="time1m" min="0" max="59" value="0" onchange="calcDateDiff()" oninput="calcDateDiff()">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -155,16 +203,20 @@
                 <div class="date-time-grid">
                     <div class="date-time-block">
                         <label class="small-text" for="date2">Дата 2</label>
-                        <input type="date" id="date2" value="2025-12-31" onchange="calcDateDiff()">
-                    </div>
-                    <div class="time-pair">
-                        <div>
-                            <label class="small-text" for="time2h">Часы</label>
-                            <input type="number" id="time2h" min="0" max="23" value="0" onchange="calcDateDiff()" oninput="calcDateDiff()">
+                        <div class="date-input-grid">
+                            <input type="date" id="date2" value="2025-12-31" onchange="syncYearSelectWithDate('date2', 'date2-year'); calcDateDiff()">
+                            <select id="date2-year" onchange="setDateYear('date2', 'date2-year'); calcDateDiff()"></select>
                         </div>
-                        <div>
-                            <label class="small-text" for="time2m">Минуты</label>
-                            <input type="number" id="time2m" min="0" max="59" value="0" onchange="calcDateDiff()" oninput="calcDateDiff()">
+                        <label class="small-text" for="date2-year">Год</label>
+                        <div class="time-pair">
+                            <div>
+                                <label class="small-text" for="time2h">Часы</label>
+                                <input type="number" id="time2h" min="0" max="23" value="0" onchange="calcDateDiff()" oninput="calcDateDiff()">
+                            </div>
+                            <div>
+                                <label class="small-text" for="time2m">Минуты</label>
+                                <input type="number" id="time2m" min="0" max="59" value="0" onchange="calcDateDiff()" oninput="calcDateDiff()">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -185,7 +237,7 @@
             </div>
         </div>
 
-        <!-- КОНВЕРТЕР ЕДИНИЦ -->
+        <!-- UNIT CONVERTER -->
         <div class="page" id="page-converter">
             <div class="header">
                 <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
@@ -224,7 +276,7 @@
             </div>
         </div>
 
-        <!-- КАЛЬКУЛЯТОР -->
+        <!-- CALCULATOR -->
         <div class="page" id="page-calc">
             <div class="header">
                 <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
@@ -290,7 +342,7 @@
             </div>
         </div>
 
-        <!-- АНАЛИЗ ТЕКСТА -->
+        <!-- TEXT ANALYSIS -->
         <div class="page" id="page-text">
             <div class="header">
                 <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
@@ -305,7 +357,7 @@
             </div>
         </div>
 
-        <!-- КОНВЕРТЕР ВАЛЮТ -->
+        <!-- CURRENCY CONVERTER -->
         <div class="page" id="page-currency">
             <div class="header">
                 <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>

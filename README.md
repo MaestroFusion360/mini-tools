@@ -1,23 +1,20 @@
 # Mobile Tools
 
-A multifunctional PWA that bundles several everyday utilities into one lightweight app: weather, world time, calendar, unit conversion, calculator, text analysis, and currency conversion.
+Mobile Tools is a lightweight PWA with everyday utilities in one app: weather, world time, calendar, unit converter, calculator, text analysis, and currency conversion.
 
 ## Features
 
-- Weather by geolocation, including address lookup and sunrise/sunset times
-- World time with 24-hour / 12-hour format toggle
+- Weather by geolocation, including reverse geocoding and sunrise/sunset
+- World time with 24h/12h toggle
 - Calendar with detailed date difference calculation
-- Unit converter with multiple measurement categories
-- Calculator with basic and scientific modes
-- Text analysis: lines, words, characters, bytes, spaces, and longest line
+- Unit converter with multiple categories and precision control
+- Calculator with basic/scientific modes and history
+- Text analysis (lines, words, characters, bytes, spaces, longest line)
 - Currency converter with online rate refresh
-- Light and dark theme with saved preferences
-- Language toggle (English / Russian)
-- PWA support with offline caching of static assets
+- Light/dark theme and language toggle (English/Russian)
+- Offline support via Service Worker + Web App Manifest
 
-## Unit Converter
-
-The unit converter includes:
+## Unit Converter Categories
 
 - Length
 - Area
@@ -28,32 +25,15 @@ The unit converter includes:
 - Pressure
 - Energy
 
-It also provides:
+## Calculator Capabilities
 
-- additional units such as nautical mile and Mach
-- quick conversion presets
-- adjustable result precision
-
-## Calculator
-
-The calculator supports:
-
-- basic and scientific modes
+- Basic and scientific modes
 - `sin`, `cos`, `tan`
 - `sqrt`, `ln`, `log`
-- factorial `n!`
-- constants `π` and `e`
-- powers, percentages, and parentheses
-- calculation history
-- backspace for deleting the last entered character
-
-## Stability
-
-The app includes:
-
-- safer handling of network/API errors
-- fallback behavior when external services are unavailable
-- basic validation for calculator expressions
+- Factorial (`n!`)
+- Constants (`π`, `e`)
+- Powers, percentages, parentheses
+- Expression history and backspace
 
 ## Tech Stack
 
@@ -65,21 +45,25 @@ The app includes:
 
 ## Quick Start
 
-> Run the project through an HTTP server so the service worker can work correctly.
+Run through an HTTP server so the Service Worker can register.
 
 ### Python
 
 ```bash
-python3 -m http.server 8000
+python -m http.server 8000
+```
 
-Open: http://localhost:8000
+Open `http://localhost:8000`.
 
-Node.js
+### Node.js
 
+```bash
 npx serve .
+```
 
-Project Structure
+## Project Structure
 
+```text
 mini-tools/
 ├── index.html               # main UI and tool pages
 ├── styles.css               # styles and responsive layout
@@ -87,22 +71,17 @@ mini-tools/
 ├── sw.js                    # service worker
 ├── manifest.webmanifest     # PWA manifest
 └── assets/                  # icons
+```
 
-External APIs
+## External APIs
 
-The app uses public services:
+- Open-Meteo (weather)
+- Nominatim / OpenStreetMap (reverse geocoding)
+- WorldTimeAPI (time)
+- ExchangeRate-API (currency rates)
 
-Open-Meteo — weather data
+If a network request fails, the app falls back gracefully.
 
-Nominatim (OpenStreetMap) — reverse geocoding
+## License
 
-WorldTimeAPI — current time
-
-ExchangeRate-API — currency exchange rates
-
-
-If a network request fails or a service is unavailable, the app falls back gracefully instead of breaking the interface.
-
-License
-
-See [LICENSE](LICENSE.md)
+See [LICENSE](LICENSE).
