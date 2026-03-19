@@ -1355,16 +1355,28 @@
                 id="text-find-btn"
                 onclick="findTextInEditor()"
               >
-                Find
+                Find / Next
               </button>
-              <button
-                type="button"
-                class="text-action-btn"
-                id="text-find-next-btn"
-                onclick="findNextInEditor()"
-              >
-                Next
-              </button>
+            </div>
+            <div class="text-find-options">
+              <label class="checkbox-label">
+                <input type="checkbox" id="text-find-case" />
+                <span class="small-text" id="text-find-case-label"
+                  >Case sensitive</span
+                >
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="text-find-whole" />
+                <span class="small-text" id="text-find-whole-label"
+                  >Whole word</span
+                >
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="text-find-wrap" checked />
+                <span class="small-text" id="text-find-wrap-label"
+                  >Wrap search</span
+                >
+              </label>
             </div>
             <div class="text-find-row">
               <input

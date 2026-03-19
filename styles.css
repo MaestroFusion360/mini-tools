@@ -1118,9 +1118,20 @@ input[type="range"] {
 
 .text-find-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 6px;
   align-items: center;
+}
+
+.text-find-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+}
+
+.text-find-options .checkbox-label {
+  gap: 6px;
 }
 
 .text-find-row:last-of-type {

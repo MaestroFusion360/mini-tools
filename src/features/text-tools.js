@@ -5,7 +5,8 @@ let textCopyFeedbackTimer = null;
 let textFindState = {
   query: "",
   sourceText: "",
-  indices: [],
+  optionsKey: "",
+  matches: [],
   activeIndex: -1,
 };
 
@@ -147,7 +148,17 @@ export function analyzeText() {
 }
 
 function resetFindState() {
-  textFindState = { query: "", sourceText: "", indices: [], activeIndex: -1 };
+  textFindState = {
+    query: "",
+    sourceText: "",
+    optionsKey: "",
+    matches: [],
+    activeIndex: -1,
+  };
+}
+
+function escapeRegExp(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function findAllIndices(text, needle) {
@@ -175,6 +186,42 @@ function formatTemplate(template, params) {
   );
 }
 
+function getFindOptions() {
+  return {
+    caseSensitive: Boolean(byId("text-find-case")?.checked),
+    wholeWord: Boolean(byId("text-find-whole")?.checked),
+    wrap: byId("text-find-wrap")?.checked !== false,
+  };
+}
+
+function getFindOptionsKey(options) {
+  return `${options.caseSensitive ? 1 : 0}:${options.wholeWord ? 1 : 0}:${options.wrap ? 1 : 0}`;
+}
+
+function findMatchRanges(text, query, options) {
+  if (!query) return [];
+  if (!options.caseSensitive && !options.wholeWord) {
+    const normalizedQuery = query.toLocaleLowerCase();
+    return findAllIndices(text.toLocaleLowerCase(), normalizedQuery).map((start) => ({
+      start,
+      length: query.length,
+    }));
+  }
+
+  const pattern = options.wholeWord
+    ? `(?<![\\p{L}\\p{N}_])${escapeRegExp(query)}(?![\\p{L}\\p{N}_])`
+    : escapeRegExp(query);
+  const flags = `g${options.caseSensitive ? "" : "i"}u`;
+  const regex = new RegExp(pattern, flags);
+  const matches = [];
+  for (const match of text.matchAll(regex)) {
+    const start = match.index;
+    if (typeof start !== "number") continue;
+    matches.push({ start, length: match[0].length });
+  }
+  return matches;
+}
+
 function focusFoundRange(startIndex, length) {
   const input = byId("text-input");
   if (!input) return;
@@ -187,46 +234,65 @@ function runFind(query, next = false) {
   if (!input) return;
   const text = input.value;
   const normalizedQuery = query.trim();
+  const options = getFindOptions();
+  const optionsKey = getFindOptionsKey(options);
   if (!normalizedQuery) {
     resetFindState();
     setFindStatus("");
     return;
   }
 
-  if (
+  const stateChanged =
     textFindState.query !== normalizedQuery ||
-    textFindState.sourceText !== text
+    textFindState.sourceText !== text ||
+    textFindState.optionsKey !== optionsKey;
+
+  if (
+    stateChanged
   ) {
     textFindState = {
       query: normalizedQuery,
       sourceText: text,
-      indices: findAllIndices(text, normalizedQuery),
+      optionsKey,
+      matches: findMatchRanges(text, normalizedQuery, options),
       activeIndex: -1,
     };
   }
 
-  if (!textFindState.indices.length) {
+  if (!textFindState.matches.length) {
     setFindStatus(t("textNoMatches"));
     return;
   }
 
-  if (next) {
+  const shouldAdvance = next || (!stateChanged && textFindState.activeIndex >= 0);
+  if (shouldAdvance) {
+    if (!options.wrap && textFindState.activeIndex >= textFindState.matches.length - 1) {
+      setFindStatus(t("textSearchEnd"));
+      return;
+    }
     textFindState.activeIndex =
-      (textFindState.activeIndex + 1) % textFindState.indices.length;
+      (textFindState.activeIndex + 1) % textFindState.matches.length;
   } else if (textFindState.activeIndex < 0) {
-    const fromCaret = textFindState.indices.findIndex(
-      (idx) => idx >= (input.selectionStart || 0),
+    const fromCaret = textFindState.matches.findIndex(
+      (match) => match.start >= (input.selectionStart || 0),
     );
-    textFindState.activeIndex = fromCaret >= 0 ? fromCaret : 0;
+    if (fromCaret >= 0) {
+      textFindState.activeIndex = fromCaret;
+    } else if (options.wrap) {
+      textFindState.activeIndex = 0;
+    } else {
+      setFindStatus(t("textSearchEnd"));
+      return;
+    }
   }
 
   const currentIndex = textFindState.activeIndex;
-  const start = textFindState.indices[currentIndex];
-  focusFoundRange(start, normalizedQuery.length);
+  const currentMatch = textFindState.matches[currentIndex];
+  focusFoundRange(currentMatch.start, currentMatch.length);
   setFindStatus(
     formatTemplate(t("textMatchInfo"), {
       current: currentIndex + 1,
-      total: textFindState.indices.length,
+      total: textFindState.matches.length,
     }),
   );
 }
@@ -306,16 +372,38 @@ export function replaceAllInEditor() {
   const input = byId("text-input");
   const findValue = byId("text-find-input")?.value || "";
   const replaceValue = byId("text-replace-input")?.value || "";
+  const options = getFindOptions();
   if (!input || !findValue) {
     setFindStatus(t("textNoMatches"));
     return;
   }
-  const count = findAllIndices(input.value, findValue).length;
+  const matches = findMatchRanges(input.value, findValue.trim(), options);
+  const count = matches.length;
   if (!count) {
     setFindStatus(t("textNoMatches"));
     return;
   }
-  input.value = input.value.split(findValue).join(replaceValue);
+  if (!options.caseSensitive && !options.wholeWord) {
+    const normalizedNeedle = findValue.trim().toLocaleLowerCase();
+    let cursor = 0;
+    let result = "";
+    for (const match of matches) {
+      const end = match.start + normalizedNeedle.length;
+      result += input.value.slice(cursor, match.start) + replaceValue;
+      cursor = end;
+    }
+    result += input.value.slice(cursor);
+    input.value = result;
+  } else {
+    let cursor = 0;
+    let result = "";
+    for (const match of matches) {
+      result += input.value.slice(cursor, match.start) + replaceValue;
+      cursor = match.start + match.length;
+    }
+    result += input.value.slice(cursor);
+    input.value = result;
+  }
   resetFindState();
   setFindStatus(formatTemplate(t("textReplacedCount"), { count }));
   analyzeText();
@@ -384,8 +472,10 @@ function applyTextToolTranslations() {
   setText("text-spaces-btn", t("textSpaces"));
   setText("text-noempty-btn", t("textNoEmpty"));
   setText("text-find-btn", t("textFind"));
-  setText("text-find-next-btn", t("textFindNext"));
   setText("text-replace-all-btn", t("textReplaceAll"));
+  setText("text-find-case-label", t("textFindCaseSensitive"));
+  setText("text-find-whole-label", t("textFindWholeWord"));
+  setText("text-find-wrap-label", t("textFindWrap"));
 
   const findInput = byId("text-find-input");
   if (findInput) findInput.placeholder = t("textFindPlaceholder");
