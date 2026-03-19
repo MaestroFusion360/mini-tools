@@ -467,10 +467,7 @@ button.primary:active {
 }
 
 .update-time {
-    margin-top: 8px;
-    text-align: right;
-    font-size: 0.72rem;
-    color: var(--text-soft);
+    display: none;
 }
 
 .weather-manual-toggle-wrap {

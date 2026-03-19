@@ -1,135 +1,156 @@
-# Mobile Tools
+<!-- markdownlint-disable MD033 -->
+# <img src="assets/icon.svg" alt="Mobile Tools" height="24" /> Mobile Tools
 
-Mobile Tools is a lightweight PWA with everyday utilities in one app: weather, world time, timer, stopwatch, calendar, converters, calculator, and text editor tools.
+Mobile Tools is a vanilla JavaScript PWA with everyday utilities in one app:
+weather, world time, timer, stopwatch, calendar/date diff, unit converter,
+calculator, text editor/analysis, and currency conversion.
 
-## Features
+- [ Mobile Tools](#-mobile-tools)
+  - [✨ Features](#-features)
+  - [🧱 Architecture](#-architecture)
+    - [🚀 Startup Flow](#-startup-flow)
+    - [🗂️ Module Responsibilities](#️-module-responsibilities)
+  - [🧭 Project Structure](#-project-structure)
+  - [⚡ Quick Start](#-quick-start)
+  - [🌐 External APIs](#-external-apis)
+  - [📄 License](#-license)
 
-- Weather by geolocation, reverse geocoding, sunrise/sunset, manual coordinates, favorites, home point, and city presets
-- World time with 24h/12h toggle
-- Timer (hours/minutes/seconds, start/pause/resume/reset, status)
-- Stopwatch (start/pause/resume/reset, lap list)
-- Calendar with month navigation, day click-to-pick for Date 1/Date 2, range highlighting, and detailed date difference calculation
-- Unit converter with multiple categories, precision control, and presets
-- Calculator with basic/scientific modes, keyboard input support, and history
-- Text editor + analysis: copy, case transforms, cleanup actions, and extended live metrics
-- Currency converter with online rate refresh and fallback behavior
-- Light/dark theme and language toggle (English/Russian)
-- Inline SVG icon sprite (theme-aware icon coloring)
-- Offline support via Service Worker + Web App Manifest
+## ✨ Features
 
-## Unit Converter Categories
+- Weather 🌤️:
+  - geolocation + reverse geocoding
+  - manual coordinates mode
+  - favorites + home point + city presets
+  - current metrics (temperature, humidity, wind)
+  - sunrise/sunset
+  - forecast blocks (morning/day/evening/tomorrow)
+- World time with 24h/12h toggle 🌍
+- Timer (start/pause/resume/reset) ⏱️
+- Stopwatch (start/pause/resume/reset + laps) 🏁
+- Calendar 📅:
+  - month navigation
+  - clickable date picking for Date 1 / Date 2
+  - range highlighting
+  - detailed date difference calculator
+- Unit converter with presets and precision slider 🔁
+- Calculator 🧮:
+  - basic/scientific mode
+  - keyboard support (`0-9`, operators, Enter, Backspace, Delete, Escape, `^`)
+  - history
+- Text editor + analysis 📝:
+  - actions: Copy, UPPER/lower/Title/Sentence, Trim, Normalize spaces, Remove empty lines
+  - metrics: lines, chars, chars without spaces, UTF-8 size, words, spaces, max line, paragraphs, avg word length, reading time
+- Currency converter with online refresh + fallback rates 💱
+- Theme + language persistence 🎨🌐
+- Offline shell via Service Worker + Manifest 📦
 
-- Length
-- Area
-- Volume
-- Weight
-- Speed
-- Temperature
-- Pressure
-- Energy
+## 🧱 Architecture
 
-## Calculator Capabilities
+### 🚀 Startup Flow
 
-- Basic and scientific modes
-- Keyboard input: `0-9`, `.`, `+ - * / %`, parentheses, `Enter`, `=`, `Backspace`, `Delete`, `Escape`, `^`
-- `sin`, `cos`, `tan`
-- `sqrt`, `ln`, `log`
-- Factorial (`n!`)
-- Constants (`π`, `e`)
-- Powers, percentages, parentheses
-- Expression history and backspace
+`index.html` loads `main.js` as an ES module.
 
-## Text Editor & Analysis
+`main.js`:
 
-### Actions
+1. initializes theme
+2. initializes i18n
+3. exposes required handlers to `window` (for existing inline HTML handlers)
+4. initializes navigation and all feature modules
+5. initializes PWA registration
+6. applies translations
 
-- Copy to clipboard (with animated feedback)
-- UPPERCASE
-- lowercase
-- Title Case
-- Sentence case
-- Trim
-- Normalize spaces
-- Remove empty lines
+### 🗂️ Module Responsibilities
 
-### Metrics
+- `main.js`: app bootstrap and init orchestration
+- `state.js`: localStorage keys and storage helpers
+- `dom.js`: shared DOM utilities
+- `utils.js`: shared formatting and generic helpers
+- `i18n.js`: translation loading and runtime language switching
+- `i18n.json`: translation dictionary (`en`, `ru`)
+- `theme.js`: light/dark theme handling
+- `navigation.js`: page switching and last-page restore
+- `weather.js`: weather UI/data/favorites/manual mode
+- `world-time.js`: world clock and format toggle
+- `timer.js`: timer logic and UI updates
+- `stopwatch.js`: stopwatch and laps
+- `calendar.js`: calendar rendering + date diff
+- `converter.js`: unit conversion
+- `calculator.js`: calculator logic, history, keyboard input
+- `text-tools.js`: text transforms + metrics + copy feedback
+- `currency.js`: rates loading and conversion
+- `pwa.js`: service worker registration wrapper
+- `scripts.js`: compatibility bootstrap for older cached app shells
 
-- Lines
-- Characters
-- Characters without spaces
-- UTF-8 size (bytes/KB)
-- Words
-- Spaces
-- Longest line
-- Paragraphs
-- Average word length
-- Estimated reading time
+## 🧭 Project Structure
 
-## Tech Stack
+```text
+mini-tools/
+├── index.html
+├── styles.css
+├── main.js
+├── state.js
+├── dom.js
+├── utils.js
+├── i18n.js
+├── i18n.json
+├── theme.js
+├── navigation.js
+├── weather.js
+├── world-time.js
+├── timer.js
+├── stopwatch.js
+├── calendar.js
+├── converter.js
+├── calculator.js
+├── text-tools.js
+├── currency.js
+├── pwa.js
+├── scripts.js
+├── sw.js
+├── manifest.webmanifest
+└── assets/
+```
 
-- HTML5
-- CSS3
-- Vanilla JavaScript
-- Service Worker API
-- Web App Manifest
+## ⚡ Quick Start
 
-## Quick Start
+Use an HTTP server (Service Worker requires non-file protocol).
 
-Run through an HTTP server so the Service Worker can register.
-
-### Python
+Python:
 
 ```bash
 python -m http.server 8000
 ```
 
-Open `http://localhost:8000`.
-
-### Node.js
+Node.js:
 
 ```bash
 npx serve .
 ```
 
-## Project Structure
+Open `http://localhost:8000`.
 
-```text
-mini-tools/
-├── index.html               # main UI and tool pages
-├── styles.css               # styles and responsive layout
-├── main.js                  # application bootstrap (ES modules)
-├── state.js                 # shared storage/state helpers
-├── dom.js                   # shared DOM helpers
-├── utils.js                 # shared utilities
-├── i18n.js                  # translations API
-├── i18n.json                # translation dictionary
-├── theme.js                 # theme handling
-├── navigation.js            # page navigation
-├── weather.js               # weather tool
-├── world-time.js            # world time tool
-├── timer.js                 # timer tool
-├── stopwatch.js             # stopwatch tool
-├── calendar.js              # calendar/date diff tool
-├── converter.js             # unit converter
-├── calculator.js            # calculator
-├── text-tools.js            # text editor/analysis
-├── currency.js              # currency converter
-├── pwa.js                   # PWA registration
-├── scripts.js               # compatibility bootstrap
-├── sw.js                    # service worker
-├── manifest.webmanifest     # PWA manifest
-└── assets/                  # static assets (app icon, favicons)
-```
+## 🌐 External APIs
 
-## External APIs
-
-- Open-Meteo (weather)
+- Open-Meteo (weather + forecast)
 - Nominatim / OpenStreetMap (reverse geocoding)
-- WorldTimeAPI (time)
+- WorldTimeAPI (location time)
 - ExchangeRate-API (currency rates)
 
-If a network request fails, the app falls back gracefully.
+If any network request fails, the app falls back safely where possible.
 
-## License
+## 📄 License
 
 See [LICENSE](LICENSE).
+
+<p align="center">
+  <a href="https://github.com/MaestroFusion360/mini-tools/issues">
+    <img src="https://img.shields.io/github/issues/MaestroFusion360/mini-tools" alt="Issues" />
+  </a>
+  <a href="https://github.com/MaestroFusion360/mini-tools/stargazers">
+    <img src="https://img.shields.io/github/stars/MaestroFusion360/mini-tools" alt="Stars" />
+  </a>
+</p>
+
+<p align="center">
+  <img src="https://komarev.com/ghpvc/?username=MaestroFusion360-mini-tools&label=Project+Views&color=blue" alt="Project Views" />
+</p>
