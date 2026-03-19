@@ -29,7 +29,7 @@
     --radius-lg: 22px;
     --radius-md: 16px;
     --radius-sm: 12px;
-    --transition: 0.24s ease;
+    --transition: 0s;
 }
 
 body.dark {
@@ -146,7 +146,6 @@ h3 {
 }
 
 .card:hover {
-    transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
     border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
 }
@@ -236,7 +235,6 @@ button:not(.primary):not(.theme-toggle):not(.lang-toggle) {
 }
 
 button:not(.primary):not(.theme-toggle):not(.lang-toggle):hover {
-    transform: translateY(-1px);
     background: var(--btn-bg-hover);
     border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
 }
@@ -253,7 +251,6 @@ button.primary {
 }
 
 button.primary:hover {
-    transform: translateY(-1px);
     box-shadow: 0 12px 20px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
@@ -389,6 +386,13 @@ button.primary:active {
     stroke-linejoin: round;
 }
 
+.btn-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    display: block;
+}
+
 .metric-icon-svg {
     width: 20px;
     height: 20px;
@@ -480,6 +484,47 @@ button.primary:active {
     padding: 8px 12px;
 }
 
+.weather-fav-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.weather-fav-main {
+    flex: 1;
+    text-align: left;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.weather-fav-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+}
+
+.weather-fav-mini-btn {
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0;
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+
+.weather-fav-mini-btn.active {
+    background: color-mix(in srgb, var(--panel-soft) 92%, transparent);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+.weather-fav-item.is-home .weather-fav-main {
+    border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+}
+
 .preset-chip {
     padding: 6px 11px;
     font-size: 0.76rem;
@@ -526,6 +571,27 @@ button.primary:active {
     color: var(--text-muted);
 }
 
+.calendar-pick-mode {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+}
+
+.calendar-pick-btn {
+    width: auto;
+    min-height: 36px;
+    padding: 8px 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border-radius: 999px;
+}
+
+.calendar-pick-btn.active {
+    background: var(--accent-gradient);
+    color: #f8fafc;
+    border-color: transparent;
+}
+
 .calendar-grid {
     margin-top: 12px;
     display: grid;
@@ -545,6 +611,14 @@ button.primary:active {
     font-size: 0.86rem;
 }
 
+.calendar-day-clickable {
+    cursor: pointer;
+}
+
+.calendar-day-clickable:hover {
+    border-color: color-mix(in srgb, var(--accent) 44%, var(--border));
+}
+
 .calendar-day.weekday {
     font-weight: 700;
     color: var(--accent);
@@ -561,6 +635,19 @@ button.primary:active {
     color: color-mix(in srgb, var(--accent) 80%, var(--text));
     border-color: color-mix(in srgb, var(--accent) 80%, var(--border));
     font-weight: 800;
+}
+
+.calendar-day.selected-start,
+.calendar-day.selected-end {
+    background: color-mix(in srgb, var(--accent) 22%, var(--panel-strong));
+    border-color: color-mix(in srgb, var(--accent) 72%, var(--border));
+    color: color-mix(in srgb, var(--accent) 82%, var(--text));
+    font-weight: 800;
+}
+
+.calendar-day.in-range {
+    background: color-mix(in srgb, var(--accent) 12%, var(--panel-soft));
+    border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
 }
 
 .date-time-grid {
@@ -675,7 +762,6 @@ input[type='range'] {
 }
 
 .calc-btn:hover {
-    transform: translateY(-1px);
     border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
 }
 
@@ -731,7 +817,112 @@ input[type='range'] {
 }
 
 .text-analysis {
-    padding: 6px 0;
+    padding: 4px 0;
+    display: grid;
+    gap: 4px;
+    line-height: 1.35;
+}
+
+.text-input-wrap {
+    position: relative;
+}
+
+.text-actions-groups {
+    display: grid;
+    gap: 8px;
+}
+
+.text-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.text-action-btn {
+    width: auto;
+    min-height: 36px;
+    padding: 7px 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.text-copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0;
+    border-radius: 10px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    background: var(--btn-bg);
+    border: 1px solid var(--border);
+}
+
+.text-copy-btn:hover {
+    background: color-mix(in srgb, var(--accent) 32%, var(--panel-strong)) !important;
+    border-color: color-mix(in srgb, var(--accent) 56%, var(--border));
+}
+
+.text-copy-btn:active {
+    background: color-mix(in srgb, var(--accent) 62%, var(--panel-strong)) !important;
+    border-color: color-mix(in srgb, var(--accent) 72%, var(--border));
+}
+
+.text-copy-btn:focus-visible {
+    background: color-mix(in srgb, var(--accent) 28%, var(--panel-strong));
+}
+
+.text-copy-btn .btn-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.text-copy-btn::after {
+    content: attr(data-copy-feedback);
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+    pointer-events: none;
+}
+
+.text-copy-btn.copy-ok::after,
+.text-copy-btn.copy-fail::after {
+    animation: copy-feedback-in-out 0.95s ease forwards;
+}
+
+@keyframes copy-feedback-in-out {
+    0% {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.96);
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    75% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.96);
+    }
 }
 
 textarea {
@@ -781,7 +972,7 @@ textarea {
 
 .theme-toggle:hover,
 .lang-toggle:hover {
-    transform: translateY(-1px) scale(1.04);
+    transform: none;
 }
 
 .theme-toggle:active,
@@ -823,6 +1014,23 @@ textarea {
 
     .weather-fav-actions {
         width: 100%;
+    }
+
+    .weather-fav-item {
+        flex-wrap: wrap;
+    }
+
+    .weather-fav-main {
+        width: 100%;
+    }
+
+    .weather-fav-item-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .calendar-pick-mode {
+        flex-wrap: wrap;
     }
 
     .icon-btn,
@@ -880,15 +1088,15 @@ textarea {
         display: grid;
         grid-template-columns: 1fr;
         align-items: start;
-        min-height: calc(100vh - 140px);
+        min-height: auto;
     }
 
     #page-text.active .card {
-        min-height: calc(100vh - 240px);
+        min-height: auto;
     }
 
     #page-text.active #text-input {
-        min-height: clamp(280px, 52vh, 760px);
+        min-height: clamp(220px, 40vh, 520px);
     }
 
     #page-weather .header,

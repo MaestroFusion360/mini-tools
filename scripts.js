@@ -85,8 +85,8 @@ const i18n = {
         converterTitle: 'Converter',
         calculator: 'Calculator',
         calculatorTitle: 'Calculator',
-        textAnalysis: 'Text Analysis',
-        textAnalysisTitle: 'Text Analysis',
+        textAnalysis: 'Text Editor',
+        textAnalysisTitle: 'Text Editor',
         currency: 'Currency',
         currencyTitle: 'Currency Converter',
         exit: 'Exit',
@@ -97,6 +97,16 @@ const i18n = {
         calcModeBasic: 'Mode: Basic',
         calcModeScientific: 'Mode: Scientific',
         textPlaceholder: 'Type text...',
+        textCopy: 'Copy',
+        textUpper: 'UPPERCASE',
+        textLower: 'lowercase',
+        textTitle: 'Title Case',
+        textSentence: 'Sentence case',
+        textTrim: 'Trim',
+        textSpaces: 'Normalize spaces',
+        textNoEmpty: 'Remove empty lines',
+        textCopied: 'Copied',
+        textCopyFailed: 'Failed',
         closeAppConfirm: 'Close app?',
         geoUnsupported: 'Geolocation is not supported',
         geoDenied: 'Geolocation access is blocked in browser',
@@ -189,8 +199,8 @@ const i18n = {
         converterTitle: 'Конвертер',
         calculator: 'Калькулятор',
         calculatorTitle: 'Калькулятор',
-        textAnalysis: 'Анализ текста',
-        textAnalysisTitle: 'Анализ текста',
+        textAnalysis: 'Текстовый редактор',
+        textAnalysisTitle: 'Текстовый редактор',
         currency: 'Конвертер валют',
         currencyTitle: 'Конвертер валют',
         exit: 'Выход',
@@ -201,6 +211,16 @@ const i18n = {
         calcModeBasic: 'Режим: Базовый',
         calcModeScientific: 'Режим: Инженерный',
         textPlaceholder: 'Введите текст...',
+        textCopy: 'Копировать',
+        textUpper: 'ВЕРХНИЙ РЕГИСТР',
+        textLower: 'Нижний регистр',
+        textTitle: 'Как в заголовке',
+        textSentence: 'Как в предложении',
+        textTrim: 'Обрезать края',
+        textSpaces: 'Нормализовать пробелы',
+        textNoEmpty: 'Убрать пустые строки',
+        textCopied: 'Скопировано',
+        textCopyFailed: 'Не удалось',
         closeAppConfirm: 'Закрыть приложение?',
         geoUnsupported: 'Геолокация не поддерживается',
         geoDenied: 'Доступ к геолокации запрещён в браузере',
@@ -249,6 +269,7 @@ const i18n = {
 };
 
 let currentLang = localStorage.getItem('lang') || 'en';
+let textCopyFeedbackTimer = null;
 
 function getLocale() {
     return currentLang === 'ru' ? 'ru-RU' : 'en-US';
@@ -281,6 +302,11 @@ function applyTranslations() {
         const el = document.getElementById(id);
         if (el) el.textContent = value;
     };
+    const setIcon = (id, iconName) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = `<svg class="icon-svg btn-icon"><use href="#${iconName}"></use></svg>`;
+    };
 
     document.documentElement.lang = currentLang;
     setText('title-tools-text', t('tools'));
@@ -304,8 +330,10 @@ function applyTranslations() {
     setText('weather-lon-label', t('longitude'));
     setText('weather-apply-btn', t('applyCoordinates'));
     setText('weather-fav-title', t('favoritesTitle'));
-    setText('weather-fav-add-btn', '+');
-    setText('weather-fav-remove-btn', '-');
+    setIcon('weather-fav-add-btn', 'i-plus');
+    setIcon('weather-fav-remove-btn', 'i-minus');
+    const weatherFavHomeBtn = document.getElementById('weather-fav-remove-btn');
+    if (weatherFavHomeBtn) weatherFavHomeBtn.title = currentLang === 'ru' ? 'Удалить домашнюю точку' : 'Remove home point';
     setText('weather-presets-title', t('presetsTitle'));
     setText('title-time', t('worldTimeTitle'));
     setText('title-calendar', t('calendarTitle'));
@@ -313,7 +341,20 @@ function applyTranslations() {
     setText('calendar-today-btn', t('calendarToday'));
     setText('title-converter', t('converterTitle'));
     setText('title-calc', t('calculatorTitle'));
+    setIcon('calc-backspace-btn', 'i-delete');
     setText('title-text', t('textAnalysisTitle'));
+    const textCopyBtn = document.getElementById('text-copy-btn');
+    if (textCopyBtn) {
+        textCopyBtn.title = t('textCopy');
+        textCopyBtn.setAttribute('aria-label', t('textCopy'));
+    }
+    setText('text-upper-btn', t('textUpper'));
+    setText('text-lower-btn', t('textLower'));
+    setText('text-title-btn', t('textTitle'));
+    setText('text-sentence-btn', t('textSentence'));
+    setText('text-trim-btn', t('textTrim'));
+    setText('text-spaces-btn', t('textSpaces'));
+    setText('text-noempty-btn', t('textNoEmpty'));
     setText('title-currency', t('currencyTitle'));
     setText('use-now-label', t('useNow'));
     setText('date-inclusive-label', t('includeBoth'));
@@ -327,6 +368,8 @@ function applyTranslations() {
     setLabelText('time2h', t('hours'));
     setLabelText('time1m', t('minutes'));
     setLabelText('time2m', t('minutes'));
+    updateCalendarPickModeLabels();
+    setCalendarPickMode(calendarPickMode);
 
     const calcBtn = document.querySelector('button[onclick="calcDateDiff()"]');
     if (calcBtn) calcBtn.textContent = t('calculate');
@@ -361,7 +404,7 @@ function applyTranslations() {
 
     const langBtn = document.getElementById('lang-toggle');
     if (langBtn) {
-        langBtn.textContent = currentLang === 'ru' ? '🇷🇺' : '🇬🇧';
+        langBtn.textContent = currentLang === 'ru' ? 'RU' : 'EN';
         langBtn.title = currentLang === 'ru' ? 'Язык' : 'Language';
     }
 
@@ -379,6 +422,7 @@ function toggleLanguage() {
     currentLang = currentLang === 'ru' ? 'en' : 'ru';
     localStorage.setItem('lang', currentLang);
     applyTranslations();
+    refreshWeatherLocaleState();
 }
 
 // ================== NAVIGATION ==================
@@ -439,19 +483,63 @@ function getWeatherFavorites() {
         const raw = localStorage.getItem(WEATHER_FAVORITES_KEY);
         const parsed = raw ? JSON.parse(raw) : [];
         if (!Array.isArray(parsed)) return [];
-        return parsed.filter(item =>
-            item &&
-            typeof item.name === 'string' &&
-            Number.isFinite(item.lat) &&
-            Number.isFinite(item.lon)
-        );
+        let hasHome = false;
+        const favorites = parsed
+            .map(item => {
+                if (!item) return null;
+                const lat = Number(item.lat);
+                const lon = Number(item.lon);
+                if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+
+                const fallbackName = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+                const name = typeof item.name === 'string' && item.name.trim() ? item.name.trim() : fallbackName;
+                const isHome = Boolean(item.isHome) && !hasHome;
+                if (isHome) hasHome = true;
+
+                return { name, lat, lon, isHome };
+            })
+            .filter(Boolean);
+        if (!hasHome && favorites.length) favorites[0].isHome = true;
+        return favorites;
     } catch {
         return [];
     }
 }
 
 function saveWeatherFavorites(items) {
-    localStorage.setItem(WEATHER_FAVORITES_KEY, JSON.stringify(items));
+    let hasHome = false;
+    const normalized = (Array.isArray(items) ? items : [])
+        .map(item => {
+            if (!item) return null;
+            const lat = Number(item.lat);
+            const lon = Number(item.lon);
+            if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+
+            const fallbackName = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+            const name = typeof item.name === 'string' && item.name.trim() ? item.name.trim() : fallbackName;
+            const isHome = Boolean(item.isHome) && !hasHome;
+            if (isHome) hasHome = true;
+
+            return { name, lat, lon, isHome };
+        })
+        .filter(Boolean);
+    if (!hasHome && normalized.length) normalized[0].isHome = true;
+
+    localStorage.setItem(WEATHER_FAVORITES_KEY, JSON.stringify(normalized));
+}
+
+function getWeatherUiText(en, ru) {
+    return currentLang === 'ru' ? ru : en;
+}
+
+async function applyFavoriteCoordinates(lat, lon) {
+    const toggle = document.getElementById('weather-manual-toggle');
+    if (toggle) toggle.checked = true;
+    localStorage.setItem(WEATHER_MODE_KEY, '1');
+    setWeatherManualUI(true);
+    document.getElementById('weather-lat').value = String(lat);
+    document.getElementById('weather-lon').value = String(lon);
+    await applyManualCoordinates();
 }
 
 function renderWeatherFavorites() {
@@ -466,21 +554,51 @@ function renderWeatherFavorites() {
 
     holder.innerHTML = '';
     favorites.forEach((item, idx) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'weather-fav-chip';
-        btn.textContent = `${idx + 1}. ${item.name}`;
-        btn.title = `${item.lat.toFixed(4)}, ${item.lon.toFixed(4)}`;
-        btn.onclick = async () => {
-            const toggle = document.getElementById('weather-manual-toggle');
-            if (toggle) toggle.checked = true;
-            localStorage.setItem(WEATHER_MODE_KEY, '1');
-            setWeatherManualUI(true);
-            document.getElementById('weather-lat').value = String(item.lat);
-            document.getElementById('weather-lon').value = String(item.lon);
-            await applyManualCoordinates();
+        const row = document.createElement('div');
+        row.className = `weather-fav-item${item.isHome ? ' is-home' : ''}`;
+
+        const applyBtn = document.createElement('button');
+        applyBtn.type = 'button';
+        applyBtn.className = 'weather-fav-chip weather-fav-main';
+        applyBtn.textContent = item.name;
+        applyBtn.title = `${item.lat.toFixed(4)}, ${item.lon.toFixed(4)}`;
+        applyBtn.onclick = async () => {
+            await applyFavoriteCoordinates(item.lat, item.lon);
         };
-        holder.appendChild(btn);
+
+        const actions = document.createElement('div');
+        actions.className = 'weather-fav-item-actions';
+
+        const homeBtn = document.createElement('button');
+        homeBtn.type = 'button';
+        homeBtn.className = `icon-btn weather-fav-mini-btn${item.isHome ? ' active' : ''}`;
+        homeBtn.innerHTML = '<svg class="icon-svg btn-icon"><use href="#i-house"></use></svg>';
+        homeBtn.title = item.isHome
+            ? getWeatherUiText('Home point', 'Домашняя точка')
+            : getWeatherUiText('Set as home', 'Сделать домашней');
+        homeBtn.onclick = () => setFavoriteHome(idx);
+
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'icon-btn weather-fav-mini-btn';
+        editBtn.innerHTML = '<svg class="icon-svg btn-icon"><use href="#i-pen"></use></svg>';
+        editBtn.title = getWeatherUiText('Rename', 'Переименовать');
+        editBtn.onclick = () => renameFavoriteCoordinate(idx);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'icon-btn weather-fav-mini-btn';
+        deleteBtn.innerHTML = '<svg class="icon-svg btn-icon"><use href="#i-x"></use></svg>';
+        deleteBtn.title = getWeatherUiText('Delete', 'Удалить');
+        deleteBtn.onclick = () => removeFavoriteCoordinateAt(idx);
+
+        actions.appendChild(homeBtn);
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        row.appendChild(applyBtn);
+        row.appendChild(actions);
+        holder.appendChild(row);
     });
 }
 
@@ -496,13 +614,7 @@ function renderWeatherPresets() {
         btn.textContent = t(item.labelKey);
         btn.title = `${item.lat.toFixed(4)}, ${item.lon.toFixed(4)}`;
         btn.onclick = async () => {
-            const toggle = document.getElementById('weather-manual-toggle');
-            if (toggle) toggle.checked = true;
-            localStorage.setItem(WEATHER_MODE_KEY, '1');
-            setWeatherManualUI(true);
-            document.getElementById('weather-lat').value = String(item.lat);
-            document.getElementById('weather-lon').value = String(item.lon);
-            await applyManualCoordinates();
+            await applyFavoriteCoordinates(item.lat, item.lon);
         };
         holder.appendChild(btn);
     });
@@ -522,10 +634,57 @@ function addCurrentCoordinateToFavorites() {
         return;
     }
 
-    favorites.push({ name: `${lat.toFixed(4)}, ${lon.toFixed(4)}`, lat, lon });
+    const defaultName = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+    const value = prompt(t('favoriteNamePrompt'), defaultName);
+    if (value === null) return;
+    const name = value.trim() || defaultName;
+
+    favorites.push({ name, lat, lon, isHome: favorites.length === 0 });
     saveWeatherFavorites(favorites);
     renderWeatherFavorites();
-    alert(t('favoriteSaved'));
+}
+
+function renameFavoriteCoordinate(index) {
+    const favorites = getWeatherFavorites();
+    const item = favorites[index];
+    if (!item) return;
+
+    const value = prompt(t('favoriteNamePrompt'), item.name);
+    if (value === null) return;
+    item.name = value.trim() || `${item.lat.toFixed(4)}, ${item.lon.toFixed(4)}`;
+    saveWeatherFavorites(favorites);
+    renderWeatherFavorites();
+}
+
+function removeFavoriteCoordinateAt(index) {
+    const favorites = getWeatherFavorites();
+    if (!favorites[index]) return;
+
+    favorites.splice(index, 1);
+    saveWeatherFavorites(favorites);
+    renderWeatherFavorites();
+}
+
+function setFavoriteHome(index) {
+    const favorites = getWeatherFavorites();
+    if (!favorites[index]) return;
+
+    favorites.forEach((item, idx) => {
+        item.isHome = idx === index;
+    });
+    saveWeatherFavorites(favorites);
+    renderWeatherFavorites();
+}
+
+function applyHomeFavoriteCoordinate() {
+    const favorites = getWeatherFavorites();
+    if (!favorites.length) {
+        alert(t('noFavorites'));
+        return;
+    }
+
+    const home = favorites.find(item => item.isHome) || favorites[0];
+    applyFavoriteCoordinates(home.lat, home.lon);
 }
 
 function removeFavoriteCoordinateDialog() {
@@ -535,20 +694,10 @@ function removeFavoriteCoordinateDialog() {
         return;
     }
 
-    const list = favorites.map((item, idx) => `${idx + 1}. ${item.name} (${item.lat.toFixed(4)}, ${item.lon.toFixed(4)})`).join('\n');
-    const value = prompt(`${t('favoriteRemovePrompt')}:\n${list}`, '1');
-    if (value === null) return;
-
-    const idx = parseInt(value, 10) - 1;
-    if (!Number.isInteger(idx) || idx < 0 || idx >= favorites.length) {
-        alert(t('favoriteInvalid'));
-        return;
-    }
-
-    favorites.splice(idx, 1);
+    const homeIndex = favorites.findIndex(item => item.isHome);
+    favorites.splice(homeIndex >= 0 ? homeIndex : 0, 1);
     saveWeatherFavorites(favorites);
     renderWeatherFavorites();
-    alert(t('favoriteRemoved'));
 }
 
 function getManualCoords() {
@@ -785,13 +934,65 @@ function updateWorldTime() {
 const CALENDAR_START_YEAR = 1970;
 const CALENDAR_END_YEAR = 2100;
 let calendarViewDate = new Date();
+let calendarPickMode = 'date1';
+
+function formatDateInputValue(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function getDateOnlyFromInput(dateId) {
+    const parsed = parseDateInputValue(dateId);
+    if (!parsed) return null;
+    return new Date(parsed.year, parsed.month - 1, parsed.day);
+}
+
+function updateCalendarPickModeLabels() {
+    const date1Btn = document.getElementById('calendar-pick-date1');
+    const date2Btn = document.getElementById('calendar-pick-date2');
+    if (date1Btn) date1Btn.textContent = t('date1');
+    if (date2Btn) date2Btn.textContent = t('date2');
+}
+
+function setCalendarPickMode(mode) {
+    if (!['date1', 'date2'].includes(mode)) return;
+    calendarPickMode = mode;
+
+    const date1Btn = document.getElementById('calendar-pick-date1');
+    const date2Btn = document.getElementById('calendar-pick-date2');
+    if (date1Btn) date1Btn.classList.toggle('active', mode === 'date1');
+    if (date2Btn) date2Btn.classList.toggle('active', mode === 'date2');
+}
+
+function applyCalendarDatePick(dateValue) {
+    if (!dateValue) return;
+    if (calendarPickMode === 'date1' && document.getElementById('date-use-now')?.checked) return;
+
+    const targetDateId = calendarPickMode;
+    const targetYearId = `${calendarPickMode}-year`;
+    const targetInput = document.getElementById(targetDateId);
+    if (!targetInput) return;
+
+    targetInput.value = dateValue;
+    syncYearSelectWithDate(targetDateId, targetYearId);
+    calcDateDiff();
+}
 
 function renderCalendar() {
     const now = new Date();
     const year = calendarViewDate.getFullYear();
     const month = calendarViewDate.getMonth();
-    const isCurrentMonth = now.getFullYear() === year && now.getMonth() === month;
-    const today = now.getDate();
+    const todayStamp = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const date1Obj = getDateOnlyFromInput('date1');
+    const date2Obj = getDateOnlyFromInput('date2');
+    const date1Stamp = date1Obj ? date1Obj.getTime() : null;
+    const date2Stamp = date2Obj ? date2Obj.getTime() : null;
+
+    let rangeStart = null;
+    let rangeEnd = null;
+    if (date1Stamp !== null && date2Stamp !== null) {
+        rangeStart = Math.min(date1Stamp, date2Stamp);
+        rangeEnd = Math.max(date1Stamp, date2Stamp);
+    }
 
     document.getElementById('calendar-month-year').textContent =
         new Date(year, month, 1).toLocaleString(getLocale(), { month: 'long', year: 'numeric' });
@@ -800,18 +1001,30 @@ function renderCalendar() {
     const lastDate = new Date(year, month + 1, 0).getDate();
 
     const weekdays = currentLang === 'ru' ? ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    let html = weekdays.map(day => `<div class=\"calendar-day weekday\">${day}</div>`).join('');
+    let html = weekdays.map(day => `<div class="calendar-day weekday">${day}</div>`).join('');
 
     for (let i = 0; i < firstDay; i++) {
         html += `<div class="calendar-day empty"></div>`;
     }
 
     for (let d = 1; d <= lastDate; d++) {
-        const cls = isCurrentMonth && d === today ? 'calendar-day today' : 'calendar-day';
-        html += `<div class="${cls}">${d}</div>`;
+        const currentDate = new Date(year, month, d);
+        const dayStamp = currentDate.getTime();
+        const classes = ['calendar-day', 'calendar-day-clickable'];
+
+        if (dayStamp === todayStamp) classes.push('today');
+        if (date1Stamp !== null && dayStamp === date1Stamp) classes.push('selected-start');
+        if (date2Stamp !== null && dayStamp === date2Stamp) classes.push('selected-end');
+        if (rangeStart !== null && dayStamp > rangeStart && dayStamp < rangeEnd) classes.push('in-range');
+
+        html += `<div class="${classes.join(' ')}" data-date="${formatDateInputValue(currentDate)}">${d}</div>`;
     }
 
-    document.getElementById('calendar-days').innerHTML = html;
+    const daysRoot = document.getElementById('calendar-days');
+    daysRoot.innerHTML = html;
+    daysRoot.querySelectorAll('.calendar-day-clickable').forEach(cell => {
+        cell.addEventListener('click', () => applyCalendarDatePick(cell.dataset.date));
+    });
 }
 
 function changeCalendarMonth(delta) {
@@ -983,6 +1196,7 @@ function calcDateDiff() {
 
     if (!d1 || !d2) {
         document.getElementById('date-diff').textContent = '--';
+        renderCalendar();
         return;
     }
 
@@ -1016,6 +1230,7 @@ function calcDateDiff() {
         `${formatWeekday(d1)} ${formatTime(d1)} → ${formatWeekday(d2)} ${formatTime(d2)}<br>` +
         `${relation}<br>` +
         `${t('totalMinutes')}: ${totalMinutes.toLocaleString(getLocale())}`;
+    renderCalendar();
 }
 
 // ================== UNIT CONVERTER ==================
@@ -1298,6 +1513,39 @@ function calcEquals(returnOnly = false) {
     return resultText;
 }
 
+function shouldIgnoreCalculatorHotkeys(target) {
+    if (!target || !(target instanceof Element)) return false;
+    return !!target.closest('input, textarea, select, [contenteditable="true"]');
+}
+
+function handleCalculatorKeyboard(event) {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    if (shouldIgnoreCalculatorHotkeys(event.target)) return;
+
+    const key = event.key;
+    let handled = true;
+
+    if (/^[0-9]$/.test(key)) {
+        calcInput(key);
+    } else if (key === '.') {
+        calcInput('.');
+    } else if (['+', '-', '*', '/', '%', '(', ')'].includes(key)) {
+        calcInput(key);
+    } else if (key === '^') {
+        calcInput('**');
+    } else if (key === 'Enter' || key === '=') {
+        calcEquals();
+    } else if (key === 'Backspace') {
+        calcBackspace();
+    } else if (key === 'Delete' || key === 'Escape') {
+        calcClear();
+    } else {
+        handled = false;
+    }
+
+    if (handled) event.preventDefault();
+}
+
 // ================== TEXT ANALYSIS ==================
 function analyzeText() {
     const t = document.getElementById('text-input').value;
@@ -1365,9 +1613,11 @@ function convertCurrency() {
 function registerServiceWorker() {
     if (!('serviceWorker' in navigator)) return;
 
-    navigator.serviceWorker.register('./sw.js').catch(err => {
-        console.warn('SW registration failed:', err);
-    });
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+        .then(reg => reg.update())
+        .catch(err => {
+            console.warn('SW registration failed:', err);
+        });
 }
 
 // ================== INITIALIZATION ==================
@@ -1392,6 +1642,7 @@ function initApp() {
     updateWorldTime();
     initWeather();
     registerServiceWorker();
+    window.addEventListener('keydown', handleCalculatorKeyboard);
 
     setInterval(updateWorldTime, WORLD_TIME_INTERVAL_MS);
     setInterval(() => {
@@ -1399,5 +1650,214 @@ function initApp() {
     }, DATE_DIFF_SYNC_INTERVAL_MS);
 }
 
+function translateTextIfKnown(el, keys) {
+    if (!el) return;
+    const current = (el.textContent || '').trim();
+    for (const key of keys) {
+        if (current === i18n.en[key] || current === i18n.ru[key]) {
+            el.textContent = t(key);
+            return;
+        }
+    }
+}
+
+function refreshWeatherLocaleState() {
+    const coordEl = document.getElementById('coord');
+    const addressEl = document.getElementById('address');
+
+    if (weatherCurrentCoords) {
+        setCoordText(weatherCurrentCoords.lat, weatherCurrentCoords.lon);
+    } else {
+        translateTextIfKnown(coordEl, [
+            'manualCoordsInvalid',
+            'geoUnsupported',
+            'geoDenied',
+            'geoNoAccess',
+            'geoCoordFail',
+            'geoTimeout',
+            'geoError'
+        ]);
+    }
+
+    translateTextIfKnown(addressEl, [
+        'manualCoordsHint',
+        'geoCheckPermissions',
+        'addressNotFound',
+        'addressUnavailable'
+    ]);
+
+    updateTimestamp();
+}
+
+// ================== TEXT ANALYSIS EXTENSIONS ==================
+function getTextWords(text) {
+    return text.match(/[A-Za-z\u0400-\u04FF0-9_]+/g) || [];
+}
+
+function getTextMetrics(text) {
+    const lines = text.split('\n');
+    const wordsList = getTextWords(text);
+    const words = wordsList.length;
+    const wordChars = wordsList.reduce((sum, word) => sum + word.length, 0);
+    const avgWordLength = words ? wordChars / words : 0;
+
+    const paragraphList = text.trim()
+        ? text.split(/\n\s*\n+/).map(block => block.trim()).filter(Boolean)
+        : [];
+
+    return {
+        lines: lines.length,
+        chars: text.length,
+        bytes: new Blob([text]).size,
+        words,
+        spaces: (text.match(/ /g) || []).length,
+        maxLine: Math.max(...lines.map(line => line.length), 0),
+        charsNoSpaces: (text.match(/\S/g) || []).length,
+        paragraphs: paragraphList.length,
+        avgWordLength,
+        readMins: words / 200
+    };
+}
+
+function formatReadTime(readMins) {
+    if (readMins < 1) return currentLang === 'ru' ? '<1 \u043c\u0438\u043d' : '<1 min';
+
+    const totalMins = Math.ceil(readMins);
+    if (totalMins < 60) {
+        return currentLang === 'ru' ? `${totalMins} \u043c\u0438\u043d` : `${totalMins} min`;
+    }
+
+    const h = Math.floor(totalMins / 60);
+    const m = totalMins % 60;
+    return m
+        ? (currentLang === 'ru' ? `${h} \u0447 ${m} \u043c\u0438\u043d` : `${h} h ${m} min`)
+        : (currentLang === 'ru' ? `${h} \u0447` : `${h} h`);
+}
+
+function renderTextMetrics(metrics) {
+    const kb = (metrics.bytes / 1024).toFixed(2);
+    const avg = metrics.avgWordLength.toFixed(2);
+    const readTime = formatReadTime(metrics.readMins);
+    const ruLines = [
+        `\u0421\u0442\u0440\u043e\u043a: ${metrics.lines} \u00b7 \u0410\u0431\u0437\u0430\u0446\u0435\u0432: ${metrics.paragraphs} \u00b7 \u0427\u0442\u0435\u043d\u0438\u0435: ${readTime}`,
+        `\u0421\u0438\u043c\u0432\u043e\u043b\u043e\u0432: ${metrics.chars} \u00b7 \u0411\u0435\u0437 \u043f\u0440\u043e\u0431\u0435\u043b\u043e\u0432: ${metrics.charsNoSpaces} \u00b7 UTF-8: ${kb} KB`,
+        `\u0421\u043b\u043e\u0432: ${metrics.words} \u00b7 \u0421\u0440. \u0434\u043b\u0438\u043d\u0430 \u0441\u043b\u043e\u0432\u0430: ${avg} \u00b7 \u041f\u0440\u043e\u0431\u0435\u043b\u043e\u0432: ${metrics.spaces} \u00b7 \u041c\u0430\u043a\u0441. \u0441\u0442\u0440\u043e\u043a\u0430: ${metrics.maxLine}`
+    ];
+    const enLines = [
+        `Lines: ${metrics.lines} \u00b7 Paragraphs: ${metrics.paragraphs} \u00b7 Read: ${readTime}`,
+        `Characters: ${metrics.chars} \u00b7 No spaces: ${metrics.charsNoSpaces} \u00b7 UTF-8: ${kb} KB`,
+        `Words: ${metrics.words} \u00b7 Avg word length: ${avg} \u00b7 Spaces: ${metrics.spaces} \u00b7 Max line: ${metrics.maxLine}`
+    ];
+
+    const el = document.getElementById('text-analysis');
+    if (el) el.innerHTML = (currentLang === 'ru' ? ruLines : enLines).join('<br>');
+}
+
+function analyzeText() {
+    const input = document.getElementById('text-input');
+    if (!input) return;
+    renderTextMetrics(getTextMetrics(input.value));
+}
+
+function applyTextTransform(transformFn) {
+    const input = document.getElementById('text-input');
+    if (!input) return;
+    input.value = transformFn(input.value);
+    analyzeText();
+}
+
+function toUpperCaseText() {
+    applyTextTransform(text => text.toUpperCase());
+}
+
+function toLowerCaseText() {
+    applyTextTransform(text => text.toLowerCase());
+}
+
+function toTitleCaseText() {
+    applyTextTransform(text =>
+        text
+            .toLowerCase()
+            .replace(/(^|[\s([{"'\-])([A-Za-z\u0400-\u04FF])/g, (_, p1, p2) => `${p1}${p2.toUpperCase()}`)
+    );
+}
+
+function toSentenceCaseText() {
+    applyTextTransform(text =>
+        text
+            .toLowerCase()
+            .replace(/(^\s*[A-Za-z\u0400-\u04FF])|([.!?]\s+[A-Za-z\u0400-\u04FF])/g, match => match.toUpperCase())
+    );
+}
+
+function trimTextAction() {
+    applyTextTransform(text => text.trim());
+}
+
+function normalizeSpacesAction() {
+    applyTextTransform(text =>
+        text
+            .split('\n')
+            .map(line => line.replace(/[ \t]+/g, ' '))
+            .join('\n')
+    );
+}
+
+function removeEmptyLinesAction() {
+    applyTextTransform(text =>
+        text
+            .split('\n')
+            .filter(line => line.trim() !== '')
+            .join('\n')
+    );
+}
+
+async function copyTextTool() {
+    const input = document.getElementById('text-input');
+    const button = document.getElementById('text-copy-btn');
+    if (!input || !button) return;
+
+    const defaultLabel = t('textCopy');
+    const successLabel = t('textCopied');
+    const failLabel = t('textCopyFailed');
+    if (textCopyFeedbackTimer) {
+        clearTimeout(textCopyFeedbackTimer);
+        textCopyFeedbackTimer = null;
+    }
+    button.classList.remove('copy-ok', 'copy-fail');
+    button.dataset.copyFeedback = '';
+
+    try {
+        if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(input.value);
+        } else {
+            input.focus();
+            input.select();
+            const copied = document.execCommand('copy');
+            if (!copied) throw new Error('execCommand failed');
+            input.setSelectionRange(input.value.length, input.value.length);
+        }
+        button.title = successLabel;
+        button.setAttribute('aria-label', successLabel);
+        button.dataset.copyFeedback = successLabel;
+        button.classList.add('copy-ok');
+    } catch {
+        button.title = failLabel;
+        button.setAttribute('aria-label', failLabel);
+        button.dataset.copyFeedback = failLabel;
+        button.classList.add('copy-fail');
+    }
+
+    textCopyFeedbackTimer = setTimeout(() => {
+        button.title = defaultLabel;
+        button.setAttribute('aria-label', defaultLabel);
+        button.classList.remove('copy-ok', 'copy-fail');
+        button.dataset.copyFeedback = '';
+        textCopyFeedbackTimer = null;
+    }, 950);
+}
+
 window.addEventListener('load', initApp);
+
+
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mobile-tools-v4';
+const CACHE_NAME = 'mobile-tools-v5';
 
 const PRECACHE_URLS = [
     './',
@@ -34,6 +34,31 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') return;
+
+    const url = new URL(event.request.url);
+    const sameOrigin = url.origin === self.location.origin;
+    const isAppShellRequest =
+        event.request.mode === 'navigate' ||
+        (sameOrigin && (
+            url.pathname.endsWith('/index.html') ||
+            url.pathname.endsWith('/scripts.js') ||
+            url.pathname.endsWith('/styles.css')
+        ));
+
+    if (isAppShellRequest) {
+        event.respondWith(
+            fetch(event.request)
+                .then(response => {
+                    if (response && response.status === 200 && sameOrigin) {
+                        const clone = response.clone();
+                        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+                    }
+                    return response;
+                })
+                .catch(() => caches.match(event.request))
+        );
+        return;
+    }
 
     event.respondWith(
         caches.match(event.request).then(cached => {

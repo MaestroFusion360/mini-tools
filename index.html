@@ -27,6 +27,16 @@
         <symbol id="i-exit" viewBox="0 0 24 24"><path d="M10 12h11"/><path d="m17 16 4-4-4-4"/><path d="M21 6.344V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-1.344"/></symbol>
         <symbol id="i-locate" viewBox="0 0 24 24"><line x1="2" x2="5" y1="12" y2="12"/><line x1="19" x2="22" y1="12" y2="12"/><line x1="12" x2="12" y1="2" y2="5"/><line x1="12" x2="12" y1="19" y2="22"/><circle cx="12" cy="12" r="7"/></symbol>
         <symbol id="i-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+        <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+        <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+        <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+        <symbol id="i-pen" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></symbol>
+        <symbol id="i-delete" viewBox="0 0 24 24"><path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/><path d="m12 9 6 6"/><path d="m18 9-6 6"/></symbol>
+        <symbol id="i-divide" viewBox="0 0 24 24"><circle cx="12" cy="6" r="1"/><line x1="5" x2="19" y1="12" y2="12"/><circle cx="12" cy="18" r="1"/></symbol>
+        <symbol id="i-percent" viewBox="0 0 24 24"><line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></symbol>
+        <symbol id="i-radical" viewBox="0 0 24 24"><path d="M3 12h3.28a1 1 0 0 1 .948.684l2.298 7.934a.5.5 0 0 0 .96-.044L13.82 4.771A1 1 0 0 1 14.792 4H21"/></symbol>
+        <symbol id="i-pi" viewBox="0 0 24 24"><line x1="9" x2="9" y1="4" y2="20"/><path d="M4 7c0-1.7 1.3-3 3-3h13"/><path d="M18 20c-1.7 0-3-1.3-3-3V4"/></symbol>
+        <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
         <symbol id="i-temperature" viewBox="0 0 24 24"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></symbol>
         <symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
         <symbol id="i-wind" viewBox="0 0 24 24"><path d="M12.8 19.6A2 2 0 1 0 14 16H2"/><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"/><path d="M9.8 4.4A2 2 0 1 1 11 8H2"/></symbol>
@@ -46,7 +56,7 @@
                 <button class="menu-btn" onclick="showPage('page-calendar')" id="menu-calendar-btn"><svg class="icon-svg menu-icon"><use href="#i-calendar"></use></svg><span id="menu-calendar">Calendar</span></button>
                 <button class="menu-btn" onclick="showPage('page-converter')" id="menu-converter-btn"><svg class="icon-svg menu-icon"><use href="#i-arrow-left-right"></use></svg><span id="menu-converter">Converter</span></button>
                 <button class="menu-btn" onclick="showPage('page-calc')" id="menu-calc-btn"><svg class="icon-svg menu-icon"><use href="#i-calculator"></use></svg><span id="menu-calc">Calculator</span></button>
-                <button class="menu-btn" onclick="showPage('page-text')" id="menu-text-btn"><svg class="icon-svg menu-icon"><use href="#i-square-pen"></use></svg><span id="menu-text">Text Analysis</span></button>
+                <button class="menu-btn" onclick="showPage('page-text')" id="menu-text-btn"><svg class="icon-svg menu-icon"><use href="#i-square-pen"></use></svg><span id="menu-text">Text Editor</span></button>
                 <button class="menu-btn" onclick="showPage('page-currency')" id="menu-currency-btn"><svg class="icon-svg menu-icon"><use href="#i-currency"></use></svg><span id="menu-currency">Currency</span></button>
                 <button class="menu-btn" onclick="exitApp()" id="menu-exit-btn"><svg class="icon-svg menu-icon"><use href="#i-exit"></use></svg><span id="menu-exit">Exit</span></button>
             </div>
@@ -89,8 +99,8 @@
                 <div class="weather-fav-header">
                     <h3 class="weather-group-title" id="weather-fav-title">Favorite coordinates</h3>
                     <div class="weather-fav-actions">
-                        <button class="icon-btn" id="weather-fav-add-btn" onclick="addCurrentCoordinateToFavorites()">+</button>
-                        <button class="icon-btn" id="weather-fav-remove-btn" onclick="removeFavoriteCoordinateDialog()">-</button>
+                        <button class="icon-btn" id="weather-fav-add-btn" onclick="addCurrentCoordinateToFavorites()"><svg class="icon-svg btn-icon"><use href="#i-plus"></use></svg></button>
+                        <button class="icon-btn" id="weather-fav-remove-btn" onclick="removeFavoriteCoordinateDialog()"><svg class="icon-svg btn-icon"><use href="#i-minus"></use></svg></button>
                     </div>
                 </div>
                 <div class="weather-favorites-list" id="weather-favorites-list"></div>
@@ -186,6 +196,10 @@
                     <button class="icon-btn calendar-nav-btn" id="calendar-next-btn" onclick="changeCalendarMonth(1)">→</button>
                 </div>
                 <button class="calendar-today-btn" id="calendar-today-btn" onclick="goToCurrentMonth()">Today</button>
+                <div class="calendar-pick-mode">
+                    <button type="button" class="calendar-pick-btn active" id="calendar-pick-date1" onclick="setCalendarPickMode('date1')">Date 1</button>
+                    <button type="button" class="calendar-pick-btn" id="calendar-pick-date2" onclick="setCalendarPickMode('date2')">Date 2</button>
+                </div>
                 <div class="calendar-grid" id="calendar-days"></div>
             </div>
 
@@ -308,44 +322,44 @@
 
                 <div class="row calc-mode-row">
                     <button class="primary" id="calc-mode-btn" onclick="toggleCalcMode()">Mode: Basic</button>
-                    <button onclick="calcBackspace()" class="icon-btn">⌫</button>
+                    <button id="calc-backspace-btn" onclick="calcBackspace()" class="icon-btn"><svg class="icon-svg btn-icon"><use href="#i-delete"></use></svg></button>
                 </div>
 
                 <div class="calc-buttons">
                     <div class="calc-btn utility" onclick="calcInput('(')">(</div>
                     <div class="calc-btn utility" onclick="calcInput(')')">)</div>
-                    <div class="calc-btn utility" onclick="calcInput('%')">%</div>
+                    <div class="calc-btn utility" onclick="calcInput('%')"><svg class="icon-svg btn-icon"><use href="#i-percent"></use></svg></div>
                     <div class="calc-btn" onclick="calcClear()">C</div>
 
                     <div class="calc-btn" onclick="calcInput('7')">7</div>
                     <div class="calc-btn" onclick="calcInput('8')">8</div>
                     <div class="calc-btn" onclick="calcInput('9')">9</div>
-                    <div class="calc-btn operator" onclick="calcInput('/')">÷</div>
+                    <div class="calc-btn operator" onclick="calcInput('/')"><svg class="icon-svg btn-icon"><use href="#i-divide"></use></svg></div>
 
                     <div class="calc-btn" onclick="calcInput('4')">4</div>
                     <div class="calc-btn" onclick="calcInput('5')">5</div>
                     <div class="calc-btn" onclick="calcInput('6')">6</div>
-                    <div class="calc-btn operator" onclick="calcInput('*')">×</div>
+                    <div class="calc-btn operator" onclick="calcInput('*')"><svg class="icon-svg btn-icon"><use href="#i-x"></use></svg></div>
 
                     <div class="calc-btn" onclick="calcInput('1')">1</div>
                     <div class="calc-btn" onclick="calcInput('2')">2</div>
                     <div class="calc-btn" onclick="calcInput('3')">3</div>
-                    <div class="calc-btn operator" onclick="calcInput('-')">−</div>
+                    <div class="calc-btn operator" onclick="calcInput('-')"><svg class="icon-svg btn-icon"><use href="#i-minus"></use></svg></div>
 
                     <div class="calc-btn" onclick="calcInput('0')">0</div>
                     <div class="calc-btn" onclick="calcInput('.')">.</div>
                     <div class="calc-btn" onclick="calcInput('**')">xʸ</div>
-                    <div class="calc-btn operator" onclick="calcInput('+')">+</div>
+                    <div class="calc-btn operator" onclick="calcInput('+')"><svg class="icon-svg btn-icon"><use href="#i-plus"></use></svg></div>
 
                     <div class="calc-btn scientific" onclick="calcFunction('sin')">sin</div>
                     <div class="calc-btn scientific" onclick="calcFunction('cos')">cos</div>
                     <div class="calc-btn scientific" onclick="calcFunction('tan')">tan</div>
-                    <div class="calc-btn scientific" onclick="calcFunction('sqrt')">√</div>
+                    <div class="calc-btn scientific" onclick="calcFunction('sqrt')"><svg class="icon-svg btn-icon"><use href="#i-radical"></use></svg></div>
 
                     <div class="calc-btn scientific" onclick="calcFunction('ln')">ln</div>
                     <div class="calc-btn scientific" onclick="calcFunction('log')">log</div>
                     <div class="calc-btn scientific" onclick="calcFunction('fact')">n!</div>
-                    <div class="calc-btn scientific" onclick="calcInput('Math.PI')">π</div>
+                    <div class="calc-btn scientific" onclick="calcInput('Math.PI')"><svg class="icon-svg btn-icon"><use href="#i-pi"></use></svg></div>
 
                     <div class="calc-btn scientific" onclick="calcInput('Math.E')">e</div>
                     <div class="calc-btn scientific" onclick="calcInput('1/')">1/x</div>
@@ -364,11 +378,29 @@
         <div class="page" id="page-text">
             <div class="header">
                 <button class="back-btn" onclick="showPage('page-menu')" data-i18n="back-btn">← Back</button>
-                <h2 id="title-text">Text Analysis</h2>
+                <h2 id="title-text">Text Editor</h2>
             </div>
 
             <div class="card">
-                <textarea id="text-input" rows="8" placeholder="Type text..." oninput="analyzeText()"></textarea>
+                <div class="text-input-wrap">
+                    <textarea id="text-input" rows="8" placeholder="Type text..." oninput="analyzeText()"></textarea>
+                    <button type="button" class="text-action-btn text-copy-btn" id="text-copy-btn" onclick="copyTextTool()" title="Copy" aria-label="Copy">
+                        <svg class="icon-svg btn-icon"><use href="#i-copy"></use></svg>
+                    </button>
+                </div>
+                <div class="text-actions-groups">
+                    <div class="text-actions-row">
+                        <button type="button" class="text-action-btn" id="text-upper-btn" onclick="toUpperCaseText()">UPPERCASE</button>
+                        <button type="button" class="text-action-btn" id="text-lower-btn" onclick="toLowerCaseText()">lowercase</button>
+                        <button type="button" class="text-action-btn" id="text-title-btn" onclick="toTitleCaseText()">Title Case</button>
+                        <button type="button" class="text-action-btn" id="text-sentence-btn" onclick="toSentenceCaseText()">Sentence case</button>
+                    </div>
+                    <div class="text-actions-row">
+                        <button type="button" class="text-action-btn" id="text-trim-btn" onclick="trimTextAction()">Trim</button>
+                        <button type="button" class="text-action-btn" id="text-spaces-btn" onclick="normalizeSpacesAction()">Normalize spaces</button>
+                        <button type="button" class="text-action-btn" id="text-noempty-btn" onclick="removeEmptyLinesAction()">Remove empty lines</button>
+                    </div>
+                </div>
                 <div class="small-text text-analysis" id="text-analysis">
                     Строк:0 Символов:0 UTF-8 0KB Макс.строка:0 Слов:0 Пробелов:0
                 </div>
@@ -416,7 +448,7 @@
     </div>
 
     <div class="floating-actions">
-        <button class="lang-toggle" onclick="toggleLanguage()" id="lang-toggle" title="Language">🇬🇧</button>
+        <button class="lang-toggle" onclick="toggleLanguage()" id="lang-toggle" title="Language">EN</button>
         <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle"><svg class="icon-svg theme-toggle-icon"><use href="#i-moon"></use></svg></button>
     </div>
 
