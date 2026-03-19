@@ -97,7 +97,25 @@ npx serve .
 mini-tools/
 ├── index.html               # main UI and tool pages
 ├── styles.css               # styles and responsive layout
-├── scripts.js               # application logic
+├── main.js                  # application bootstrap (ES modules)
+├── state.js                 # shared storage/state helpers
+├── dom.js                   # shared DOM helpers
+├── utils.js                 # shared utilities
+├── i18n.js                  # translations API
+├── i18n.json                # translation dictionary
+├── theme.js                 # theme handling
+├── navigation.js            # page navigation
+├── weather.js               # weather tool
+├── world-time.js            # world time tool
+├── timer.js                 # timer tool
+├── stopwatch.js             # stopwatch tool
+├── calendar.js              # calendar/date diff tool
+├── converter.js             # unit converter
+├── calculator.js            # calculator
+├── text-tools.js            # text editor/analysis
+├── currency.js              # currency converter
+├── pwa.js                   # PWA registration
+├── scripts.js               # compatibility bootstrap
 ├── sw.js                    # service worker
 ├── manifest.webmanifest     # PWA manifest
 └── assets/                  # static assets (app icon, favicons)

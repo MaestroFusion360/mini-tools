@@ -30,6 +30,7 @@
     --radius-md: 16px;
     --radius-sm: 12px;
     --transition: 0s;
+    --content-max: 760px;
 }
 
 body.dark {
@@ -82,6 +83,24 @@ body {
     flex-direction: column;
     gap: 14px;
     animation: fade-up 0.45s ease;
+    align-items: center;
+}
+
+.page.active > .header,
+.page.active > .card {
+    width: min(100%, var(--content-max));
+    margin-inline: auto;
+}
+
+.page.active > .header {
+    justify-content: center;
+    position: relative;
+}
+
+.page.active > .header .back-btn {
+    position: absolute;
+    left: 0;
+    width: auto;
 }
 
 @keyframes fade-up {
@@ -328,11 +347,19 @@ button.primary:active {
     gap: 10px;
 }
 
+.weather-sections {
+    display: grid;
+    gap: 10px;
+}
+
 .weather-group {
     border: 1px solid var(--border);
     background: color-mix(in srgb, var(--panel-soft) 82%, transparent);
     border-radius: var(--radius-md);
     padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .weather-group-title {
@@ -352,6 +379,10 @@ button.primary:active {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.weather-forecast {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .metric-item {
     display: flex;
     align-items: center;
@@ -366,6 +397,12 @@ button.primary:active {
     display: flex;
     flex-direction: column;
     gap: 2px;
+}
+
+.metric-item-forecast {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
 }
 
 .metric-icon {
@@ -437,13 +474,17 @@ button.primary:active {
 }
 
 .weather-manual-toggle-wrap {
-    margin-top: 2px;
+    margin-top: 4px;
 }
 
 .weather-manual-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
+    gap: 10px;
+}
+
+#weather-apply-btn {
+    margin-top: 2px;
 }
 
 .weather-manual-grid > div,
@@ -591,8 +632,12 @@ button.primary:active {
 
 .calendar-pick-btn.active {
     background: var(--accent-gradient);
-    color: #f8fafc;
+    color: var(--text);
     border-color: transparent;
+}
+
+body.dark .calendar-pick-btn.active {
+    color: #f8fafc;
 }
 
 .calendar-grid {
@@ -1013,6 +1058,7 @@ textarea {
 
     .weather-main,
     .weather-sun,
+    .weather-forecast,
     .weather-manual-grid,
     .timer-input-grid,
     .date-input-grid,
@@ -1083,25 +1129,10 @@ textarea {
     }
 
     #page-menu.active {
-        display: grid;
-        grid-template-columns: 1fr;
-    }
-
-    #page-weather.active,
-    #page-calendar.active,
-    #page-currency.active,
-    #page-converter.active,
-    #page-time.active,
-    #page-calc.active {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        align-items: start;
+        align-items: stretch;
     }
 
     #page-text.active {
-        display: grid;
-        grid-template-columns: 1fr;
-        align-items: start;
         min-height: auto;
     }
 
@@ -1111,26 +1142,6 @@ textarea {
 
     #page-text.active #text-input {
         min-height: clamp(220px, 40vh, 520px);
-    }
-
-    #page-weather .header,
-    #page-calendar .header,
-    #page-currency .header,
-    #page-converter .header,
-    #page-time .header,
-    #page-text .header,
-    #page-calc .header {
-        grid-column: 1 / -1;
-    }
-
-    #page-weather .card:first-of-type,
-    #page-calendar .card:first-of-type,
-    #page-calc .card,
-    #page-time .card,
-    #page-text .card,
-    #page-currency .card,
-    #page-converter .card {
-        min-height: 100%;
     }
 }
 

@@ -1,10 +1,28 @@
-const CACHE_NAME = 'mobile-tools-v5';
+const CACHE_NAME = 'mobile-tools-v6';
 
 const PRECACHE_URLS = [
     './',
     './index.html',
     './styles.css',
+    './main.js',
+    './state.js',
+    './dom.js',
+    './utils.js',
+    './i18n.js',
+    './theme.js',
+    './navigation.js',
+    './weather.js',
+    './world-time.js',
+    './timer.js',
+    './stopwatch.js',
+    './calendar.js',
+    './converter.js',
+    './calculator.js',
+    './text-tools.js',
+    './currency.js',
+    './pwa.js',
     './scripts.js',
+    './i18n.json',
     './manifest.webmanifest',
     './assets/favicon.ico',
     './assets/apple-touch-icon.png',
@@ -37,12 +55,33 @@ self.addEventListener('fetch', event => {
 
     const url = new URL(event.request.url);
     const sameOrigin = url.origin === self.location.origin;
+    const appScriptPaths = [
+        '/main.js',
+        '/state.js',
+        '/dom.js',
+        '/utils.js',
+        '/i18n.js',
+        '/theme.js',
+        '/navigation.js',
+        '/weather.js',
+        '/world-time.js',
+        '/timer.js',
+        '/stopwatch.js',
+        '/calendar.js',
+        '/converter.js',
+        '/calculator.js',
+        '/text-tools.js',
+        '/currency.js',
+        '/pwa.js',
+        '/scripts.js'
+    ];
     const isAppShellRequest =
         event.request.mode === 'navigate' ||
         (sameOrigin && (
             url.pathname.endsWith('/index.html') ||
-            url.pathname.endsWith('/scripts.js') ||
-            url.pathname.endsWith('/styles.css')
+            url.pathname.endsWith('/styles.css') ||
+            url.pathname.endsWith('/i18n.json') ||
+            appScriptPaths.some(path => url.pathname.endsWith(path))
         ));
 
     if (isAppShellRequest) {

@@ -1,7 +1,7 @@
 {
   "name": "Mobile Tools",
   "short_name": "Tools",
-  "description": "Mobile toolkit: weather, time, calendar, converters, calculator, text analysis",
+  "description": "Mobile toolkit: weather, world time, timer, stopwatch, calendar, converters, calculator, text editor",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
