@@ -196,9 +196,7 @@ export function renderWeatherFavorites() {
     homeBtn.className = `icon-btn weather-fav-mini-btn${item.isHome ? " active" : ""}`;
     homeBtn.innerHTML =
       '<svg class="icon-svg btn-icon"><use href="#i-house"></use></svg>';
-    homeBtn.title = item.isHome
-      ? "Home point"
-      : "Set as home";
+    homeBtn.title = item.isHome ? "Home point" : "Set as home";
     homeBtn.onclick = () => setFavoriteHome(idx);
 
     const editBtn = document.createElement("button");
@@ -519,7 +517,8 @@ function renderForecast(weatherData = null) {
     dayEl.textContent = "--°C";
     eveningEl.textContent = "--°C";
     tomorrowEl.textContent = "--°C / --°C";
-    if (tomorrowDescEl) tomorrowDescEl.textContent = t("weatherConditionUnknown");
+    if (tomorrowDescEl)
+      tomorrowDescEl.textContent = t("weatherConditionUnknown");
     return;
   }
 

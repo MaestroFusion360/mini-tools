@@ -1,4 +1,9 @@
-import { byId, setLabelText, setSelectOptionText, setText } from "../core/dom.js";
+import {
+  byId,
+  setLabelText,
+  setSelectOptionText,
+  setText,
+} from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
 import { getLocale } from "../core/utils.js";
 
@@ -398,4 +403,3 @@ export function initCalendar() {
     if (byId("date-use-now")?.checked) calcDateDiff();
   }, DATE_DIFF_SYNC_INTERVAL_MS);
 }
-

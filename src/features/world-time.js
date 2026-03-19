@@ -52,7 +52,11 @@ function applyWorldTimeTranslations() {
   setText("title-time", t("worldTimeTitle"));
 
   setSelectOptionText("timezone-select", "local", t("localTimezone"));
-  setSelectOptionText("timezone-select", "America/New_York", t("presetNewYork"));
+  setSelectOptionText(
+    "timezone-select",
+    "America/New_York",
+    t("presetNewYork"),
+  );
   setSelectOptionText("timezone-select", "America/Chicago", t("presetChicago"));
   setSelectOptionText("timezone-select", "America/Denver", t("presetDenver"));
   setSelectOptionText(
@@ -84,13 +88,13 @@ function applyWorldTimeTranslations() {
   setSelectOptionText("timezone-select", "Asia/Shanghai", t("presetShanghai"));
   setSelectOptionText("timezone-select", "Asia/Hong_Kong", t("presetHongKong"));
   setSelectOptionText("timezone-select", "Asia/Seoul", t("presetSeoul"));
-  setSelectOptionText("timezone-select", "Asia/Singapore", t("presetSingapore"));
-  setSelectOptionText("timezone-select", "Asia/Kolkata", t("presetDelhi"));
   setSelectOptionText(
     "timezone-select",
-    "Australia/Sydney",
-    t("presetSydney"),
+    "Asia/Singapore",
+    t("presetSingapore"),
   );
+  setSelectOptionText("timezone-select", "Asia/Kolkata", t("presetDelhi"));
+  setSelectOptionText("timezone-select", "Australia/Sydney", t("presetSydney"));
   setSelectOptionText(
     "timezone-select",
     "Pacific/Auckland",

@@ -27,7 +27,9 @@ describe("text tools", () => {
     const input = document.getElementById("text-input");
     input.value = "hello world";
     analyzeText();
-    expect(document.getElementById("text-analysis")?.textContent).toContain("Words");
+    expect(document.getElementById("text-analysis")?.textContent).toContain(
+      "Words",
+    );
   });
 
   it("applies uppercase and normalize spaces", () => {

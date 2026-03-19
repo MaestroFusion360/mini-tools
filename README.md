@@ -135,7 +135,7 @@ Open `http://localhost:8000`.
 Format all project files with Prettier:
 
 ```bash
-npx prettier --write "*.{js,json,md,css,html,webmanifest}"
+npx prettier --write .
 ```
 
 ## 🧪 Testing
