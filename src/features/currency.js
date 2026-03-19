@@ -1,6 +1,6 @@
-import { byId, setText } from "./dom.js";
-import { registerTranslationApplier, t } from "./i18n.js";
-import { getLocale } from "./utils.js";
+import { byId, setText } from "../core/dom.js";
+import { registerTranslationApplier, t } from "../core/i18n.js";
+import { getLocale } from "../core/utils.js";
 
 let rates = { USD: 1, EUR: 0.92, RUB: 92.5, GBP: 0.79, JPY: 151.5 };
 let ratesSourceText = t("ratesSourceBuiltIn");

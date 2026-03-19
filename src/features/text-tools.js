@@ -1,5 +1,5 @@
-import { byId, setText } from "./dom.js";
-import { registerTranslationApplier, t, getLanguage } from "./i18n.js";
+import { byId, setText } from "../core/dom.js";
+import { registerTranslationApplier, t, getLanguage } from "../core/i18n.js";
 
 let textCopyFeedbackTimer = null;
 let textFindState = {

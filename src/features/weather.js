@@ -1,18 +1,18 @@
-import { byId, setIcon, setText } from "./dom.js";
+import { byId, setIcon, setText } from "../core/dom.js";
 import {
   registerTranslationApplier,
   getLanguage,
   isKnownTranslation,
   t,
-} from "./i18n.js";
+} from "../core/i18n.js";
 import {
   STORAGE_KEYS,
   getStored,
   getStoredJson,
   setStored,
   setStoredJson,
-} from "./state.js";
-import { formatDateTime, getLocale } from "./utils.js";
+} from "../core/state.js";
+import { formatDateTime, getLocale } from "../core/utils.js";
 
 let weatherCurrentCoords = null;
 let weatherUsingApiSource = false;

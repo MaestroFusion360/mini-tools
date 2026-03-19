@@ -8,7 +8,7 @@ import {
   setDateYear,
   swapDates,
   syncYearSelectWithDate,
-} from "./calendar.js";
+} from "./features/calendar.js";
 import {
   calcBackspace,
   calcClear,
@@ -22,28 +22,28 @@ import {
   calcToggleSign,
   initCalculator,
   toggleCalcMode,
-} from "./calculator.js";
+} from "./features/calculator.js";
 import {
   convertUnit,
   initConverter,
   swapConvUnits,
   updateConvUnits,
-} from "./converter.js";
+} from "./features/converter.js";
 import {
   convertCurrency,
   initCurrency,
   loadRates,
   swapCurrencyUnits,
-} from "./currency.js";
-import { applyTranslations, initI18n, toggleLanguage } from "./i18n.js";
-import { exitApp, initNavigation, showPage } from "./navigation.js";
-import { initPwa } from "./pwa.js";
+} from "./features/currency.js";
+import { applyTranslations, initI18n, toggleLanguage } from "./core/i18n.js";
+import { exitApp, initNavigation, showPage } from "./core/navigation.js";
+import { initPwa } from "./core/pwa.js";
 import {
   initStopwatch,
   toggleStopwatch,
   addStopwatchLap,
   resetStopwatch,
-} from "./stopwatch.js";
+} from "./features/stopwatch.js";
 import {
   initTextTools,
   analyzeText,
@@ -58,26 +58,26 @@ import {
   toTitleCaseText,
   toUpperCaseText,
   trimTextAction,
-} from "./text-tools.js";
-import { initTheme, toggleTheme } from "./theme.js";
+} from "./features/text-tools.js";
+import { initTheme, toggleTheme } from "./core/theme.js";
 import {
   initTimer,
   resetTimer,
   syncTimerFromInputs,
   toggleTimer,
-} from "./timer.js";
+} from "./features/timer.js";
 import {
   addCurrentCoordinateToFavorites,
   applyManualCoordinates,
   initWeatherModule,
   removeFavoriteCoordinateDialog,
   toggleWeatherManualMode,
-} from "./weather.js";
+} from "./features/weather.js";
 import {
   initWorldTime,
   toggleTimeFormat,
   updateWorldTime,
-} from "./world-time.js";
+} from "./features/world-time.js";
 
 function exposeGlobals() {
   Object.assign(window, {

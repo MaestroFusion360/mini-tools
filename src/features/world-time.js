@@ -1,7 +1,7 @@
-import { byId, setSelectOptionText, setText } from "./dom.js";
-import { registerTranslationApplier, t } from "./i18n.js";
-import { STORAGE_KEYS, getStored, setStored } from "./state.js";
-import { getLocale } from "./utils.js";
+import { byId, setSelectOptionText, setText } from "../core/dom.js";
+import { registerTranslationApplier, t } from "../core/i18n.js";
+import { STORAGE_KEYS, getStored, setStored } from "../core/state.js";
+import { getLocale } from "../core/utils.js";
 
 let time24h = true;
 const WORLD_TIME_INTERVAL_MS = 1000;

@@ -13,6 +13,7 @@ calculator, text editor/analysis, and currency conversion.
     - [🗂️ Module Responsibilities](#️-module-responsibilities)
   - [🧭 Project Structure](#-project-structure)
   - [⚡ Quick Start](#-quick-start)
+  - [🧪 Testing](#-testing)
   - [🌐 External APIs](#-external-apis)
   - [📄 License](#-license)
 
@@ -49,9 +50,9 @@ calculator, text editor/analysis, and currency conversion.
 
 ### 🚀 Startup Flow
 
-`index.html` loads `main.js` as an ES module.
+`index.html` loads `src/main.js` as an ES module.
 
-`main.js`:
+`src/main.js`:
 
 1. initializes theme
 2. initializes i18n
@@ -62,25 +63,24 @@ calculator, text editor/analysis, and currency conversion.
 
 ### 🗂️ Module Responsibilities
 
-- `main.js`: app bootstrap and init orchestration
-- `state.js`: localStorage keys and storage helpers
-- `dom.js`: shared DOM utilities
-- `utils.js`: shared formatting and generic helpers
-- `i18n.js`: translation loading and runtime language switching
+- `src/main.js`: app bootstrap and init orchestration
+- `src/core/state.js`: localStorage keys and storage helpers
+- `src/core/dom.js`: shared DOM utilities
+- `src/core/utils.js`: shared formatting and generic helpers
+- `src/core/i18n.js`: translation loading and runtime language switching
 - `i18n.json`: translation dictionary (`en`, `ru`)
-- `theme.js`: light/dark theme handling
-- `navigation.js`: page switching and last-page restore
-- `weather.js`: weather UI/data/favorites/manual mode
-- `world-time.js`: world clock and format toggle
-- `timer.js`: timer logic and UI updates
-- `stopwatch.js`: stopwatch and laps
-- `calendar.js`: calendar rendering + date diff
-- `converter.js`: unit conversion
-- `calculator.js`: calculator logic, history, keyboard input
-- `text-tools.js`: text transforms + metrics + copy feedback
-- `currency.js`: rates loading and conversion
-- `pwa.js`: service worker registration wrapper
-- `scripts.js`: compatibility bootstrap for older cached app shells
+- `src/core/theme.js`: light/dark theme handling
+- `src/core/navigation.js`: page switching and last-page restore
+- `src/features/weather.js`: weather UI/data/favorites/manual mode
+- `src/features/world-time.js`: world clock and format toggle
+- `src/features/timer.js`: timer logic and UI updates
+- `src/features/stopwatch.js`: stopwatch and laps
+- `src/features/calendar.js`: calendar rendering + date diff
+- `src/features/converter.js`: unit conversion
+- `src/features/calculator.js`: calculator logic, history, keyboard input
+- `src/features/text-tools.js`: text transforms + metrics + copy feedback
+- `src/features/currency.js`: rates loading and conversion
+- `src/core/pwa.js`: service worker registration wrapper
 
 ## 🧭 Project Structure
 
@@ -88,25 +88,27 @@ calculator, text editor/analysis, and currency conversion.
 mini-tools/
 ├── index.html
 ├── styles.css
-├── main.js
-├── state.js
-├── dom.js
-├── utils.js
-├── i18n.js
 ├── i18n.json
-├── theme.js
-├── navigation.js
-├── weather.js
-├── world-time.js
-├── timer.js
-├── stopwatch.js
-├── calendar.js
-├── converter.js
-├── calculator.js
-├── text-tools.js
-├── currency.js
-├── pwa.js
-├── scripts.js
+├── src/
+│   ├── main.js
+│   ├── core/
+│   │   ├── state.js
+│   │   ├── dom.js
+│   │   ├── utils.js
+│   │   ├── i18n.js
+│   │   ├── theme.js
+│   │   ├── navigation.js
+│   │   └── pwa.js
+│   └── features/
+│       ├── weather.js
+│       ├── world-time.js
+│       ├── timer.js
+│       ├── stopwatch.js
+│       ├── calendar.js
+│       ├── converter.js
+│       ├── calculator.js
+│       ├── text-tools.js
+│       └── currency.js
 ├── sw.js
 ├── manifest.webmanifest
 └── assets/
@@ -134,6 +136,26 @@ Format all project files with Prettier:
 
 ```bash
 npx prettier --write "*.{js,json,md,css,html,webmanifest}"
+```
+
+## 🧪 Testing
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run all tests once:
+
+```bash
+npm test
+```
+
+Run tests in watch mode:
+
+```bash
+npm run test:watch
 ```
 
 ## 🌐 External APIs

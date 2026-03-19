@@ -1,11 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap");
 
+/* ===== Base Reset ===== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* ===== Theme Tokens (Light) ===== */
 :root {
   --bg: #f4f7fb;
   --bg-overlay:
@@ -22,12 +24,7 @@
   --accent: #0f766e;
   --accent-2: #ea580c;
   --accent-hover: #0b5f58;
-  --accent-gradient: linear-gradient(
-    135deg,
-    #0f766e 0%,
-    #0284c7 55%,
-    #0ea5a8 100%
-  );
+  --accent-gradient: var(--accent);
   --danger: #b91c1c;
   --focus-ring: color-mix(in srgb, var(--accent) 62%, white);
   --btn-bg: color-mix(in srgb, var(--panel-strong) 86%, transparent);
@@ -41,6 +38,7 @@
   --content-max: 760px;
 }
 
+/* ===== Theme Tokens (Dark) ===== */
 body.dark {
   --bg: #09111d;
   --bg-overlay:
@@ -69,12 +67,7 @@ body.dark {
   --accent: #14b8a6;
   --accent-2: #fb923c;
   --accent-hover: #0d9488;
-  --accent-gradient: linear-gradient(
-    135deg,
-    #14b8a6 0%,
-    #0ea5e9 58%,
-    #22d3ee 100%
-  );
+  --accent-gradient: var(--accent);
   --danger: #f87171;
   --focus-ring: color-mix(in srgb, var(--accent) 76%, white);
   --btn-bg: color-mix(in srgb, var(--panel-strong) 82%, transparent);
@@ -83,6 +76,7 @@ body.dark {
   --shadow-lg: 0 28px 46px rgba(2, 6, 23, 0.58);
 }
 
+/* ===== App Layout ===== */
 body {
   min-height: 100vh;
   background: var(--bg);
@@ -133,6 +127,7 @@ body {
   width: auto;
 }
 
+/* ===== Motion ===== */
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -144,6 +139,7 @@ body {
   }
 }
 
+/* ===== Typography ===== */
 .header {
   display: flex;
   align-items: center;
@@ -180,6 +176,7 @@ h3 {
   color: var(--text-muted);
 }
 
+/* ===== Surfaces and Cards ===== */
 .card {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -203,6 +200,7 @@ h3 {
   border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
 }
 
+/* ===== Menu ===== */
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -235,6 +233,7 @@ h3 {
   flex: 0 0 18px;
 }
 
+/* ===== Shared Inputs and Buttons ===== */
 input,
 select,
 textarea,
@@ -304,20 +303,22 @@ button:not(.primary):not(.theme-toggle):not(.lang-toggle):active {
 }
 
 button.primary {
-  background: var(--accent-gradient);
+  background: var(--accent);
   color: #f8fafc;
   border: none;
   font-weight: 700;
 }
 
 button.primary:hover {
-  box-shadow: 0 12px 20px color-mix(in srgb, var(--accent) 30%, transparent);
+  background: var(--accent-hover);
+  box-shadow: none;
 }
 
 button.primary:active {
   transform: translateY(0);
 }
 
+/* ===== Shared Utility Classes ===== */
 .back-btn,
 .icon-btn,
 .calendar-today-btn,
@@ -377,6 +378,7 @@ button.primary:active {
   color: var(--text-soft);
 }
 
+/* ===== Weather: Metrics and Sections ===== */
 .metric-row {
   display: grid;
   gap: 10px;
@@ -521,6 +523,7 @@ button.primary:active {
   display: none;
 }
 
+/* ===== Weather: Manual Coordinates ===== */
 .weather-manual-toggle-wrap {
   margin-top: 4px;
 }
@@ -543,6 +546,7 @@ button.primary:active {
   gap: 6px;
 }
 
+/* ===== Weather: Favorites and Presets ===== */
 .weather-fav-header {
   display: flex;
   align-items: center;
@@ -660,6 +664,7 @@ button.primary:active {
   padding: 0;
 }
 
+/* ===== Calendar ===== */
 .calendar-toolbar {
   display: flex;
   align-items: center;
@@ -795,6 +800,7 @@ body.dark .calendar-pick-btn.active {
   border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
 }
 
+/* ===== Date Difference ===== */
 .date-time-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -831,6 +837,7 @@ input[type="checkbox"] {
   margin: 0;
 }
 
+/* ===== Converter ===== */
 .converter-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -870,6 +877,7 @@ input[type="range"] {
   flex: 0 0 auto;
 }
 
+/* ===== Calculator ===== */
 .calc-expression-preview,
 .calc-mode-row,
 .calc-history-title {
@@ -1023,6 +1031,7 @@ input[type="range"] {
   max-height: 180px;
 }
 
+/* ===== Text Editor ===== */
 .text-analysis {
   padding: 4px 0;
   display: grid;
@@ -1161,6 +1170,7 @@ textarea {
   resize: none;
 }
 
+/* ===== Floating UI: Header Actions, Footer, Toast ===== */
 .floating-actions {
   position: fixed;
   right: 18px;
@@ -1225,13 +1235,13 @@ textarea {
 
 .theme-toggle {
   color: #f8fafc;
-  background: var(--accent-gradient);
+  background: var(--accent);
   border-color: transparent;
 }
 
 .lang-toggle {
   color: #f8fafc;
-  background: var(--accent-gradient);
+  background: var(--accent);
   border-color: transparent;
 }
 
@@ -1243,6 +1253,7 @@ textarea {
 
 .theme-toggle:hover,
 .lang-toggle:hover {
+  background: var(--accent-hover);
   transform: none;
 }
 
@@ -1251,11 +1262,13 @@ textarea {
   transform: scale(0.98);
 }
 
+/* ===== Overflow Fixes ===== */
 #page-converter .card,
 #page-currency .card {
   overflow: visible;
 }
 
+/* ===== Responsive: Mobile ===== */
 @media (max-width: 520px) {
   body {
     padding: 18px 10px 10px;
@@ -1358,6 +1371,7 @@ textarea {
   }
 }
 
+/* ===== Responsive: Desktop ===== */
 @media (min-width: 780px) {
   .container {
     max-width: 920px;

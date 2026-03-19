@@ -1,6 +1,6 @@
-import { byId, setLabelText, setSelectOptionText, setText } from "./dom.js";
-import { registerTranslationApplier, getLanguage, t } from "./i18n.js";
-import { formatNumber } from "./utils.js";
+import { byId, setLabelText, setSelectOptionText, setText } from "../core/dom.js";
+import { registerTranslationApplier, getLanguage, t } from "../core/i18n.js";
+import { formatNumber } from "../core/utils.js";
 
 const unitLabels = {
   en: {

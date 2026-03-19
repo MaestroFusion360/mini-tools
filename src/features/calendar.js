@@ -1,6 +1,6 @@
-import { byId, setLabelText, setSelectOptionText, setText } from "./dom.js";
-import { registerTranslationApplier, t } from "./i18n.js";
-import { getLocale } from "./utils.js";
+import { byId, setLabelText, setSelectOptionText, setText } from "../core/dom.js";
+import { registerTranslationApplier, t } from "../core/i18n.js";
+import { getLocale } from "../core/utils.js";
 
 const CALENDAR_START_YEAR = 1970;
 const CALENDAR_END_YEAR = 2100;

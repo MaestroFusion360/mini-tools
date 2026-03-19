@@ -1,5 +1,5 @@
-import { byId, setText, showAppToast } from "./dom.js";
-import { registerTranslationApplier, t } from "./i18n.js";
+import { byId, setText, showAppToast } from "../core/dom.js";
+import { registerTranslationApplier, t } from "../core/i18n.js";
 
 let timerRemainingSeconds = 60;
 let timerIntervalId = null;

@@ -1,5 +1,5 @@
-import { byId, setIcon, setText } from "./dom.js";
-import { registerTranslationApplier, t } from "./i18n.js";
+import { byId, setIcon, setText } from "../core/dom.js";
+import { registerTranslationApplier, t } from "../core/i18n.js";
 
 let calcVal = "0";
 let calcScientificMode = false;
