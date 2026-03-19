@@ -1,4 +1,5 @@
 <!-- markdownlint-disable MD033 -->
+
 # <img src="assets/icon.svg" alt="Mobile Tools" height="24" /> Mobile Tools
 
 Mobile Tools is a vanilla JavaScript PWA with everyday utilities in one app:
@@ -128,6 +129,12 @@ npx serve .
 ```
 
 Open `http://localhost:8000`.
+
+Format all project files with Prettier:
+
+```bash
+npx prettier --write "*.{js,json,md,css,html,webmanifest}"
+```
 
 ## 🌐 External APIs
 
