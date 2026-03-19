@@ -39,7 +39,7 @@ function loadTheme() {
 
 const i18n = {
     en: {
-        back: '← Back',
+        back: 'Back',
         tools: 'Tools',
         weather: 'Weather',
         weatherTitle: 'Weather',
@@ -74,6 +74,10 @@ const i18n = {
         presetTokyo: 'Tokyo',
         worldTime: 'World Time',
         worldTimeTitle: 'World Time',
+        timer: 'Timer',
+        timerTitle: 'Timer',
+        stopwatch: 'Stopwatch',
+        stopwatchTitle: 'Stopwatch',
         calendar: 'Calendar',
         calendarTitle: 'Calendar',
         calendarDiffTitle: 'Date Difference',
@@ -107,6 +111,22 @@ const i18n = {
         textNoEmpty: 'Remove empty lines',
         textCopied: 'Copied',
         textCopyFailed: 'Failed',
+        timerStart: 'Start',
+        timerPause: 'Pause',
+        timerResume: 'Resume',
+        timerReset: 'Reset',
+        timerReady: 'Ready',
+        timerRunning: 'Running...',
+        timerPaused: 'Paused',
+        timerDone: 'Time is up',
+        timerInvalid: 'Set time greater than 0',
+        stopwatchStart: 'Start',
+        stopwatchPause: 'Pause',
+        stopwatchResume: 'Resume',
+        stopwatchReset: 'Reset',
+        stopwatchLap: 'Lap',
+        stopwatchLapsTitle: 'Laps',
+        stopwatchNoLaps: 'No laps yet',
         closeAppConfirm: 'Close app?',
         geoUnsupported: 'Geolocation is not supported',
         geoDenied: 'Geolocation access is blocked in browser',
@@ -124,6 +144,7 @@ const i18n = {
         date2: 'Date 2',
         hours: 'Hours',
         minutes: 'Minutes',
+        seconds: 'Seconds',
         calculate: 'Calculate',
         length: 'Length',
         area: 'Area',
@@ -153,7 +174,7 @@ const i18n = {
         ratesFallback: 'Refresh failed, using built-in rates'
     },
     ru: {
-        back: '← Назад',
+        back: 'Назад',
         tools: 'Инструменты',
         weather: 'Погода',
         weatherTitle: 'Погода',
@@ -188,6 +209,10 @@ const i18n = {
         presetTokyo: 'Токио',
         worldTime: 'Мировое время',
         worldTimeTitle: 'Мировое время',
+        timer: 'Таймер',
+        timerTitle: 'Таймер',
+        stopwatch: 'Секундомер',
+        stopwatchTitle: 'Секундомер',
         calendar: 'Календарь',
         calendarTitle: 'Календарь',
         calendarDiffTitle: 'Разница дат',
@@ -221,6 +246,22 @@ const i18n = {
         textNoEmpty: 'Убрать пустые строки',
         textCopied: 'Скопировано',
         textCopyFailed: 'Не удалось',
+        timerStart: 'Старт',
+        timerPause: 'Пауза',
+        timerResume: 'Продолжить',
+        timerReset: 'Сброс',
+        timerReady: 'Готово',
+        timerRunning: 'Идет отсчет...',
+        timerPaused: 'Пауза',
+        timerDone: 'Время вышло',
+        timerInvalid: 'Укажите время больше 0',
+        stopwatchStart: 'Старт',
+        stopwatchPause: 'Пауза',
+        stopwatchResume: 'Продолжить',
+        stopwatchReset: 'Сброс',
+        stopwatchLap: 'Круг',
+        stopwatchLapsTitle: 'Круги',
+        stopwatchNoLaps: 'Пока пусто',
         closeAppConfirm: 'Закрыть приложение?',
         geoUnsupported: 'Геолокация не поддерживается',
         geoDenied: 'Доступ к геолокации запрещён в браузере',
@@ -238,6 +279,7 @@ const i18n = {
         date2: 'Дата 2',
         hours: 'Часы',
         minutes: 'Минуты',
+        seconds: 'Секунды',
         calculate: 'Рассчитать',
         length: 'Длина',
         area: 'Площадь',
@@ -312,6 +354,8 @@ function applyTranslations() {
     setText('title-tools-text', t('tools'));
     setText('menu-weather', t('weather'));
     setText('menu-time', t('worldTime'));
+    setText('menu-timer', t('timer'));
+    setText('menu-stopwatch', t('stopwatch'));
     setText('menu-calendar', t('calendar'));
     setText('menu-converter', t('converter'));
     setText('menu-calc', t('calculator'));
@@ -319,7 +363,9 @@ function applyTranslations() {
     setText('menu-currency', t('currency'));
     setText('menu-exit', t('exit'));
 
-    document.querySelectorAll('[data-i18n="back-btn"]').forEach(btn => btn.textContent = t('back'));
+    document.querySelectorAll('[data-i18n="back-btn"]').forEach(btn => {
+        btn.innerHTML = `<svg class="icon-svg btn-icon"><use href="#i-arrow-left"></use></svg><span>${t('back')}</span>`;
+    });
     setText('title-weather', t('weatherTitle'));
     setText('weather-main-title', t('weatherNow'));
     setText('weather-sun-title', t('weatherSun'));
@@ -336,6 +382,8 @@ function applyTranslations() {
     if (weatherFavHomeBtn) weatherFavHomeBtn.title = currentLang === 'ru' ? 'Удалить домашнюю точку' : 'Remove home point';
     setText('weather-presets-title', t('presetsTitle'));
     setText('title-time', t('worldTimeTitle'));
+    setText('title-timer', t('timerTitle'));
+    setText('title-stopwatch', t('stopwatchTitle'));
     setText('title-calendar', t('calendarTitle'));
     setText('calendar-diff-title', t('calendarDiffTitle'));
     setText('calendar-today-btn', t('calendarToday'));
@@ -356,6 +404,13 @@ function applyTranslations() {
     setText('text-spaces-btn', t('textSpaces'));
     setText('text-noempty-btn', t('textNoEmpty'));
     setText('title-currency', t('currencyTitle'));
+    setText('timer-reset-btn', t('timerReset'));
+    setText('timer-hours-label', t('hours'));
+    setText('timer-minutes-label', t('minutes'));
+    setText('timer-seconds-label', t('seconds'));
+    setText('stopwatch-laps-title', t('stopwatchLapsTitle'));
+    setText('stopwatch-lap-btn', t('stopwatchLap'));
+    setText('stopwatch-reset-btn', t('stopwatchReset'));
     setText('use-now-label', t('useNow'));
     setText('date-inclusive-label', t('includeBoth'));
     setText('cur-refresh-btn', t('refreshServer'));
@@ -416,6 +471,9 @@ function applyTranslations() {
     analyzeText();
     renderWeatherFavorites();
     renderWeatherPresets();
+    renderTimerControls();
+    renderStopwatchControls();
+    renderStopwatchLaps();
 }
 
 function toggleLanguage() {
@@ -928,6 +986,229 @@ function updateWorldTime() {
 
     document.getElementById('world-time').textContent = timeStr;
     document.getElementById('unix-time').textContent = `${t('unixLabel')}: ${Math.floor(now.getTime() / 1000)}`;
+}
+
+// ================== TIMER ==================
+let timerRemainingSeconds = 60;
+let timerIntervalId = null;
+let timerRunning = false;
+let timerEndAtMs = 0;
+let timerHasStarted = false;
+let timerFinished = false;
+
+function parseTimerInputValue(id, min, max) {
+    const input = document.getElementById(id);
+    if (!input) return 0;
+    const raw = Number(input.value);
+    const clamped = Math.max(min, Math.min(max, Number.isFinite(raw) ? Math.floor(raw) : 0));
+    input.value = String(clamped);
+    return clamped;
+}
+
+function readTimerInputs() {
+    const h = parseTimerInputValue('timer-hours', 0, 99);
+    const m = parseTimerInputValue('timer-minutes', 0, 59);
+    const s = parseTimerInputValue('timer-seconds', 0, 59);
+    return (h * 3600) + (m * 60) + s;
+}
+
+function secondsToTimerParts(totalSeconds) {
+    const total = Math.max(0, Math.floor(totalSeconds));
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return { h, m, s };
+}
+
+function formatTimerDisplay(totalSeconds) {
+    const { h, m, s } = secondsToTimerParts(totalSeconds);
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function renderTimerDisplay() {
+    const display = document.getElementById('timer-display');
+    if (display) display.textContent = formatTimerDisplay(timerRemainingSeconds);
+}
+
+function setTimerStatus(statusKey) {
+    const statusEl = document.getElementById('timer-status');
+    if (statusEl) statusEl.textContent = t(statusKey);
+}
+
+function renderTimerControls() {
+    const startBtn = document.getElementById('timer-start-btn');
+    if (startBtn) {
+        startBtn.textContent = timerRunning ? t('timerPause') : (timerHasStarted ? t('timerResume') : t('timerStart'));
+    }
+
+    if (timerRunning) setTimerStatus('timerRunning');
+    else if (timerFinished) setTimerStatus('timerDone');
+    else if (timerHasStarted && timerRemainingSeconds > 0) setTimerStatus('timerPaused');
+    else setTimerStatus('timerReady');
+}
+
+function stopTimerInterval() {
+    if (timerIntervalId) {
+        clearInterval(timerIntervalId);
+        timerIntervalId = null;
+    }
+}
+
+function onTimerFinished() {
+    timerRunning = false;
+    timerHasStarted = false;
+    timerFinished = true;
+    stopTimerInterval();
+    timerRemainingSeconds = 0;
+    renderTimerDisplay();
+    renderTimerControls();
+}
+
+function timerTick() {
+    if (!timerRunning) return;
+    timerRemainingSeconds = Math.max(0, Math.ceil((timerEndAtMs - Date.now()) / 1000));
+    renderTimerDisplay();
+
+    if (timerRemainingSeconds <= 0) {
+        onTimerFinished();
+    }
+}
+
+function toggleTimer() {
+    if (timerRunning) {
+        timerTick();
+        timerRunning = false;
+        stopTimerInterval();
+        setTimerStatus('timerPaused');
+        renderTimerControls();
+        return;
+    }
+
+    if (timerRemainingSeconds <= 0) {
+        timerRemainingSeconds = readTimerInputs();
+    }
+
+    if (timerRemainingSeconds <= 0) {
+        setTimerStatus('timerInvalid');
+        return;
+    }
+
+    timerRunning = true;
+    timerHasStarted = true;
+    timerFinished = false;
+    timerEndAtMs = Date.now() + (timerRemainingSeconds * 1000);
+    stopTimerInterval();
+    timerIntervalId = setInterval(timerTick, 250);
+    renderTimerControls();
+}
+
+function resetTimer() {
+    timerRunning = false;
+    timerHasStarted = false;
+    timerFinished = false;
+    stopTimerInterval();
+    timerRemainingSeconds = readTimerInputs();
+    renderTimerDisplay();
+    renderTimerControls();
+}
+
+function syncTimerFromInputs() {
+    if (timerRunning) return;
+    timerHasStarted = false;
+    timerFinished = false;
+    timerRemainingSeconds = readTimerInputs();
+    renderTimerDisplay();
+    renderTimerControls();
+}
+
+// ================== STOPWATCH ==================
+let stopwatchRunning = false;
+let stopwatchStartAtMs = 0;
+let stopwatchElapsedMs = 0;
+let stopwatchIntervalId = null;
+const stopwatchLaps = [];
+
+function formatStopwatchDisplay(ms) {
+    const total = Math.max(0, Math.floor(ms));
+    const hours = Math.floor(total / 3600000);
+    const minutes = Math.floor((total % 3600000) / 60000);
+    const seconds = Math.floor((total % 60000) / 1000);
+    const centiseconds = Math.floor((total % 1000) / 10);
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(centiseconds).padStart(2, '0')}`;
+}
+
+function renderStopwatchDisplay() {
+    const el = document.getElementById('stopwatch-display');
+    if (el) el.textContent = formatStopwatchDisplay(stopwatchElapsedMs);
+}
+
+function renderStopwatchControls() {
+    const startBtn = document.getElementById('stopwatch-start-btn');
+    if (startBtn) {
+        startBtn.textContent = stopwatchRunning
+            ? t('stopwatchPause')
+            : (stopwatchElapsedMs > 0 ? t('stopwatchResume') : t('stopwatchStart'));
+    }
+}
+
+function renderStopwatchLaps() {
+    const holder = document.getElementById('stopwatch-laps');
+    if (!holder) return;
+
+    if (!stopwatchLaps.length) {
+        holder.textContent = t('stopwatchNoLaps');
+        return;
+    }
+
+    holder.innerHTML = stopwatchLaps
+        .map((lap, index) => `<div class="calc-history-item">#${index + 1}: ${formatStopwatchDisplay(lap)}</div>`)
+        .reverse()
+        .join('');
+}
+
+function stopStopwatchInterval() {
+    if (stopwatchIntervalId) {
+        clearInterval(stopwatchIntervalId);
+        stopwatchIntervalId = null;
+    }
+}
+
+function stopwatchTick() {
+    if (!stopwatchRunning) return;
+    stopwatchElapsedMs = Date.now() - stopwatchStartAtMs;
+    renderStopwatchDisplay();
+}
+
+function toggleStopwatch() {
+    if (stopwatchRunning) {
+        stopwatchTick();
+        stopwatchRunning = false;
+        stopStopwatchInterval();
+        renderStopwatchControls();
+        return;
+    }
+
+    stopwatchRunning = true;
+    stopwatchStartAtMs = Date.now() - stopwatchElapsedMs;
+    stopStopwatchInterval();
+    stopwatchIntervalId = setInterval(stopwatchTick, 33);
+    renderStopwatchControls();
+}
+
+function resetStopwatch() {
+    stopwatchRunning = false;
+    stopStopwatchInterval();
+    stopwatchElapsedMs = 0;
+    stopwatchLaps.length = 0;
+    renderStopwatchDisplay();
+    renderStopwatchControls();
+    renderStopwatchLaps();
+}
+
+function addStopwatchLap() {
+    if (!stopwatchRunning && stopwatchElapsedMs === 0) return;
+    stopwatchLaps.push(stopwatchElapsedMs);
+    renderStopwatchLaps();
 }
 
 // ================== CALENDAR ==================
@@ -1628,6 +1909,9 @@ function initApp() {
     loadTheme();
     loadWeatherSettings();
     initDateYearSelects();
+    syncTimerFromInputs();
+    renderStopwatchDisplay();
+    renderStopwatchLaps();
     applyTranslations();
     loadTimeFormat();
     loadLastPage();

@@ -1,17 +1,20 @@
 # Mobile Tools
 
-Mobile Tools is a lightweight PWA with everyday utilities in one app: weather, world time, calendar, unit converter, calculator, text analysis, and currency conversion.
+Mobile Tools is a lightweight PWA with everyday utilities in one app: weather, world time, timer, stopwatch, calendar, converters, calculator, and text editor tools.
 
 ## Features
 
-- Weather by geolocation, including reverse geocoding and sunrise/sunset
+- Weather by geolocation, reverse geocoding, sunrise/sunset, manual coordinates, favorites, home point, and city presets
 - World time with 24h/12h toggle
-- Calendar with detailed date difference calculation
-- Unit converter with multiple categories and precision control
-- Calculator with basic/scientific modes and history
-- Text analysis (lines, words, characters, bytes, spaces, longest line)
-- Currency converter with online rate refresh
+- Timer (hours/minutes/seconds, start/pause/resume/reset, status)
+- Stopwatch (start/pause/resume/reset, lap list)
+- Calendar with month navigation, day click-to-pick for Date 1/Date 2, range highlighting, and detailed date difference calculation
+- Unit converter with multiple categories, precision control, and presets
+- Calculator with basic/scientific modes, keyboard input support, and history
+- Text editor + analysis: copy, case transforms, cleanup actions, and extended live metrics
+- Currency converter with online rate refresh and fallback behavior
 - Light/dark theme and language toggle (English/Russian)
+- Inline SVG icon sprite (theme-aware icon coloring)
 - Offline support via Service Worker + Web App Manifest
 
 ## Unit Converter Categories
@@ -28,12 +31,39 @@ Mobile Tools is a lightweight PWA with everyday utilities in one app: weather, w
 ## Calculator Capabilities
 
 - Basic and scientific modes
+- Keyboard input: `0-9`, `.`, `+ - * / %`, parentheses, `Enter`, `=`, `Backspace`, `Delete`, `Escape`, `^`
 - `sin`, `cos`, `tan`
 - `sqrt`, `ln`, `log`
 - Factorial (`n!`)
 - Constants (`π`, `e`)
 - Powers, percentages, parentheses
 - Expression history and backspace
+
+## Text Editor & Analysis
+
+### Actions
+
+- Copy to clipboard (with animated feedback)
+- UPPERCASE
+- lowercase
+- Title Case
+- Sentence case
+- Trim
+- Normalize spaces
+- Remove empty lines
+
+### Metrics
+
+- Lines
+- Characters
+- Characters without spaces
+- UTF-8 size (bytes/KB)
+- Words
+- Spaces
+- Longest line
+- Paragraphs
+- Average word length
+- Estimated reading time
 
 ## Tech Stack
 
@@ -70,7 +100,7 @@ mini-tools/
 ├── scripts.js               # application logic
 ├── sw.js                    # service worker
 ├── manifest.webmanifest     # PWA manifest
-└── assets/                  # icons
+└── assets/                  # static assets (app icon, favicons)
 ```
 
 ## External APIs
