@@ -967,13 +967,6 @@
         <button class="primary" id="calc-mode-btn" onclick="toggleCalcMode()">
           Mode: Basic
         </button>
-        <button
-          id="calc-backspace-btn"
-          onclick="calcBackspace()"
-          class="icon-btn"
-        >
-          <svg class="icon-svg btn-icon"><use href="#i-delete"></use></svg>
-        </button>
       </div>
       <div class="row calc-memory-row">
         <button
@@ -1086,7 +1079,7 @@
           <div class="calc-btn scientific" onclick="calcInput('1/')">1/x</div>
           <div class="calc-btn scientific" onclick="calcInput('**3')">x³</div>
           <div class="calc-btn scientific" onclick="calcInput('**')">xʸ</div>
-          <div class="calc-btn scientific" onclick="calcInput('%')">
+          <div class="calc-btn scientific utility" onclick="calcInput('%')">
             <svg class="icon-svg btn-icon">
               <use href="#i-percent"></use>
             </svg>

@@ -1,7 +1,8 @@
-﻿import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
   calcBackspace,
   calcClear,
+  calcClearHistory,
   calcEquals,
   calcFunction,
   calcInput,
@@ -9,6 +10,7 @@ import {
   calcMemoryClear,
   calcMemoryRecall,
   calcMemorySubtract,
+  calcRemoveHistoryAt,
   toggleCalcMode,
   initCalculator,
 } from "../features/calculator.js";
@@ -19,7 +21,6 @@ function mountCalculatorDom() {
     <div id="calc-expression-preview"></div>
     <div id="calc-history"></div>
     <div id="calc-memory-value"></div>
-    <button id="calc-backspace-btn"></button>
     <button id="calc-mc-btn"></button>
     <button id="calc-mr-btn"></button>
     <button id="calc-mplus-btn"></button>
@@ -34,6 +35,7 @@ describe("calculator basics", () => {
   beforeEach(() => {
     mountCalculatorDom();
     initCalculator();
+    calcClearHistory();
     calcClear();
   });
 
@@ -52,6 +54,18 @@ describe("calculator basics", () => {
     calcEquals();
     const history = document.getElementById("calc-history")?.textContent || "";
     expect(history).toContain("9/3 = 3");
+  });
+
+  it("shows lowercase x instead of * in display and history", () => {
+    calcInput("2");
+    calcInput("*");
+    calcInput("3");
+    expect(document.getElementById("calc-expression-preview")?.textContent).toContain(
+      "2x3",
+    );
+    calcEquals();
+    const history = document.getElementById("calc-history")?.textContent || "";
+    expect(history).toContain("2x3 = 6");
   });
 
   it("toggles basic/scientific mode class", () => {
@@ -102,6 +116,17 @@ describe("calculator basics", () => {
     expect(document.getElementById("calc-display")?.textContent).toBe("10");
   });
 
+  it("supports Math constants from scientific keypad", () => {
+    calcInput("Math.PI");
+    calcInput("+");
+    calcInput("Math.E");
+    calcEquals();
+
+    const result = Number(document.getElementById("calc-display")?.textContent);
+    expect(Number.isFinite(result)).toBe(true);
+    expect(Math.abs(result - (Math.PI + Math.E))).toBeLessThan(1e-12);
+  });
+
   it("resets result on malformed expression", () => {
     calcInput("(");
     calcInput("2");
@@ -116,5 +141,23 @@ describe("calculator basics", () => {
     calcBackspace();
     expect(document.getElementById("calc-display")?.textContent).toBe("0");
   });
-});
 
+  it("removes a specific history entry", () => {
+    calcInput("2");
+    calcInput("+");
+    calcInput("2");
+    calcEquals();
+
+    calcClear();
+    calcInput("3");
+    calcInput("+");
+    calcInput("3");
+    calcEquals();
+
+    calcRemoveHistoryAt(0);
+
+    const history = document.getElementById("calc-history")?.textContent || "";
+    expect(history).not.toContain("2+2 = 4");
+    expect(history).toContain("3+3 = 6");
+  });
+});

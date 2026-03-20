@@ -27,6 +27,8 @@
   --accent-gradient: var(--accent);
   --danger: #b91c1c;
   --focus-ring: color-mix(in srgb, var(--accent) 62%, white);
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 3px;
   --btn-bg: color-mix(in srgb, var(--panel-strong) 86%, transparent);
   --btn-bg-hover: color-mix(in srgb, var(--panel-strong) 94%, transparent);
   --shadow-md: 0 14px 32px rgba(15, 23, 42, 0.08);
@@ -281,19 +283,9 @@ textarea:focus {
   background: color-mix(in srgb, var(--panel-strong) 86%, transparent);
 }
 
-:where(
-  button,
-  input,
-  select,
-  textarea,
-  .menu-btn,
-  .back-btn,
-  .icon-btn,
-  .weather-fav-chip,
-  .preset-chip
-):focus-visible {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: 3px;
+:where(button, input, select, textarea, a[href], [tabindex]):focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring) !important;
+  outline-offset: var(--focus-ring-offset);
 }
 
 button {
@@ -949,9 +941,12 @@ input[type="range"] {
 
 /* ===== Calculator ===== */
 .calc-expression-preview,
-.calc-mode-row,
-.calc-history-title {
+.calc-mode-row {
   margin-bottom: 6px;
+}
+
+.calc-history-title {
+  margin-bottom: 2px;
 }
 
 .calc-memory-row {
@@ -972,10 +967,6 @@ input[type="range"] {
 .calc-mode-row > #calc-mode-btn {
   flex: 1;
   min-width: 0;
-}
-
-.calc-mode-row > .icon-btn {
-  width: auto;
 }
 
 .calc-buttons {
@@ -1048,6 +1039,16 @@ input[type="range"] {
   color: var(--text-muted);
 }
 
+.calc-btn.scientific.utility,
+.calc-btn.scientific.operator {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--panel-strong) 88%, transparent);
+}
+
+.calc-btn.scientific.equals {
+  color: #f8fafc;
+}
+
 .calc-equals {
   grid-column: auto;
 }
@@ -1071,7 +1072,7 @@ input[type="range"] {
 }
 
 .calc-history {
-  margin-top: 4px;
+  margin-top: 0;
   max-height: 124px;
   overflow: auto;
   border-radius: var(--radius-sm);
@@ -1083,12 +1084,46 @@ input[type="range"] {
 }
 
 .calc-history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 4px 0;
+  background: inherit;
   border-bottom: 1px dashed color-mix(in srgb, var(--border) 80%, transparent);
 }
 
 .calc-history-item:last-child {
   border-bottom: none;
+}
+
+.calc-history-entry {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+button.calc-history-remove-btn {
+  width: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  padding: 0;
+  border: 0;
+  background: inherit !important;
+  color: var(--text-soft);
+  border-radius: 6px;
+  flex: 0 0 22px;
+  box-shadow: none;
+}
+
+.calc-history-remove-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+button.calc-history-remove-btn:hover {
+  background: inherit !important;
+  border-color: transparent !important;
+  color: var(--danger);
 }
 
 .timer-input-grid {

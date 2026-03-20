@@ -1,4 +1,4 @@
-import { byId, setIcon, setText } from "../core/dom.js";
+import { byId, setText } from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
 
 let calcVal = "0";
@@ -7,10 +7,14 @@ let calcMemoryValue = 0;
 const calcAllowed = /^[\d+\-*/().,%\s]*$/;
 const calcHistory = [];
 
+function formatCalcTextForDisplay(text) {
+  return String(text).replaceAll("**", "^").replaceAll("*", "x");
+}
+
 function renderCalcDisplay() {
-  byId("calc-display").textContent = calcVal;
+  byId("calc-display").textContent = formatCalcTextForDisplay(calcVal);
   byId("calc-expression-preview").textContent =
-    `${t("calcExpression")}: ${calcVal}`;
+    `${t("calcExpression")}: ${formatCalcTextForDisplay(calcVal)}`;
 }
 
 function renderCalcHistory() {
@@ -22,7 +26,23 @@ function renderCalcHistory() {
   el.innerHTML = calcHistory
     .slice(-10)
     .reverse()
-    .map((item) => `<div class="calc-history-item">${item}</div>`)
+    .map((item, visibleIndex, visibleItems) => {
+      const actualIndex = calcHistory.length - 1 - visibleIndex;
+      return `
+        <div class="calc-history-item">
+          <span class="calc-history-entry">${formatCalcTextForDisplay(item)}</span>
+          <button
+            type="button"
+            class="calc-history-remove-btn"
+            onclick="calcRemoveHistoryAt(${actualIndex})"
+            aria-label="${t("removeFavorite")}"
+            title="${t("removeFavorite")}"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+          </button>
+        </div>
+      `;
+    })
     .join("");
 }
 
@@ -97,6 +117,18 @@ export function calcMemorySubtract() {
   renderCalcMemory();
 }
 
+export function calcRemoveHistoryAt(index) {
+  if (!Number.isInteger(index)) return;
+  if (index < 0 || index >= calcHistory.length) return;
+  calcHistory.splice(index, 1);
+  renderCalcHistory();
+}
+
+export function calcClearHistory() {
+  calcHistory.length = 0;
+  renderCalcHistory();
+}
+
 function factorial(n) {
   if (!Number.isInteger(n) || n < 0 || n > 170)
     throw new Error("Factorial range");
@@ -136,6 +168,9 @@ export function calcEquals(returnOnly = false) {
   let resultText = "0";
   try {
     let expr = calcVal.replace(/\s+/g, "");
+    expr = expr
+      .replaceAll("Math.PI", `(${Math.PI})`)
+      .replaceAll("Math.E", `(${Math.E})`);
     if (!expr || !calcAllowed.test(expr)) throw new Error("Invalid input");
     expr = expr.replace(/(\d+(?:\.\d+)?)%/g, "($1/100)");
     const openBrackets = (expr.match(/\(/g) || []).length;
@@ -182,7 +217,6 @@ function handleCalculatorKeyboard(event) {
 
 function applyCalculatorTranslations() {
   setText("title-calc", t("calculatorTitle"));
-  setIcon("calc-backspace-btn", "i-delete");
   setText("calc-mc-btn", t("calcMemoryClear"));
   setText("calc-mr-btn", t("calcMemoryRecall"));
   setText("calc-mplus-btn", t("calcMemoryAdd"));
