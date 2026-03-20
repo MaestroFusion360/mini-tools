@@ -410,6 +410,22 @@ button.primary:active {
   color: var(--text-soft);
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
 /* ===== Weather: Metrics and Sections ===== */
 .metric-row {
   display: grid;
@@ -1387,6 +1403,84 @@ textarea {
   resize: none;
 }
 
+/* ===== Paint & Media ===== */
+.paint-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.paint-toolbar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 6px;
+}
+
+.paint-toolbar-actions {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.paint-toolbar-actions .toolbar-icon-btn[id^="paint-panel-"].active {
+  border-color: color-mix(in srgb, var(--accent) 58%, var(--border));
+  background: color-mix(in srgb, var(--panel-strong) 86%, transparent);
+}
+
+.toolbar-icon-btn {
+  width: 44px;
+  min-width: 44px;
+  min-height: 36px;
+  padding: 0;
+}
+
+#paint-color {
+  height: 44px;
+  min-height: 44px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+#paint-color::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+#paint-color::-webkit-color-swatch {
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius-sm) - 2px);
+}
+
+.paint-canvas-wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--panel-soft) 90%, transparent);
+  padding: 8px;
+  overflow: auto;
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+}
+
+#paint-canvas {
+  display: block;
+  max-width: none;
+  touch-action: none;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--border) 86%, transparent);
+  background:
+    linear-gradient(45deg, rgba(0, 0, 0, 0.04) 25%, transparent 25%) 0 0/16px
+      16px,
+    linear-gradient(-45deg, rgba(0, 0, 0, 0.04) 25%, transparent 25%) 0 0/16px
+      16px,
+    #fff;
+}
+
+.media-player {
+  width: 100%;
+  min-height: 240px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: #050b15;
+}
+
 /* ===== Floating UI: Header Actions, Footer, Toast ===== */
 .floating-actions {
   position: fixed;
@@ -1487,6 +1581,11 @@ textarea {
 
 /* ===== Responsive: Mobile ===== */
 @media (max-width: 520px) {
+  .paint-toolbar-actions {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
   body {
     padding: 18px 10px 10px;
   }

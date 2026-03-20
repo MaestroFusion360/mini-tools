@@ -36,6 +36,27 @@ import {
   loadRates,
   swapCurrencyUnits,
 } from "./features/currency.js";
+import {
+  initMediaPlayer,
+  mediaClearPlaylist,
+  mediaNext,
+  mediaOpenFilesDialog,
+  mediaPlaySelected,
+  mediaPrev,
+} from "./features/media-player.js";
+import {
+  initPaint,
+  paintApplyCrop,
+  paintApplyMirror,
+  paintApplyResize,
+  paintApplyRotate,
+  paintClearCanvas,
+  paintOpenFileDialog,
+  paintTogglePanel,
+  paintRedo,
+  paintSaveImage,
+  paintUndo,
+} from "./features/paint.js";
 import { applyTranslations, initI18n, toggleLanguage } from "./core/i18n.js";
 import { exitApp, initNavigation, showPage } from "./core/navigation.js";
 import { initPwa } from "./core/pwa.js";
@@ -138,6 +159,21 @@ function exposeGlobals() {
     loadRates,
     swapCurrencyUnits,
     convertCurrency,
+    paintOpenFileDialog,
+    paintTogglePanel,
+    paintSaveImage,
+    paintUndo,
+    paintRedo,
+    paintClearCanvas,
+    paintApplyCrop,
+    paintApplyResize,
+    paintApplyRotate,
+    paintApplyMirror,
+    mediaOpenFilesDialog,
+    mediaPlaySelected,
+    mediaPrev,
+    mediaNext,
+    mediaClearPlaylist,
   });
 }
 
@@ -169,6 +205,8 @@ async function initApp() {
   initCalculator();
   initTextTools();
   initCurrency();
+  initPaint();
+  initMediaPlayer();
   initPwa();
 
   applyTranslations();
