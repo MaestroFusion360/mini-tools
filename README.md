@@ -45,6 +45,23 @@ calculator, text editor/analysis, and currency conversion.
   - actions: Copy, UPPER/lower/Title/Sentence, Trim, Normalize spaces, Remove empty lines
   - metrics: lines, chars, chars without spaces, UTF-8 size, words, spaces, max line, paragraphs, avg word length, reading time
 - Currency converter with online refresh + fallback rates 💱
+- Paint editor:
+  - open/save PNG, undo/redo, clear
+  - fullscreen mode (stable enter/exit)
+  - crop/resize/rotate/mirror
+  - filters: brightness, contrast, saturation
+  - tools: brush, eraser (BackColor-based), text, pipette, fill
+  - shapes: rectangle, ellipse, line, spline (2-step curve)
+  - zoom in/out/reset + grid overlay
+  - selection tool + Delete clears selected area
+  - copy/paste with selection-aware behavior
+  - Color + BackColor + Size are always in one row
+  - text extras: text input + fonts panel
+- Media player:
+  - open local audio/video files
+  - playlist select + previous/next controls
+  - clear playlist
+  - built-in HTML5 media controls (play/pause/seek/volume)
 - Theme + language persistence 🎨🌐
 - Offline shell via Service Worker + Manifest 📦
 
@@ -82,6 +99,8 @@ calculator, text editor/analysis, and currency conversion.
 - `src/features/calculator.js`: calculator logic, history, keyboard input
 - `src/features/text-tools.js`: text transforms + metrics + copy feedback
 - `src/features/currency.js`: rates loading and conversion
+- `src/features/paint.js`: paint canvas, tools, panels, filters, selection, fullscreen
+- `src/features/media-player.js`: media playlist and player controls
 - `src/core/pwa.js`: service worker registration wrapper
 
 ## 🧭 Project Structure
@@ -92,6 +111,7 @@ mini-tools/
 ├── i18n.json
 ├── src/
 │   ├── app.html
+│   ├── icons.html
 │   ├── main.js
 │   ├── styles.css
 │   ├── core/
@@ -111,7 +131,9 @@ mini-tools/
 │       ├── converter.js
 │       ├── calculator.js
 │       ├── text-tools.js
-│       └── currency.js
+│       ├── currency.js
+│       ├── paint.js
+│       └── media-player.js
 ├── sw.js
 ├── manifest.webmanifest
 └── assets/
