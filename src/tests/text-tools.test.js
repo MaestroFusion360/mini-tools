@@ -7,6 +7,7 @@ import {
   normalizeSpacesAction,
   removeEmptyLinesAction,
   replaceAllInEditor,
+  saveTextToFile,
   toSentenceCaseText,
   toTitleCaseText,
   trimTextAction,
@@ -24,6 +25,12 @@ function mountTextDom() {
     <input id="text-find-wrap" type="checkbox" checked />
     <div id="text-find-status"></div>
     <button id="text-copy-btn"></button>
+    <select id="text-save-encoding">
+      <option value="utf8">UTF-8</option>
+      <option value="utf8bom">UTF-8 BOM</option>
+      <option value="cp1251">ANSI (CP1251)</option>
+      <option value="utf16le">UTF-16 LE</option>
+    </select>
   `;
 }
 
@@ -126,6 +133,44 @@ describe("text tools", () => {
     expect(copyBtn.dataset.copyFeedback).toBe("");
     vi.useRealTimers();
     vi.unstubAllGlobals();
+  });
+
+  it("saves cp1251 bytes for cyrillic text", async () => {
+    const input = document.getElementById("text-input");
+    const encoding = document.getElementById("text-save-encoding");
+    input.value = "Привет Ёё № €";
+    encoding.value = "cp1251";
+
+    let capturedBlob = null;
+    const originalCreateObjectURL = URL.createObjectURL;
+    const originalRevokeObjectURL = URL.revokeObjectURL;
+    URL.createObjectURL = vi.fn((blob) => {
+      capturedBlob = blob;
+      return "blob:test";
+    });
+    URL.revokeObjectURL = vi.fn(() => {});
+    const clickSpy = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(() => {});
+
+    saveTextToFile();
+    expect(capturedBlob).toBeTruthy();
+    const bytes = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(Array.from(new Uint8Array(reader.result)));
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(capturedBlob);
+    });
+    expect(bytes).toEqual([
+      0xcf, 0xf0, 0xe8, 0xe2, 0xe5, 0xf2, 0x20, 0xa8, 0xb8, 0x20, 0xb9, 0x20,
+      0x88,
+    ]);
+
+    clickSpy.mockRestore();
+    URL.createObjectURL = originalCreateObjectURL;
+    URL.revokeObjectURL = originalRevokeObjectURL;
   });
 });
 

@@ -7,6 +7,9 @@ function setThemeToggleIcon(isDark) {
 
   const iconName = isDark ? "i-sun" : "i-moon";
   const iconAlt = isDark ? "Light mode" : "Dark mode";
+  const buttonAlt = isDark ? "Switch to light mode" : "Switch to dark mode";
+  toggle.title = buttonAlt;
+  toggle.setAttribute("aria-label", buttonAlt);
   toggle.innerHTML = `<svg class="icon-svg theme-toggle-icon" aria-label="${iconAlt}"><use href="#${iconName}"></use></svg>`;
 }
 

@@ -9,6 +9,77 @@ let textFindState = {
   matches: [],
   activeIndex: -1,
 };
+const TEXT_SAVE_ENCODING_OPTIONS = {
+  utf8: { label: "UTF-8" },
+  utf8bom: { label: "UTF-8 BOM" },
+  cp1251: { label: "ANSI (CP1251)" },
+  utf16le: { label: "UTF-16 LE" },
+};
+const CP1251_EXTRA_CHARS = {
+  "\u0402": 0x80,
+  "\u0403": 0x81,
+  "\u201A": 0x82,
+  "\u0453": 0x83,
+  "\u201E": 0x84,
+  "\u2026": 0x85,
+  "\u2020": 0x86,
+  "\u2021": 0x87,
+  "\u20AC": 0x88,
+  "\u2030": 0x89,
+  "\u0409": 0x8a,
+  "\u2039": 0x8b,
+  "\u040A": 0x8c,
+  "\u040C": 0x8d,
+  "\u040B": 0x8e,
+  "\u040F": 0x8f,
+  "\u0452": 0x90,
+  "\u2018": 0x91,
+  "\u2019": 0x92,
+  "\u201C": 0x93,
+  "\u201D": 0x94,
+  "\u2022": 0x95,
+  "\u2013": 0x96,
+  "\u2014": 0x97,
+  "\u2122": 0x99,
+  "\u0459": 0x9a,
+  "\u203A": 0x9b,
+  "\u045A": 0x9c,
+  "\u045C": 0x9d,
+  "\u045B": 0x9e,
+  "\u045F": 0x9f,
+  "\u00A0": 0xa0,
+  "\u040E": 0xa1,
+  "\u045E": 0xa2,
+  "\u0408": 0xa3,
+  "\u00A4": 0xa4,
+  "\u0490": 0xa5,
+  "\u00A6": 0xa6,
+  "\u00A7": 0xa7,
+  "\u0401": 0xa8,
+  "\u00A9": 0xa9,
+  "\u0404": 0xaa,
+  "\u00AB": 0xab,
+  "\u00AC": 0xac,
+  "\u00AD": 0xad,
+  "\u00AE": 0xae,
+  "\u0407": 0xaf,
+  "\u00B0": 0xb0,
+  "\u00B1": 0xb1,
+  "\u0406": 0xb2,
+  "\u0456": 0xb3,
+  "\u0491": 0xb4,
+  "\u00B5": 0xb5,
+  "\u00B6": 0xb6,
+  "\u00B7": 0xb7,
+  "\u0451": 0xb8,
+  "\u2116": 0xb9,
+  "\u0454": 0xba,
+  "\u00BB": 0xbb,
+  "\u0458": 0xbc,
+  "\u0405": 0xbd,
+  "\u0455": 0xbe,
+  "\u0457": 0xbf,
+};
 
 async function readDroppedFileAsText(file) {
   if (!file) return "";
@@ -78,12 +149,104 @@ function getTextWords(text) {
   return text.match(/[A-Za-z\u0400-\u04FF0-9_]+/g) || [];
 }
 
+function getSelectedTextSaveEncoding() {
+  const selected = byId("text-save-encoding")?.value || "utf8";
+  return TEXT_SAVE_ENCODING_OPTIONS[selected] ? selected : "utf8";
+}
+
+function getCp1251ByteLength(text) {
+  return encodeCp1251Text(text).length;
+}
+
+function getUtf16LeByteLength(text) {
+  let bytes = 0;
+  for (const char of text) {
+    const code = char.codePointAt(0);
+    if (typeof code !== "number") continue;
+    bytes += code > 0xffff ? 4 : 2;
+  }
+  return bytes;
+}
+
+function getByteLengthForEncoding(text, encoding) {
+  switch (encoding) {
+    case "utf8bom":
+      return new Blob([text]).size + 3;
+    case "cp1251":
+      return getCp1251ByteLength(text);
+    case "utf16le":
+      return getUtf16LeByteLength(text);
+    case "utf8":
+    default:
+      return new Blob([text]).size;
+  }
+}
+
+function encodeCp1251Text(text) {
+  const bytes = [];
+  for (const char of text) {
+    if (Object.prototype.hasOwnProperty.call(CP1251_EXTRA_CHARS, char)) {
+      bytes.push(CP1251_EXTRA_CHARS[char]);
+      continue;
+    }
+
+    const code = char.charCodeAt(0);
+    if (typeof code !== "number") continue;
+    if (code <= 0x7f) {
+      bytes.push(code);
+      continue;
+    }
+    if (code >= 0x410 && code <= 0x42f) {
+      bytes.push(0xc0 + (code - 0x410));
+      continue;
+    }
+    if (code >= 0x430 && code <= 0x44f) {
+      bytes.push(0xe0 + (code - 0x430));
+      continue;
+    }
+    bytes.push(0x3f);
+  }
+  return new Uint8Array(bytes);
+}
+
+function encodeUtf16LeText(text) {
+  const bytes = new Uint8Array(text.length * 2);
+  let byteIndex = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    const code = text.charCodeAt(i);
+    bytes[byteIndex] = code & 0xff;
+    bytes[byteIndex + 1] = code >> 8;
+    byteIndex += 2;
+  }
+  return bytes;
+}
+
+function getEncodedBytes(text, encoding) {
+  const utf8Bytes = new TextEncoder().encode(text);
+  switch (encoding) {
+    case "utf8bom": {
+      const withBom = new Uint8Array(utf8Bytes.length + 3);
+      withBom.set([0xef, 0xbb, 0xbf], 0);
+      withBom.set(utf8Bytes, 3);
+      return withBom;
+    }
+    case "cp1251":
+      return encodeCp1251Text(text);
+    case "utf16le":
+      return encodeUtf16LeText(text);
+    case "utf8":
+    default:
+      return utf8Bytes;
+  }
+}
+
 function getTextMetrics(text) {
   const lines = text.split("\n");
   const wordsList = getTextWords(text);
   const words = wordsList.length;
   const wordChars = wordsList.reduce((sum, word) => sum + word.length, 0);
   const avgWordLength = words ? wordChars / words : 0;
+  const encoding = getSelectedTextSaveEncoding();
   const paragraphList = text.trim()
     ? text
         .split(/\n\s*\n+/)
@@ -94,7 +257,8 @@ function getTextMetrics(text) {
   return {
     lines: lines.length,
     chars: text.length,
-    bytes: new Blob([text]).size,
+    bytes: getByteLengthForEncoding(text, encoding),
+    encodingLabel: TEXT_SAVE_ENCODING_OPTIONS[encoding].label,
     words,
     spaces: (text.match(/ /g) || []).length,
     maxLine: Math.max(...lines.map((line) => line.length), 0),
@@ -106,18 +270,20 @@ function getTextMetrics(text) {
 }
 
 function formatReadTime(readMins) {
-  if (readMins < 1) return getLanguage() === "ru" ? "<1 мин" : "<1 min";
+  if (readMins < 1) return getLanguage() === "ru" ? "<1 \u043c\u0438\u043d" : "<1 min";
   const totalMins = Math.ceil(readMins);
   if (totalMins < 60)
-    return getLanguage() === "ru" ? `${totalMins} мин` : `${totalMins} min`;
+    return getLanguage() === "ru"
+      ? `${totalMins} \u043c\u0438\u043d`
+      : `${totalMins} min`;
   const h = Math.floor(totalMins / 60);
   const m = totalMins % 60;
   return m
     ? getLanguage() === "ru"
-      ? `${h} ч ${m} мин`
+      ? `${h} \u0447 ${m} \u043c\u0438\u043d`
       : `${h} h ${m} min`
     : getLanguage() === "ru"
-      ? `${h} ч`
+      ? `${h} \u0447`
       : `${h} h`;
 }
 
@@ -126,14 +292,14 @@ function renderTextMetrics(metrics) {
   const avg = metrics.avgWordLength.toFixed(2);
   const readTime = formatReadTime(metrics.readMins);
   const ruLines = [
-    `Строк: ${metrics.lines} · Абзацев: ${metrics.paragraphs} · Чтение: ${readTime}`,
-    `Символов: ${metrics.chars} · Без пробелов: ${metrics.charsNoSpaces} · UTF-8: ${kb} KB`,
-    `Слов: ${metrics.words} · Ср. длина слова: ${avg} · Пробелов: ${metrics.spaces} · Макс. строка: ${metrics.maxLine}`,
+    `\u0421\u0442\u0440\u043e\u043a: ${metrics.lines} | \u0410\u0431\u0437\u0430\u0446\u0435\u0432: ${metrics.paragraphs} | \u0427\u0442\u0435\u043d\u0438\u0435: ${readTime}`,
+    `\u0421\u0438\u043c\u0432\u043e\u043b\u043e\u0432: ${metrics.chars} | \u0411\u0435\u0437 \u043f\u0440\u043e\u0431\u0435\u043b\u043e\u0432: ${metrics.charsNoSpaces} | ${metrics.encodingLabel}: ${kb} KB`,
+    `\u0421\u043b\u043e\u0432: ${metrics.words} | \u0421\u0440. \u0434\u043b\u0438\u043d\u0430 \u0441\u043b\u043e\u0432\u0430: ${avg} | \u041f\u0440\u043e\u0431\u0435\u043b\u043e\u0432: ${metrics.spaces} | \u041c\u0430\u043a\u0441. \u0441\u0442\u0440\u043e\u043a\u0430: ${metrics.maxLine}`,
   ];
   const enLines = [
-    `Lines: ${metrics.lines} · Paragraphs: ${metrics.paragraphs} · Read: ${readTime}`,
-    `Characters: ${metrics.chars} · No spaces: ${metrics.charsNoSpaces} · UTF-8: ${kb} KB`,
-    `Words: ${metrics.words} · Avg word length: ${avg} · Spaces: ${metrics.spaces} · Max line: ${metrics.maxLine}`,
+    `Lines: ${metrics.lines} | Paragraphs: ${metrics.paragraphs} | Read: ${readTime}`,
+    `Characters: ${metrics.chars} | No spaces: ${metrics.charsNoSpaces} | ${metrics.encodingLabel}: ${kb} KB`,
+    `Words: ${metrics.words} | Avg word length: ${avg} | Spaces: ${metrics.spaces} | Max line: ${metrics.maxLine}`,
   ];
 
   const el = byId("text-analysis");
@@ -458,10 +624,42 @@ export async function copyTextTool() {
   }, 950);
 }
 
+export function saveTextToFile() {
+  const input = byId("text-input");
+  if (!input) return;
+
+  const encoding = getSelectedTextSaveEncoding();
+  const bytes = getEncodedBytes(input.value, encoding);
+  const mimeByEncoding = {
+    utf8: "text/plain;charset=utf-8",
+    utf8bom: "text/plain;charset=utf-8",
+    cp1251: "text/plain;charset=windows-1251",
+    utf16le: "text/plain;charset=utf-16le",
+  };
+  const blob = new Blob([bytes], {
+    type: mimeByEncoding[encoding] || "application/octet-stream",
+  });
+  const link = document.createElement("a");
+  const objectUrl = URL.createObjectURL(blob);
+  link.href = objectUrl;
+  link.download = "editor.txt";
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+}
+
 function applyTextToolTranslations() {
   setText("title-text", t("textAnalysisTitle"));
   const placeholder = byId("text-input");
   if (placeholder) placeholder.placeholder = t("textPlaceholder");
+
+  const setControlTooltip = (id, label) => {
+    const el = byId(id);
+    if (!el) return;
+    el.title = label;
+    el.setAttribute("aria-label", label);
+  };
 
   const textCopyBtn = byId("text-copy-btn");
   if (textCopyBtn) {
@@ -475,16 +673,53 @@ function applyTextToolTranslations() {
   setText("text-trim-btn", t("textTrim"));
   setText("text-spaces-btn", t("textSpaces"));
   setText("text-noempty-btn", t("textNoEmpty"));
+  setText("text-save-btn", "Save");
   setText("text-find-btn", t("textFind"));
   setText("text-replace-all-btn", t("textReplaceAll"));
+  setControlTooltip("text-upper-btn", t("textUpper"));
+  setControlTooltip("text-lower-btn", t("textLower"));
+  setControlTooltip("text-title-btn", t("textTitle"));
+  setControlTooltip("text-sentence-btn", t("textSentence"));
+  setControlTooltip("text-trim-btn", t("textTrim"));
+  setControlTooltip("text-spaces-btn", t("textSpaces"));
+  setControlTooltip("text-noempty-btn", t("textNoEmpty"));
+  setControlTooltip("text-save-btn", "Save");
+  setControlTooltip("text-find-btn", t("textFind"));
+  setControlTooltip("text-replace-all-btn", t("textReplaceAll"));
+  setControlTooltip("text-tools-summary", "Show or hide editor tools");
   setText("text-find-case-label", t("textFindCaseSensitive"));
   setText("text-find-whole-label", t("textFindWholeWord"));
   setText("text-find-wrap-label", t("textFindWrap"));
+  setText("text-tools-summary-label", "Editor tools");
+
+  const encodingSelect = byId("text-save-encoding");
+  if (encodingSelect) {
+    encodingSelect.title = "Save encoding";
+    encodingSelect.setAttribute("aria-label", "Save encoding");
+    const options = Array.from(encodingSelect.options);
+    for (const option of options) {
+      if (option.value === "utf8") option.textContent = "UTF-8 (default)";
+      if (option.value === "utf8bom") option.textContent = "UTF-8 BOM";
+      if (option.value === "cp1251") option.textContent = "ANSI (CP1251)";
+      if (option.value === "utf16le") option.textContent = "UTF-16 LE";
+    }
+    if (!TEXT_SAVE_ENCODING_OPTIONS[encodingSelect.value]) {
+      encodingSelect.value = "utf8";
+    }
+  }
 
   const findInput = byId("text-find-input");
-  if (findInput) findInput.placeholder = t("textFindPlaceholder");
+  if (findInput) {
+    findInput.placeholder = t("textFindPlaceholder");
+    findInput.title = t("textFindPlaceholder");
+    findInput.setAttribute("aria-label", t("textFindPlaceholder"));
+  }
   const replaceInput = byId("text-replace-input");
-  if (replaceInput) replaceInput.placeholder = t("textReplacePlaceholder");
+  if (replaceInput) {
+    replaceInput.placeholder = t("textReplacePlaceholder");
+    replaceInput.title = t("textReplacePlaceholder");
+    replaceInput.setAttribute("aria-label", t("textReplacePlaceholder"));
+  }
   analyzeText();
 }
 
@@ -501,7 +736,16 @@ export function initTextTools() {
     });
   }
 
+  const encodingSelect = byId("text-save-encoding");
+  if (encodingSelect && encodingSelect.dataset.bound !== "1") {
+    encodingSelect.dataset.bound = "1";
+    encodingSelect.addEventListener("change", () => {
+      analyzeText();
+    });
+  }
+
   registerTranslationApplier(applyTextToolTranslations);
   bindTextDragAndDrop();
   analyzeText();
 }
+

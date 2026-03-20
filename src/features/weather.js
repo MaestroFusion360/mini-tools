@@ -197,6 +197,7 @@ export function renderWeatherFavorites() {
     homeBtn.innerHTML =
       '<svg class="icon-svg btn-icon"><use href="#i-house"></use></svg>';
     homeBtn.title = item.isHome ? "Home point" : "Set as home";
+    homeBtn.setAttribute("aria-label", homeBtn.title);
     homeBtn.onclick = () => setFavoriteHome(idx);
 
     const editBtn = document.createElement("button");
@@ -205,6 +206,7 @@ export function renderWeatherFavorites() {
     editBtn.innerHTML =
       '<svg class="icon-svg btn-icon"><use href="#i-pen"></use></svg>';
     editBtn.title = "Rename";
+    editBtn.setAttribute("aria-label", editBtn.title);
     editBtn.onclick = () => renameFavoriteCoordinate(idx);
 
     const deleteBtn = document.createElement("button");
@@ -213,6 +215,7 @@ export function renderWeatherFavorites() {
     deleteBtn.innerHTML =
       '<svg class="icon-svg btn-icon"><use href="#i-x"></use></svg>';
     deleteBtn.title = "Delete";
+    deleteBtn.setAttribute("aria-label", deleteBtn.title);
     deleteBtn.onclick = () => removeFavoriteCoordinateAt(idx);
 
     actions.appendChild(homeBtn);
@@ -637,8 +640,16 @@ function applyWeatherTranslations() {
   setText("weather-presets-title", t("presetsTitle"));
   setIcon("weather-fav-add-btn", "i-plus");
   setIcon("weather-fav-remove-btn", "i-minus");
+  const weatherFavAddBtn = byId("weather-fav-add-btn");
+  if (weatherFavAddBtn) {
+    weatherFavAddBtn.title = t("addFavorite");
+    weatherFavAddBtn.setAttribute("aria-label", t("addFavorite"));
+  }
   const weatherFavHomeBtn = byId("weather-fav-remove-btn");
-  if (weatherFavHomeBtn) weatherFavHomeBtn.title = t("removeFavorite");
+  if (weatherFavHomeBtn) {
+    weatherFavHomeBtn.title = t("removeFavorite");
+    weatherFavHomeBtn.setAttribute("aria-label", t("removeFavorite"));
+  }
   if (!weatherUsingApiSource) weatherSourceText = t("weatherSourceUnavailable");
 
   renderWeatherFavorites();

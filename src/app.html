@@ -344,6 +344,8 @@
                 class="icon-btn"
                 id="weather-fav-add-btn"
                 onclick="addCurrentCoordinateToFavorites()"
+                title="Add"
+                aria-label="Add"
               >
                 <svg class="icon-svg btn-icon">
                   <use href="#i-plus"></use>
@@ -353,6 +355,8 @@
                 class="icon-btn"
                 id="weather-fav-remove-btn"
                 onclick="removeFavoriteCoordinateDialog()"
+                title="Remove"
+                aria-label="Remove"
               >
                 <svg class="icon-svg btn-icon">
                   <use href="#i-minus"></use>
@@ -693,6 +697,8 @@
           class="icon-btn calendar-nav-btn"
           id="calendar-prev-btn"
           onclick="changeCalendarMonth(-1)"
+          title="Previous month"
+          aria-label="Previous month"
         >
           <svg class="icon-svg btn-icon">
             <use href="#i-arrow-left"></use>
@@ -703,6 +709,8 @@
           class="icon-btn calendar-nav-btn"
           id="calendar-next-btn"
           onclick="changeCalendarMonth(1)"
+          title="Next month"
+          aria-label="Next month"
         >
           <svg class="icon-svg btn-icon">
             <use href="#i-arrow-right"></use>
@@ -865,7 +873,13 @@
         <button class="primary flex-1" onclick="calcDateDiff()">
           Calculate
         </button>
-        <button onclick="swapDates()" class="icon-btn">
+        <button
+          id="calendar-swap-btn"
+          onclick="swapDates()"
+          class="icon-btn"
+          title="Swap dates"
+          aria-label="Swap dates"
+        >
           <svg class="icon-svg btn-icon">
             <use href="#i-arrow-left-right"></use>
           </svg>
@@ -931,7 +945,13 @@
 
       <div class="converter-row">
         <select id="conv-from" onchange="convertUnit()"></select>
-        <button onclick="swapConvUnits()" class="icon-btn">
+        <button
+          id="conv-swap-btn"
+          onclick="swapConvUnits()"
+          class="icon-btn"
+          title="Swap units"
+          aria-label="Swap units"
+        >
           <svg class="icon-svg btn-icon">
             <use href="#i-arrow-left-right"></use>
           </svg>
@@ -1184,115 +1204,157 @@
           <svg class="icon-svg btn-icon"><use href="#i-copy"></use></svg>
         </button>
       </div>
-      <div class="text-actions-groups">
-        <div class="text-actions-row">
-          <button
-            type="button"
-            class="text-action-btn"
-            id="text-upper-btn"
-            onclick="toUpperCaseText()"
-          >
-            UPPERCASE
-          </button>
-          <button
-            type="button"
-            class="text-action-btn"
-            id="text-lower-btn"
-            onclick="toLowerCaseText()"
-          >
-            lowercase
-          </button>
-          <button
-            type="button"
-            class="text-action-btn"
-            id="text-title-btn"
-            onclick="toTitleCaseText()"
-          >
-            Title Case
-          </button>
-          <button
-            type="button"
-            class="text-action-btn"
-            id="text-sentence-btn"
-            onclick="toSentenceCaseText()"
-          >
-            Sentence case
-          </button>
-        </div>
-        <div class="text-actions-row">
-          <button
-            type="button"
-            class="text-action-btn"
-            id="text-trim-btn"
-            onclick="trimTextAction()"
-          >
-            Trim
-          </button>
-          <button
-            type="button"
-            class="text-action-btn"
-            id="text-spaces-btn"
-            onclick="normalizeSpacesAction()"
-          >
-            Normalize spaces
-          </button>
-          <button
-            type="button"
-            class="text-action-btn"
-            id="text-noempty-btn"
-            onclick="removeEmptyLinesAction()"
-          >
-            Remove empty lines
-          </button>
-        </div>
-        <div class="text-find-row">
-          <input type="text" id="text-find-input" placeholder="Find..." />
-          <button
-            type="button"
-            class="text-action-btn"
-            id="text-find-btn"
-            onclick="findTextInEditor()"
-          >
-            Find / Next
-          </button>
-        </div>
-        <div class="text-find-options">
-          <label class="checkbox-label">
-            <input type="checkbox" id="text-find-case" />
-            <span class="small-text" id="text-find-case-label"
-              >Case sensitive</span
+      <details class="text-tools-accordion" id="text-tools-accordion">
+        <summary
+          class="text-tools-summary"
+          id="text-tools-summary"
+          title="Show or hide editor tools"
+          aria-label="Show or hide editor tools"
+        >
+          <span id="text-tools-summary-label">Editor tools</span>
+          <span class="text-tools-summary-icon" aria-hidden="true">
+            <svg
+              class="icon-svg text-tools-chevron text-tools-chevron-right"
+              viewBox="0 0 24 24"
             >
-          </label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="text-find-whole" />
-            <span class="small-text" id="text-find-whole-label"
-              >Whole word</span
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+            <svg
+              class="icon-svg text-tools-chevron text-tools-chevron-down"
+              viewBox="0 0 24 24"
             >
-          </label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="text-find-wrap" checked />
-            <span class="small-text" id="text-find-wrap-label"
-              >Wrap search</span
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </span>
+        </summary>
+        <div class="text-actions-groups">
+          <div class="text-actions-row text-encoding-row">
+            <select id="text-save-encoding">
+              <option value="utf8">UTF-8 (default)</option>
+              <option value="utf8bom">UTF-8 BOM</option>
+              <option value="cp1251">ANSI (CP1251)</option>
+              <option value="utf16le">UTF-16 LE</option>
+            </select>
+            <button
+              type="button"
+              class="text-action-btn"
+              id="text-save-btn"
+              onclick="saveTextToFile()"
+              title="Save"
+              aria-label="Save"
             >
-          </label>
+              Save
+            </button>
+          </div>
+          <div class="text-actions-row">
+            <button
+              type="button"
+              class="text-action-btn"
+              id="text-upper-btn"
+              onclick="toUpperCaseText()"
+            >
+              UPPERCASE
+            </button>
+            <button
+              type="button"
+              class="text-action-btn"
+              id="text-lower-btn"
+              onclick="toLowerCaseText()"
+            >
+              lowercase
+            </button>
+            <button
+              type="button"
+              class="text-action-btn"
+              id="text-title-btn"
+              onclick="toTitleCaseText()"
+            >
+              Title Case
+            </button>
+            <button
+              type="button"
+              class="text-action-btn"
+              id="text-sentence-btn"
+              onclick="toSentenceCaseText()"
+            >
+              Sentence case
+            </button>
+          </div>
+          <div class="text-actions-row">
+            <button
+              type="button"
+              class="text-action-btn"
+              id="text-trim-btn"
+              onclick="trimTextAction()"
+            >
+              Trim
+            </button>
+            <button
+              type="button"
+              class="text-action-btn"
+              id="text-spaces-btn"
+              onclick="normalizeSpacesAction()"
+            >
+              Normalize spaces
+            </button>
+            <button
+              type="button"
+              class="text-action-btn"
+              id="text-noempty-btn"
+              onclick="removeEmptyLinesAction()"
+            >
+              Remove empty lines
+            </button>
+          </div>
+          <div class="text-find-row">
+            <input type="text" id="text-find-input" placeholder="Find..." />
+            <button
+              type="button"
+              class="text-action-btn"
+              id="text-find-btn"
+              onclick="findTextInEditor()"
+            >
+              Find / Next
+            </button>
+          </div>
+          <div class="text-find-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="text-find-case" />
+              <span class="small-text" id="text-find-case-label"
+                >Case sensitive</span
+              >
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="text-find-whole" />
+              <span class="small-text" id="text-find-whole-label"
+                >Whole word</span
+              >
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="text-find-wrap" checked />
+              <span class="small-text" id="text-find-wrap-label"
+                >Wrap search</span
+              >
+            </label>
+          </div>
+          <div class="text-find-row">
+            <input
+              type="text"
+              id="text-replace-input"
+              placeholder="Replace with..."
+            />
+            <button
+              type="button"
+              class="text-action-btn"
+              id="text-replace-all-btn"
+              onclick="replaceAllInEditor()"
+            >
+              Replace all
+            </button>
+            <div class="small-text" id="text-find-status"></div>
+          </div>
         </div>
-        <div class="text-find-row">
-          <input
-            type="text"
-            id="text-replace-input"
-            placeholder="Replace with..."
-          />
-          <button
-            type="button"
-            class="text-action-btn"
-            id="text-replace-all-btn"
-            onclick="replaceAllInEditor()"
-          >
-            Replace all
-          </button>
-          <div class="small-text" id="text-find-status"></div>
-        </div>
-      </div>
+      </details>
       <div class="small-text text-analysis" id="text-analysis">
         Lines: 1 ? Characters: 0 ? UTF-8: 0.00 KB ? Max line: 0 ? Words: 0 ?
         Spaces: 0
@@ -1338,7 +1400,13 @@
           <option value="JPY">JPY</option>
         </select>
 
-        <button onclick="swapCurrencyUnits()" class="icon-btn">
+        <button
+          id="cur-swap-btn"
+          onclick="swapCurrencyUnits()"
+          class="icon-btn"
+          title="Swap currencies"
+          aria-label="Swap currencies"
+        >
           <svg class="icon-svg btn-icon">
             <use href="#i-arrow-left-right"></use>
           </svg>
@@ -1371,7 +1439,13 @@
   >
     EN
   </button>
-  <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle">
+  <button
+    class="theme-toggle"
+    onclick="toggleTheme()"
+    id="theme-toggle"
+    title="Toggle theme"
+    aria-label="Toggle theme"
+  >
     <svg class="icon-svg theme-toggle-icon"><use href="#i-moon"></use></svg>
   </button>
 </div>

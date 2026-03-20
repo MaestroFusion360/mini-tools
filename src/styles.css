@@ -78,6 +78,28 @@ body.dark {
   --shadow-lg: 0 28px 46px rgba(2, 6, 23, 0.58);
 }
 
+/* ===== Scrollbars ===== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-soft) 46%, transparent)
+    color-mix(in srgb, var(--panel-soft) 58%, transparent);
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--panel-soft) 58%, transparent);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-soft) 46%, transparent);
+  border-radius: 999px;
+}
+
 /* ===== App Layout ===== */
 body {
   min-height: 100vh;
@@ -1154,6 +1176,63 @@ button.calc-history-remove-btn:hover {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent) inset;
 }
 
+.text-tools-accordion {
+  display: grid;
+  gap: 8px;
+}
+
+.text-tools-summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 36px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.text-tools-summary::-webkit-details-marker {
+  display: none;
+}
+
+.text-tools-accordion[open] .text-tools-summary {
+  background: color-mix(in srgb, var(--panel-soft) 54%, transparent);
+}
+
+.text-tools-summary-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-tools-chevron {
+  width: 16px;
+  height: 16px;
+}
+
+.text-tools-chevron-down {
+  display: none;
+}
+
+.text-tools-accordion[open] .text-tools-chevron-right {
+  display: none;
+}
+
+.text-tools-accordion[open] .text-tools-chevron-down {
+  display: block;
+}
+
 .text-actions-groups {
   display: grid;
   gap: 8px;
@@ -1165,11 +1244,33 @@ button.calc-history-remove-btn:hover {
   gap: 6px;
 }
 
+.text-encoding-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+#text-save-encoding {
+  min-height: 36px;
+  padding: 7px 10px;
+  font-size: 0.8rem;
+}
+
+#text-save-btn {
+  min-width: 76px;
+}
+
 .text-find-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 6px;
   align-items: center;
+}
+
+.text-find-row input {
+  min-height: 36px;
+  padding: 7px 10px;
+  font-size: 0.8rem;
 }
 
 .text-find-options {
@@ -1471,6 +1572,15 @@ textarea {
   .text-find-row,
   .text-find-row:last-of-type {
     grid-template-columns: 1fr;
+  }
+
+  .text-encoding-row {
+    grid-template-columns: 1fr;
+  }
+
+  #page-text #text-input {
+    aspect-ratio: 1 / 1;
+    min-height: 0;
   }
 
   .world-time-add-row,

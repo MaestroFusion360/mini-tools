@@ -382,8 +382,19 @@ function applyCalendarTranslations() {
 
   const prevBtn = byId("calendar-prev-btn");
   const nextBtn = byId("calendar-next-btn");
-  if (prevBtn) prevBtn.title = t("calendarPrev");
-  if (nextBtn) nextBtn.title = t("calendarNext");
+  if (prevBtn) {
+    prevBtn.title = t("calendarPrev");
+    prevBtn.setAttribute("aria-label", t("calendarPrev"));
+  }
+  if (nextBtn) {
+    nextBtn.title = t("calendarNext");
+    nextBtn.setAttribute("aria-label", t("calendarNext"));
+  }
+  const swapBtn = byId("calendar-swap-btn");
+  if (swapBtn) {
+    swapBtn.title = "Swap dates";
+    swapBtn.setAttribute("aria-label", "Swap dates");
+  }
 
   calcDateDiff();
 }
