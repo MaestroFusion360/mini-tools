@@ -14,6 +14,8 @@ calculator, text editor/analysis, and currency conversion.
   - [🧭 Project Structure](#-project-structure)
   - [⚡ Quick Start](#-quick-start)
   - [🧪 Testing](#-testing)
+  - [🧭 Playwright Layout Testing](#-playwright-layout-testing)
+  - [📍 Geolocation Notes (Chrome/Firefox)](#-geolocation-notes-chromefirefox)
   - [🌐 External APIs](#-external-apis)
   - [📄 License](#-license)
 
@@ -158,6 +160,46 @@ Run tests in watch mode:
 ```bash
 npm run test:watch
 ```
+
+## 🧭 Playwright Layout Testing
+
+This project includes Playwright layout smoke tests for multiple viewport sizes.
+
+Install browser binaries once:
+
+```bash
+npx playwright install chromium
+```
+
+Run layout tests:
+
+```bash
+npm run test:layout
+```
+
+Open HTML report:
+
+```bash
+npx playwright show-report
+```
+
+Run with visible browser (headed mode):
+
+```bash
+npx playwright test --headed
+```
+
+## 📍 Geolocation Notes (Chrome/Firefox)
+
+If geolocation works in Firefox but fails in Chrome, check:
+
+1. Site permission in Chrome (`Allow` for Location).
+2. Secure context (`https://`, `http://localhost`, or `http://127.0.0.1`).
+3. OS-level location access (Windows Privacy -> Location).
+4. DevTools sensor overrides (disable forced location).
+5. Cached permission state (reset site settings and reload).
+
+The app already handles denied/failed location and supports manual coordinates as fallback.
 
 ## 🌐 External APIs
 
