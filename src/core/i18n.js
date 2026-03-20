@@ -73,13 +73,33 @@ export function applyTranslations() {
   setControlTooltip("paint-save-btn", t("paintSavePng"));
   setControlTooltip("paint-undo-btn", t("paintUndo"));
   setControlTooltip("paint-redo-btn", t("paintRedo"));
+  setControlTooltip("paint-copy-btn", t("paintCopy"));
+  setControlTooltip("paint-paste-btn", t("paintPaste"));
   setControlTooltip("paint-clear-btn", t("paintClear"));
   setControlTooltip("paint-fullscreen-btn", t("paintFullscreen"));
+  setControlTooltip("paint-panel-filters-btn", t("paintFilters"));
+  setControlTooltip("paint-panel-shapes-btn", t("paintShapes"));
+  setControlTooltip("paint-select-btn", t("paintSelect"));
+  setControlTooltip("paint-panel-zoom-btn", t("paintZoomPanel"));
+  setControlTooltip("paint-grid-btn", t("paintGrid"));
   setControlTooltip("paint-panel-draw-btn", t("paint"));
   setControlTooltip("paint-panel-resize-btn", t("paintResize"));
   setControlTooltip("paint-panel-crop-btn", t("paintCrop"));
   setControlTooltip("paint-panel-rotate-btn", t("paintRotate"));
   setControlTooltip("paint-panel-mirror-btn", t("paintMirror"));
+  setControlTooltip("paint-tool-brush-btn", t("paintToolBrush"));
+  setControlTooltip("paint-tool-eraser-btn", t("paintToolEraser"));
+  setControlTooltip("paint-tool-text-btn", t("paintToolText"));
+  setControlTooltip("paint-text-fonts-btn", t("paintFonts"));
+  setControlTooltip("paint-tool-pipette-btn", t("paintPipette"));
+  setControlTooltip("paint-tool-fill-btn", t("paintFill"));
+  setControlTooltip("paint-shape-rect-btn", t("paintShapeRect"));
+  setControlTooltip("paint-shape-ellipse-btn", t("paintShapeEllipse"));
+  setControlTooltip("paint-shape-line-btn", t("paintShapeLine"));
+  setControlTooltip("paint-shape-spline-btn", t("paintShapeSpline"));
+  setControlTooltip("paint-zoom-in-btn", t("paintZoomIn"));
+  setControlTooltip("paint-zoom-out-btn", t("paintZoomOut"));
+  setControlTooltip("paint-zoom-reset-btn", t("paintZoomReset"));
   setText("paint-tool-brush", t("paintToolBrush"));
   setText("paint-tool-eraser", t("paintToolEraser"));
   setText("paint-tool-text", t("paintToolText"));
@@ -110,7 +130,7 @@ export function applyTranslations() {
   const langBtn = document.getElementById("lang-toggle");
   if (langBtn) {
     langBtn.textContent = currentLang === "ru" ? "RU" : "EN";
-    langBtn.title = currentLang === "ru" ? "Язык" : "Language";
+        langBtn.title = t("languageLabel");
   }
 
   translationAppliers.forEach((fn) => fn());

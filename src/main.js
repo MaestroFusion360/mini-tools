@@ -46,14 +46,26 @@ import {
 } from "./features/media-player.js";
 import {
   initPaint,
+  paintApplyFilters,
   paintApplyCrop,
+  paintCopySelection,
   paintApplyMirror,
   paintApplyResize,
   paintApplyRotate,
   paintClearCanvas,
+  paintPasteClipboard,
   paintOpenFileDialog,
+  paintResetFilters,
+  paintSelectShape,
+  paintSetTool,
+  paintToggleFontPanel,
+  paintToggleGrid,
+  paintToggleSelectionTool,
   paintToggleFullscreen,
   paintTogglePanel,
+  paintZoomIn,
+  paintZoomOut,
+  paintZoomReset,
   paintRedo,
   paintSaveImage,
   paintUndo,
@@ -163,6 +175,18 @@ function exposeGlobals() {
     paintOpenFileDialog,
     paintToggleFullscreen,
     paintTogglePanel,
+    paintApplyFilters,
+    paintResetFilters,
+    paintSelectShape,
+    paintSetTool,
+    paintToggleFontPanel,
+    paintZoomIn,
+    paintZoomOut,
+    paintZoomReset,
+    paintToggleGrid,
+    paintToggleSelectionTool,
+    paintCopySelection,
+    paintPasteClipboard,
     paintSaveImage,
     paintUndo,
     paintRedo,
@@ -183,12 +207,21 @@ async function loadAppTemplate() {
   const appRoot = document.getElementById("app-root");
   if (!appRoot) throw new Error("Missing #app-root container");
 
-  const response = await fetch("./src/app.html", { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Failed to load app template: ${response.status}`);
+  const [iconsResponse, appResponse] = await Promise.all([
+    fetch("./src/icons.html", { cache: "no-store" }),
+    fetch("./src/app.html", { cache: "no-store" }),
+  ]);
+  if (!iconsResponse.ok) {
+    throw new Error(`Failed to load icons template: ${iconsResponse.status}`);
   }
-
-  appRoot.innerHTML = await response.text();
+  if (!appResponse.ok) {
+    throw new Error(`Failed to load app template: ${appResponse.status}`);
+  }
+  const [iconsHtml, appHtml] = await Promise.all([
+    iconsResponse.text(),
+    appResponse.text(),
+  ]);
+  appRoot.innerHTML = `${iconsHtml}\n${appHtml}`;
 }
 
 async function initApp() {
