@@ -74,6 +74,7 @@ export function applyTranslations() {
   setControlTooltip("paint-undo-btn", t("paintUndo"));
   setControlTooltip("paint-redo-btn", t("paintRedo"));
   setControlTooltip("paint-clear-btn", t("paintClear"));
+  setControlTooltip("paint-fullscreen-btn", t("paintFullscreen"));
   setControlTooltip("paint-panel-draw-btn", t("paint"));
   setControlTooltip("paint-panel-resize-btn", t("paintResize"));
   setControlTooltip("paint-panel-crop-btn", t("paintCrop"));

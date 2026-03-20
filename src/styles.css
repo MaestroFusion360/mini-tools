@@ -1404,6 +1404,24 @@ textarea {
 }
 
 /* ===== Paint & Media ===== */
+#page-paint.active {
+  align-items: stretch;
+  gap: 10px;
+  min-height: calc(100vh - 130px);
+}
+
+#page-paint.active > .header {
+  width: 100%;
+}
+
+#page-paint .paint-controls {
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .paint-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -1422,6 +1440,11 @@ textarea {
 }
 
 .paint-toolbar-actions .toolbar-icon-btn[id^="paint-panel-"].active {
+  border-color: color-mix(in srgb, var(--accent) 58%, var(--border));
+  background: color-mix(in srgb, var(--panel-strong) 86%, transparent);
+}
+
+.paint-toolbar-actions .toolbar-icon-btn#paint-fullscreen-btn.active {
   border-color: color-mix(in srgb, var(--accent) 58%, var(--border));
   background: color-mix(in srgb, var(--panel-strong) 86%, transparent);
 }
@@ -1456,12 +1479,16 @@ textarea {
   padding: 8px;
   overflow: auto;
   width: min(100%, var(--content-max));
+  flex: 0 0 auto;
+  min-height: 0;
   margin-inline: auto;
 }
 
 #paint-canvas {
   display: block;
-  max-width: none;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
   touch-action: none;
   border-radius: 10px;
   border: 1px solid color-mix(in srgb, var(--border) 86%, transparent);
@@ -1471,6 +1498,53 @@ textarea {
     linear-gradient(-45deg, rgba(0, 0, 0, 0.04) 25%, transparent 25%) 0 0/16px
       16px,
     #fff;
+}
+
+#page-paint:fullscreen,
+#page-paint:-webkit-full-screen {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  margin: 0;
+  background: var(--bg);
+}
+
+#page-paint:fullscreen.active,
+#page-paint:-webkit-full-screen.active {
+  min-height: 100%;
+}
+
+#page-paint:fullscreen > .header,
+#page-paint:-webkit-full-screen > .header,
+#page-paint:fullscreen > .paint-controls,
+#page-paint:-webkit-full-screen > .paint-controls,
+#page-paint:fullscreen > .paint-canvas-wrap,
+#page-paint:-webkit-full-screen > .paint-canvas-wrap {
+  width: 100%;
+  max-width: none;
+}
+
+#page-paint:fullscreen .back-btn,
+#page-paint:-webkit-full-screen .back-btn {
+  display: none;
+}
+
+#page-paint:fullscreen > .paint-canvas-wrap,
+#page-paint:-webkit-full-screen > .paint-canvas-wrap {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#page-paint:fullscreen #paint-canvas,
+#page-paint:-webkit-full-screen #paint-canvas {
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+  margin: auto;
 }
 
 .media-player {

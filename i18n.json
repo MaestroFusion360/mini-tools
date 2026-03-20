@@ -253,7 +253,8 @@
     "mediaNoFileSelected": "No file selected",
     "mediaNowPlaying": "Now playing",
     "mediaPlaylistEmpty": "Playlist is empty",
-    "paintRedo": "Redo"
+    "paintRedo": "Redo",
+    "paintFullscreen": "Fullscreen"
   },
   "ru": {
     "back": "Назад",
@@ -509,6 +510,7 @@
     "mediaNoFileSelected": "Файл не выбран",
     "mediaNowPlaying": "Сейчас играет",
     "mediaPlaylistEmpty": "Плейлист пуст",
-    "paintRedo": "Повторить"
+    "paintRedo": "Повторить",
+    "paintFullscreen": "На весь экран"
   }
 }

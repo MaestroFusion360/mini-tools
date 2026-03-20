@@ -22,6 +22,68 @@ function getCtx() {
   return canvas ? canvas.getContext("2d") : null;
 }
 
+function getPage() {
+  return byId("page-paint");
+}
+
+function getFullscreenButton() {
+  return byId("paint-fullscreen-btn");
+}
+
+function getFullscreenElement() {
+  const doc = document;
+  return doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
+}
+
+function isPaintFullscreen() {
+  const page = getPage();
+  const fullscreenElement = getFullscreenElement();
+  if (!page || !fullscreenElement) return false;
+  return fullscreenElement === page || page.contains(fullscreenElement);
+}
+
+function updateFullscreenUi() {
+  const button = getFullscreenButton();
+  if (!button) return;
+  const isActive = isPaintFullscreen();
+  button.classList.toggle("active", isActive);
+  button.setAttribute("aria-pressed", isActive ? "true" : "false");
+}
+
+function handlePaintFullscreenChange() {
+  updateFullscreenUi();
+}
+
+async function requestElementFullscreen(element) {
+  if (!element) return;
+  if (typeof element.requestFullscreen === "function") {
+    await element.requestFullscreen();
+    return;
+  }
+  if (typeof element.webkitRequestFullscreen === "function") {
+    element.webkitRequestFullscreen();
+    return;
+  }
+  if (typeof element.msRequestFullscreen === "function") {
+    element.msRequestFullscreen();
+  }
+}
+
+async function exitAnyFullscreen() {
+  const doc = document;
+  if (typeof doc.exitFullscreen === "function") {
+    await doc.exitFullscreen();
+    return;
+  }
+  if (typeof doc.webkitExitFullscreen === "function") {
+    doc.webkitExitFullscreen();
+    return;
+  }
+  if (typeof doc.msExitFullscreen === "function") {
+    doc.msExitFullscreen();
+  }
+}
+
 function getTool() {
   return byId("paint-tool")?.value || "brush";
 }
@@ -217,6 +279,22 @@ export function paintTogglePanel(panel) {
   updatePanelUi();
 }
 
+export async function paintToggleFullscreen() {
+  const page = getPage();
+  if (!page) return;
+  try {
+    if (isPaintFullscreen()) {
+      await exitAnyFullscreen();
+    } else {
+      await requestElementFullscreen(page);
+    }
+  } catch {
+    // Fullscreen can be blocked by browser policy/user settings.
+  } finally {
+    updateFullscreenUi();
+  }
+}
+
 export function paintSaveImage() {
   const canvas = getCanvas();
   if (!canvas) return;
@@ -352,5 +430,10 @@ export function initPaint() {
     });
   }
 
+  document.addEventListener("fullscreenchange", handlePaintFullscreenChange);
+  document.addEventListener("webkitfullscreenchange", handlePaintFullscreenChange);
+  document.addEventListener("msfullscreenchange", handlePaintFullscreenChange);
+
   updatePanelUi();
+  handlePaintFullscreenChange();
 }

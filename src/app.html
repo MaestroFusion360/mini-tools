@@ -236,6 +236,13 @@
     <path d="M9 3h3" />
     <rect x="3" y="11" width="10" height="10" rx="1" />
   </symbol>
+  <symbol id="i-fullscreen" viewBox="0 0 24 24">
+    <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+    <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+    <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+    <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+    <rect width="10" height="8" x="7" y="8" rx="1" />
+  </symbol>
 </svg>
 <div class="container" id="app">
   <!-- MENU -->
@@ -354,7 +361,7 @@
     <div class="header">
       <button
         class="back-btn"
-        onclick="showPage('page-menu')"
+        onclick="paintBackToMenu()"
         data-i18n="back-btn"
       >
         Back
@@ -1528,13 +1535,13 @@
       <h2 id="title-paint">Paint</h2>
     </div>
 
-    <div class="card">
-      <input
-        type="file"
-        id="paint-open-input"
-        accept="image/*"
-        class="visually-hidden"
-      />
+    <input
+      type="file"
+      id="paint-open-input"
+      accept="image/*"
+      class="visually-hidden"
+    />
+    <div class="paint-controls">
       <div class="paint-toolbar paint-toolbar-actions">
         <button
           type="button"
@@ -1575,6 +1582,14 @@
           onclick="paintClearCanvas()"
         >
           <svg class="icon-svg btn-icon"><use href="#i-trash"></use></svg>
+        </button>
+        <button
+          type="button"
+          class="text-action-btn toolbar-icon-btn"
+          id="paint-fullscreen-btn"
+          onclick="paintToggleFullscreen()"
+        >
+          <svg class="icon-svg btn-icon"><use href="#i-fullscreen"></use></svg>
         </button>
         <button
           type="button"
