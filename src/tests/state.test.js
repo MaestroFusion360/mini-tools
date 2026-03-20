@@ -1,10 +1,10 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import {
   getStored,
   getStoredJson,
   setStored,
   setStoredJson,
-} from "../src/core/state.js";
+} from "../core/state.js";
 
 describe("state storage helpers", () => {
   it("stores and reads plain values", () => {
@@ -22,3 +22,4 @@ describe("state storage helpers", () => {
     expect(getStoredJson("bad", [])).toEqual([]);
   });
 });
+

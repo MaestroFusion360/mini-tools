@@ -87,10 +87,11 @@ calculator, text editor/analysis, and currency conversion.
 ```text
 mini-tools/
 ├── index.html
-├── styles.css
 ├── i18n.json
 ├── src/
+│   ├── app.html
 │   ├── main.js
+│   ├── styles.css
 │   ├── core/
 │   │   ├── state.js
 │   │   ├── dom.js

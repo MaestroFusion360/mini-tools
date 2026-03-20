@@ -1,9 +1,13 @@
-const CACHE_NAME = "mobile-tools-v9";
+const CACHE_NAME = "mobile-tools-v2";
 
-const PRECACHE_URLS = [
+// App shell files required to render the UI offline.
+const APP_SHELL_PATHS = [
   "./",
   "./index.html",
-  "./styles.css",
+  "./src/styles.css",
+  "./src/app.html",
+  "./i18n.json",
+  "./manifest.webmanifest",
   "./src/main.js",
   "./src/core/state.js",
   "./src/core/dom.js",
@@ -21,19 +25,22 @@ const PRECACHE_URLS = [
   "./src/features/calculator.js",
   "./src/features/text-tools.js",
   "./src/features/currency.js",
-  "./i18n.json",
-  "./manifest.webmanifest",
   "./assets/favicon.ico",
   "./assets/apple-touch-icon.png",
   "./assets/icon-192x192.png",
   "./assets/icon-512x512.png",
+  "./assets/icon.svg",
 ];
+
+const APP_SHELL_ABSOLUTE = APP_SHELL_PATHS.map(
+  (path) => new URL(path, self.registration.scope).href,
+);
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then((cache) => cache.addAll(APP_SHELL_PATHS))
       .then(() => self.skipWaiting()),
   );
 });
@@ -42,91 +49,87 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((names) =>
+      .then((cacheNames) =>
         Promise.all(
-          names
-            .filter((name) => name !== CACHE_NAME)
-            .map((name) => caches.delete(name)),
+          cacheNames
+            .filter((cacheName) => cacheName !== CACHE_NAME)
+            .map((cacheName) => caches.delete(cacheName)),
         ),
       )
       .then(() => self.clients.claim()),
   );
 });
 
+function isAppShellRequest(request) {
+  if (request.mode === "navigate") return true;
+  if (request.method !== "GET") return false;
+  return APP_SHELL_ABSOLUTE.includes(request.url);
+}
+
+async function networkFirst(request) {
+  const cache = await caches.open(CACHE_NAME);
+
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      await cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  } catch {
+    const cachedResponse = await cache.match(request);
+    if (cachedResponse) return cachedResponse;
+
+    if (request.mode === "navigate") {
+      const fallback = await cache.match("./index.html");
+      if (fallback) return fallback;
+    }
+
+    return new Response("Offline", {
+      status: 503,
+      statusText: "Offline",
+    });
+  }
+}
+
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cachedResponse = await cache.match(request);
+
+  const networkPromise = fetch(request)
+    .then((networkResponse) => {
+      if (networkResponse.ok) {
+        cache.put(request, networkResponse.clone());
+      }
+      return networkResponse;
+    })
+    .catch(() => null);
+
+  if (cachedResponse) return cachedResponse;
+
+  const networkResponse = await networkPromise;
+  return (
+    networkResponse ||
+    new Response("Offline", {
+      status: 503,
+      statusText: "Offline",
+    })
+  );
+}
+
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+  const { request } = event;
+  if (request.method !== "GET") return;
 
-  const url = new URL(event.request.url);
+  const url = new URL(request.url);
   const sameOrigin = url.origin === self.location.origin;
-  const appScriptPaths = [
-    "/src/main.js",
-    "/src/core/state.js",
-    "/src/core/dom.js",
-    "/src/core/utils.js",
-    "/src/core/i18n.js",
-    "/src/core/theme.js",
-    "/src/core/navigation.js",
-    "/src/core/pwa.js",
-    "/src/features/weather.js",
-    "/src/features/world-time.js",
-    "/src/features/timer.js",
-    "/src/features/stopwatch.js",
-    "/src/features/calendar.js",
-    "/src/features/converter.js",
-    "/src/features/calculator.js",
-    "/src/features/text-tools.js",
-    "/src/features/currency.js",
-  ];
-  const isAppShellRequest =
-    event.request.mode === "navigate" ||
-    (sameOrigin &&
-      (url.pathname.endsWith("/index.html") ||
-        url.pathname.endsWith("/styles.css") ||
-        url.pathname.endsWith("/i18n.json") ||
-        appScriptPaths.some((path) => url.pathname.endsWith(path))));
 
-  if (isAppShellRequest) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          if (response && response.status === 200 && sameOrigin) {
-            const clone = response.clone();
-            caches
-              .open(CACHE_NAME)
-              .then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => caches.match(event.request)),
-    );
+  // Keep third-party API requests live-only to avoid stale external data in cache.
+  if (!sameOrigin) return;
+
+  if (isAppShellRequest(request)) {
+    event.respondWith(networkFirst(request));
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(event.request)
-        .then((response) => {
-          if (
-            response &&
-            response.status === 200 &&
-            (response.type === "basic" || response.type === "cors")
-          ) {
-            const clone = response.clone();
-            caches
-              .open(CACHE_NAME)
-              .then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(
-          () =>
-            new Response("Offline", {
-              status: 503,
-              statusText: "Offline",
-            }),
-        );
-    }),
-  );
+  event.respondWith(staleWhileRevalidate(request));
 });

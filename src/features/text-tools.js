@@ -202,10 +202,12 @@ function findMatchRanges(text, query, options) {
   if (!query) return [];
   if (!options.caseSensitive && !options.wholeWord) {
     const normalizedQuery = query.toLocaleLowerCase();
-    return findAllIndices(text.toLocaleLowerCase(), normalizedQuery).map((start) => ({
-      start,
-      length: query.length,
-    }));
+    return findAllIndices(text.toLocaleLowerCase(), normalizedQuery).map(
+      (start) => ({
+        start,
+        length: query.length,
+      }),
+    );
   }
 
   const pattern = options.wholeWord
@@ -247,9 +249,7 @@ function runFind(query, next = false) {
     textFindState.sourceText !== text ||
     textFindState.optionsKey !== optionsKey;
 
-  if (
-    stateChanged
-  ) {
+  if (stateChanged) {
     textFindState = {
       query: normalizedQuery,
       sourceText: text,
@@ -264,9 +264,13 @@ function runFind(query, next = false) {
     return;
   }
 
-  const shouldAdvance = next || (!stateChanged && textFindState.activeIndex >= 0);
+  const shouldAdvance =
+    next || (!stateChanged && textFindState.activeIndex >= 0);
   if (shouldAdvance) {
-    if (!options.wrap && textFindState.activeIndex >= textFindState.matches.length - 1) {
+    if (
+      !options.wrap &&
+      textFindState.activeIndex >= textFindState.matches.length - 1
+    ) {
       setFindStatus(t("textSearchEnd"));
       return;
     }

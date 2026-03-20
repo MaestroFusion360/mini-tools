@@ -137,7 +137,20 @@ function exposeGlobals() {
   });
 }
 
+async function loadAppTemplate() {
+  const appRoot = document.getElementById("app-root");
+  if (!appRoot) throw new Error("Missing #app-root container");
+
+  const response = await fetch("./src/app.html", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Failed to load app template: ${response.status}`);
+  }
+
+  appRoot.innerHTML = await response.text();
+}
+
 async function initApp() {
+  await loadAppTemplate();
   initTheme();
   await initI18n();
   exposeGlobals();
