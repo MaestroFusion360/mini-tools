@@ -130,7 +130,16 @@ export function applyTranslations() {
   const langBtn = document.getElementById("lang-toggle");
   if (langBtn) {
     langBtn.textContent = currentLang === "ru" ? "RU" : "EN";
-        langBtn.title = t("languageLabel");
+    const langLabel = t("languageLabel");
+    langBtn.title = langLabel;
+    langBtn.setAttribute("aria-label", langLabel);
+  }
+
+  const themeBtn = document.getElementById("theme-toggle");
+  if (themeBtn) {
+    const themeLabel = t("themeToggleLabel");
+    themeBtn.title = themeLabel;
+    themeBtn.setAttribute("aria-label", themeLabel);
   }
 
   translationAppliers.forEach((fn) => fn());

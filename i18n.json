@@ -154,6 +154,8 @@
     "calcMemoryAdd": "M+",
     "calcMemorySubtract": "M-",
     "calcClearHistory": "Clear",
+    "calcError": "Error",
+    "removeHistoryItem": "Remove history item",
     "relationForward": "from first to second",
     "relationReverse": "from second to first",
     "dayShort": "days",
@@ -272,7 +274,8 @@
     "paintZoomIn": "Zoom in",
     "paintZoomOut": "Zoom out",
     "paintZoomReset": "Reset zoom",
-    "languageLabel": "Language"
+    "languageLabel": "Language",
+    "themeToggleLabel": "Toggle theme"
   },
   "ru": {
     "back": "Назад",
@@ -429,6 +432,8 @@
     "calcMemoryAdd": "M+",
     "calcMemorySubtract": "M-",
     "calcClearHistory": "Очистить",
+    "calcError": "Ошибка",
+    "removeHistoryItem": "Удалить запись истории",
     "relationForward": "от первой до второй",
     "relationReverse": "от второй до первой",
     "dayShort": "дн",
@@ -547,6 +552,7 @@
     "paintZoomIn": "Увеличить",
     "paintZoomOut": "Уменьшить",
     "paintZoomReset": "Сбросить масштаб",
-    "languageLabel": "Язык"
+    "languageLabel": "Язык",
+    "themeToggleLabel": "Переключить тему"
   }
 }

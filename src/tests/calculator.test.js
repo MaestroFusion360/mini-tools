@@ -11,6 +11,7 @@ import {
   calcMemoryRecall,
   calcMemorySubtract,
   calcRemoveHistoryAt,
+  calcToggleSign,
   toggleCalcMode,
   initCalculator,
 } from "../features/calculator.js";
@@ -98,7 +99,7 @@ describe("calculator basics", () => {
     calcClear();
     calcInput("171");
     calcFunction("fact");
-    expect(document.getElementById("calc-display")?.textContent).toBe("0");
+    expect(document.getElementById("calc-display")?.textContent).toBe("Error");
   });
 
   it("supports percent and bracketed expressions", () => {
@@ -116,6 +117,18 @@ describe("calculator basics", () => {
     expect(document.getElementById("calc-display")?.textContent).toBe("10");
   });
 
+  it("uses calculator-style percent for addition", () => {
+    calcInput("2");
+    calcInput("0");
+    calcInput("0");
+    calcInput("+");
+    calcInput("1");
+    calcInput("0");
+    calcInput("%");
+    calcEquals();
+    expect(document.getElementById("calc-display")?.textContent).toBe("220");
+  });
+
   it("supports Math constants from scientific keypad", () => {
     calcInput("Math.PI");
     calcInput("+");
@@ -127,13 +140,22 @@ describe("calculator basics", () => {
     expect(Math.abs(result - (Math.PI + Math.E))).toBeLessThan(1e-12);
   });
 
-  it("resets result on malformed expression", () => {
+  it("shows Error on malformed expression", () => {
     calcInput("(");
     calcInput("2");
     calcInput("+");
     calcInput("2");
     calcEquals();
-    expect(document.getElementById("calc-display")?.textContent).toBe("0");
+    expect(document.getElementById("calc-display")?.textContent).toBe("Error");
+  });
+
+  it("toggle sign applies to the last operand", () => {
+    calcInput("2");
+    calcInput("+");
+    calcInput("3");
+    calcToggleSign();
+    calcEquals();
+    expect(document.getElementById("calc-display")?.textContent).toBe("-1");
   });
 
   it("backspace falls back to zero for single char", () => {

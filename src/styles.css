@@ -1714,7 +1714,14 @@ textarea {
 .theme-toggle,
 .lang-toggle {
   width: 42px;
+  min-width: 42px;
+  max-width: 42px;
   height: 42px;
+  min-height: 42px;
+  max-height: 42px;
+  padding: 0;
+  aspect-ratio: 1 / 1;
+  line-height: 1;
   border-radius: 999px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-md);
@@ -1884,6 +1891,191 @@ textarea {
 
   .floating-actions {
     right: 12px;
+  }
+}
+
+@media (max-width: 400px) and (max-height: 620px) {
+  body {
+    padding: 10px 8px 8px;
+  }
+
+  .container {
+    padding-bottom: 56px;
+  }
+
+  #page-menu.active {
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  #page-menu.active > .header {
+    margin-bottom: 8px;
+  }
+
+  #page-menu .menu-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+
+  #page-menu .menu-btn {
+    min-height: 44px;
+    padding: 8px 6px;
+    font-size: 0.8rem;
+    border-radius: 12px;
+    gap: 6px;
+  }
+
+  #page-menu .menu-icon {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+  }
+
+  #page-converter.active {
+    gap: 8px;
+  }
+
+  #page-converter.active > .header {
+    margin-bottom: 8px;
+  }
+
+  #page-converter .card {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  #page-converter select,
+  #page-converter input {
+    min-height: 34px;
+    padding: 7px 8px;
+    font-size: 0.84rem;
+  }
+
+  #page-converter .converter-precision-row {
+    gap: 4px 8px;
+  }
+
+  #page-converter .converter-row {
+    grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  #page-converter #conv-swap-btn {
+    width: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0;
+  }
+
+  #page-converter .converter-presets {
+    gap: 4px;
+  }
+
+  #page-converter .preset-chip {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+
+  #page-converter #conv-result {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  #page-calc.active {
+    gap: 8px;
+  }
+
+  #page-calc.active > .header {
+    margin-bottom: 4px;
+  }
+
+  #page-calc .card {
+    padding: 8px;
+    gap: 4px;
+  }
+
+  #page-calc .result {
+    padding: 6px 8px;
+  }
+
+  #page-calc .result-large {
+    font-size: clamp(1.3rem, 7vw, 1.7rem);
+  }
+
+  .calc-expression-preview,
+  .calc-mode-row,
+  .calc-memory-row,
+  .calc-history-title {
+    margin-bottom: 0;
+  }
+
+  .calc-grid {
+    gap: 3px;
+  }
+
+  .calc-btn {
+    min-height: 38px;
+    font-size: 0.86rem;
+    border-radius: 9px;
+  }
+
+  .calc-btn.scientific {
+    font-size: 0.74rem;
+  }
+
+  .calc-history {
+    max-height: 34px;
+    padding: 4px;
+    font-size: 0.72rem;
+  }
+
+  #page-calc button {
+    min-height: 34px;
+    padding: 6px 8px;
+  }
+
+  .icon-btn {
+    min-width: 40px;
+    min-height: 40px;
+    padding: 7px 10px;
+  }
+
+  .toolbar-icon-btn {
+    width: 38px;
+    min-width: 38px;
+    min-height: 32px;
+  }
+
+  .btn-icon {
+    width: 15px;
+    height: 15px;
+    flex: 0 0 15px;
+  }
+
+  .theme-toggle,
+  .lang-toggle {
+    width: 34px;
+    min-width: 34px;
+    max-width: 34px;
+    height: 34px;
+    min-height: 34px;
+    max-height: 34px;
+    padding: 0;
+    aspect-ratio: 1 / 1;
+    line-height: 1;
+    font-size: 0.82rem;
+  }
+
+  .theme-toggle-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .app-footer {
+    font-size: 0.68rem;
+    bottom: 4px;
+    padding: 2px 8px;
   }
 }
 
