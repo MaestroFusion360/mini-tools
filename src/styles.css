@@ -1404,22 +1404,39 @@ textarea {
 }
 
 /* ===== Paint & Media ===== */
+body.paint-page-active .container {
+  max-width: min(100vw - 24px, 1480px);
+}
+
 #page-paint.active {
   align-items: stretch;
   gap: 10px;
-  min-height: calc(100vh - 130px);
+  min-height: calc(100vh - 128px);
 }
 
 #page-paint.active > .header {
   width: 100%;
 }
 
+#page-paint {
+  --paint-control-size: 44px;
+}
+
 #page-paint .paint-controls {
-  width: min(100%, var(--content-max));
-  margin-inline: auto;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  position: relative;
+  z-index: 5;
+}
+
+#page-paint .paint-controls :is(button, input, select) {
+  min-height: var(--paint-control-size);
+}
+
+.paint-top-hover-zone {
+  display: none;
 }
 
 .paint-toolbar {
@@ -1437,7 +1454,13 @@ textarea {
 .paint-toolbar-actions {
   flex-wrap: nowrap;
   overflow-x: auto;
-  padding-bottom: 2px;
+  overflow-y: hidden;
+  padding: 2px 0 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.paint-toolbar-main {
+  flex-wrap: nowrap;
 }
 
 .paint-toolbar-actions .toolbar-icon-btn[id^="paint-panel-"].active {
@@ -1460,16 +1483,19 @@ textarea {
 }
 
 .toolbar-icon-btn {
-  width: 44px;
-  min-width: 44px;
-  min-height: 36px;
+  width: var(--paint-control-size);
+  min-width: var(--paint-control-size);
+  height: var(--paint-control-size);
+  min-height: var(--paint-control-size);
   padding: 0;
 }
 
 #paint-color,
 #paint-back-color {
-  height: 44px;
-  min-height: 44px;
+  width: var(--paint-control-size);
+  min-width: var(--paint-control-size);
+  height: var(--paint-control-size);
+  min-height: var(--paint-control-size);
   padding: 4px;
   cursor: pointer;
 }
@@ -1493,10 +1519,65 @@ textarea {
   align-items: end;
 }
 
+.paint-toolbar-main .paint-common-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 0;
+  margin-left: 4px;
+  flex: 0 0 auto;
+}
+
+.paint-toolbar-main .paint-common-controls .paint-field {
+  gap: 0;
+}
+
+.paint-toolbar-main .paint-common-controls .paint-field > span {
+  display: none;
+}
+
+.paint-toolbar-main #paint-color,
+.paint-toolbar-main #paint-back-color {
+  width: var(--paint-control-size);
+  min-width: var(--paint-control-size);
+  height: var(--paint-control-size);
+  min-height: var(--paint-control-size);
+  border-radius: 10px;
+  padding: 2px;
+}
+
+.paint-toolbar-main #paint-size {
+  width: 76px;
+  min-width: 76px;
+  height: var(--paint-control-size);
+  min-height: var(--paint-control-size);
+  padding: 0 8px;
+  text-align: center;
+}
+
 .paint-text-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 240px) auto;
   gap: 8px;
+  align-items: end;
+}
+
+.paint-text-controls .paint-field-full {
+  grid-column: auto;
+}
+
+.paint-text-style-controls {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  align-self: end;
+}
+
+.paint-text-style-controls .toolbar-icon-btn {
+  width: var(--paint-control-size);
+  min-width: var(--paint-control-size);
+  height: var(--paint-control-size);
+  min-height: var(--paint-control-size);
 }
 
 .paint-field {
@@ -1523,6 +1604,11 @@ textarea {
 
 .paint-filters-grid {
   grid-template-columns: 1fr;
+  justify-content: start;
+}
+
+.paint-filters-grid > * {
+  width: min(100%, 360px);
 }
 
 .paint-range-control {
@@ -1530,6 +1616,7 @@ textarea {
   grid-template-columns: 28px 1fr;
   gap: 8px;
   align-items: center;
+  min-height: var(--paint-control-size);
 }
 
 .paint-range-control > span {
@@ -1540,6 +1627,8 @@ textarea {
 
 .paint-range-control input[type="range"] {
   width: 100%;
+  height: var(--paint-control-size);
+  padding: 0;
 }
 
 .paint-zoom-label {
@@ -1549,6 +1638,7 @@ textarea {
   color: var(--text-muted);
   font-weight: 700;
   white-space: nowrap;
+  min-height: var(--paint-control-size);
 }
 
 .paint-canvas-wrap {
@@ -1557,10 +1647,9 @@ textarea {
   background: color-mix(in srgb, var(--panel-soft) 90%, transparent);
   padding: 8px;
   overflow: auto;
-  width: min(100%, var(--content-max));
-  flex: 0 0 auto;
+  width: 100%;
+  flex: 1 1 auto;
   min-height: 0;
-  margin-inline: auto;
   position: relative;
 }
 
@@ -1606,51 +1695,83 @@ textarea {
   background: color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
-#page-paint:fullscreen,
-#page-paint:-webkit-full-screen {
-  width: 100%;
-  height: 100%;
-  padding: 12px;
+#page-paint.paint-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  width: 100vw;
+  height: 100dvh;
   margin: 0;
-  background: var(--bg);
-}
-
-#page-paint:fullscreen.active,
-#page-paint:-webkit-full-screen.active {
-  min-height: 100%;
-}
-
-#page-paint:fullscreen > .header,
-#page-paint:-webkit-full-screen > .header,
-#page-paint:fullscreen > .paint-controls,
-#page-paint:-webkit-full-screen > .paint-controls,
-#page-paint:fullscreen > .paint-canvas-wrap,
-#page-paint:-webkit-full-screen > .paint-canvas-wrap {
-  width: 100%;
+  padding: 0;
   max-width: none;
+  background: var(--bg);
+  gap: 0;
 }
 
-#page-paint:fullscreen .back-btn,
-#page-paint:-webkit-full-screen .back-btn {
+#page-paint.paint-fullscreen > .header {
   display: none;
 }
 
-#page-paint:fullscreen > .paint-canvas-wrap,
-#page-paint:-webkit-full-screen > .paint-canvas-wrap {
+#page-paint.paint-fullscreen .paint-top-hover-zone {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  z-index: 20;
+}
+
+#page-paint.paint-fullscreen .paint-controls {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding: 8px 10px 10px;
+  background: color-mix(in srgb, var(--panel) 96%, transparent);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-md);
+  transform: translateY(calc(-100% + 18px));
+  opacity: 0.1;
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease;
+  z-index: 21;
+}
+
+#page-paint.paint-fullscreen .paint-top-hover-zone:hover ~ .paint-controls,
+#page-paint.paint-fullscreen .paint-controls:hover {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+#page-paint.paint-fullscreen > .paint-canvas-wrap {
+  width: 100%;
+  height: 100%;
+  max-width: none;
   min-height: 0;
-  flex: 1 1 auto;
+  border-radius: 0;
+  border: 0;
+  margin: 0;
+  padding: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-#page-paint:fullscreen #paint-canvas,
-#page-paint:-webkit-full-screen #paint-canvas {
+#page-paint.paint-fullscreen #paint-canvas {
   width: auto;
   max-width: 100%;
   max-height: 100%;
   height: auto;
   margin: auto;
+}
+
+body.paint-immersive-active .floating-actions,
+body.paint-immersive-active .app-footer {
+  display: none;
 }
 
 .media-player {
@@ -1769,8 +1890,12 @@ textarea {
 /* ===== Responsive: Mobile ===== */
 @media (max-width: 520px) {
   .paint-toolbar-actions {
-    flex-wrap: wrap;
-    overflow-x: visible;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .paint-text-controls {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   body {

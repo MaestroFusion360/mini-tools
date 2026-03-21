@@ -32,10 +32,38 @@ const paintState = {
   showGrid: false,
   clipboardSnapshot: "",
   clipboardMeta: null,
+  fullscreen: false,
+  textBold: false,
+  textItalic: false,
+  autoSizedToViewport: false,
 };
 const PAINT_PANELS = ["draw", "resize", "crop", "rotate", "mirror", "filters", "shapes", "zoom"];
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 4;
+const PAINT_DEFAULT_FONTS = [
+  "Manrope",
+  "Arial",
+  "Arial Black",
+  "Bahnschrift",
+  "Calibri",
+  "Cambria",
+  "Candara",
+  "Comic Sans MS",
+  "Consolas",
+  "Corbel",
+  "Courier",
+  "Courier New",
+  "Franklin Gothic Medium",
+  "Georgia",
+  "Impact",
+  "Lucida Console",
+  "Lucida Sans Unicode",
+  "Palatino Linotype",
+  "Segoe UI",
+  "Tahoma",
+  "Times New Roman",
+  "Verdana",
+];
 
 function getCanvas() {
   return byId("paint-canvas");
@@ -100,6 +128,25 @@ function clearSelectionIfAny() {
   }
 }
 
+function getActiveSelectionBounds(canvas = getCanvas()) {
+  if (!canvas || !paintState.selection) return null;
+  const rawX = Number(paintState.selection.x);
+  const rawY = Number(paintState.selection.y);
+  const rawW = Number(paintState.selection.w);
+  const rawH = Number(paintState.selection.h);
+  if (!Number.isFinite(rawX) || !Number.isFinite(rawY) || !Number.isFinite(rawW) || !Number.isFinite(rawH)) {
+    return null;
+  }
+  const x = Math.max(0, Math.floor(rawX));
+  const y = Math.max(0, Math.floor(rawY));
+  const w = Math.max(1, Math.floor(rawW));
+  const h = Math.max(1, Math.floor(rawH));
+  if (x >= canvas.width || y >= canvas.height) return null;
+  const clampedW = Math.max(1, Math.min(w, canvas.width - x));
+  const clampedH = Math.max(1, Math.min(h, canvas.height - y));
+  return { x, y, w: clampedW, h: clampedH };
+}
+
 function makeOffscreenFromImageData(imageData) {
   const offscreen = document.createElement("canvas");
   offscreen.width = imageData.width;
@@ -118,8 +165,12 @@ function updateZoomUi() {
   if (canvas) {
     if (isPaintFullscreen() && paintState.zoom === 1) {
       canvas.style.width = "auto";
+      canvas.style.height = "auto";
     } else {
-      canvas.style.width = `${Math.round(paintState.zoom * 100)}%`;
+      const nextWidth = Math.max(1, Math.round(canvas.width * paintState.zoom));
+      const nextHeight = Math.max(1, Math.round(canvas.height * paintState.zoom));
+      canvas.style.width = `${nextWidth}px`;
+      canvas.style.height = `${nextHeight}px`;
     }
   }
   if (label) {
@@ -185,6 +236,11 @@ function updateShapeUi() {
     ["ellipse", byId("paint-shape-ellipse-btn")],
     ["line", byId("paint-shape-line-btn")],
     ["spline", byId("paint-shape-spline-btn")],
+    ["star", byId("paint-shape-star-btn")],
+    ["arrow-up", byId("paint-shape-arrow-up-btn")],
+    ["arrow-down", byId("paint-shape-arrow-down-btn")],
+    ["arrow-left", byId("paint-shape-arrow-left-btn")],
+    ["arrow-right", byId("paint-shape-arrow-right-btn")],
   ];
   shapeButtons.forEach(([shape, button]) => {
     if (!button) return;
@@ -196,6 +252,7 @@ function updateShapeUi() {
 
 function updateToolUi() {
   const tool = getTool();
+  const showTextUi = tool === "text" && (paintState.activePanel === "" || paintState.activePanel === "draw");
   const brushBtn = byId("paint-tool-brush-btn");
   const eraserBtn = byId("paint-tool-eraser-btn");
   const textBtn = byId("paint-tool-text-btn");
@@ -204,6 +261,9 @@ function updateToolUi() {
   const textWrap = byId("paint-text-wrap");
   const fontBtn = byId("paint-text-fonts-btn");
   const fontWrap = byId("paint-font-wrap");
+  const textStyleWrap = byId("paint-text-style-wrap");
+  const textBoldBtn = byId("paint-text-bold-btn");
+  const textItalicBtn = byId("paint-text-italic-btn");
   if (brushBtn) {
     const active = tool === "brush";
     brushBtn.classList.toggle("active", active);
@@ -230,22 +290,29 @@ function updateToolUi() {
     fillBtn.setAttribute("aria-pressed", active ? "true" : "false");
   }
   if (textWrap) {
-    textWrap.classList.toggle("is-hidden", tool !== "text");
+    textWrap.classList.toggle("is-hidden", !showTextUi);
   }
   if (fontBtn) {
-    const showFontBtn = tool === "text";
-    fontBtn.classList.toggle("is-hidden", !showFontBtn);
-    if (!showFontBtn) {
-      paintState.showFontPanel = false;
-      fontBtn.classList.remove("active");
-      fontBtn.setAttribute("aria-pressed", "false");
-    } else {
-      fontBtn.classList.toggle("active", paintState.showFontPanel);
-      fontBtn.setAttribute("aria-pressed", paintState.showFontPanel ? "true" : "false");
-    }
+    paintState.showFontPanel = false;
+    fontBtn.classList.add("is-hidden");
+    fontBtn.classList.remove("active");
+    fontBtn.setAttribute("aria-pressed", "false");
   }
   if (fontWrap) {
-    fontWrap.classList.toggle("is-hidden", !(tool === "text" && paintState.showFontPanel));
+    fontWrap.classList.toggle("is-hidden", !showTextUi);
+  }
+  if (textStyleWrap) {
+    textStyleWrap.classList.toggle("is-hidden", !showTextUi);
+  }
+  if (textBoldBtn) {
+    const isActive = tool === "text" && paintState.textBold;
+    textBoldBtn.classList.toggle("active", isActive);
+    textBoldBtn.setAttribute("aria-pressed", isActive ? "true" : "false");
+  }
+  if (textItalicBtn) {
+    const isActive = tool === "text" && paintState.textItalic;
+    textItalicBtn.classList.toggle("active", isActive);
+    textItalicBtn.setAttribute("aria-pressed", isActive ? "true" : "false");
   }
 }
 
@@ -257,60 +324,43 @@ function getFullscreenButton() {
   return byId("paint-fullscreen-btn");
 }
 
-function getFullscreenElement() {
-  const doc = document;
-  return doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
-}
-
 function isPaintFullscreen() {
-  const page = getPage();
-  const fullscreenElement = getFullscreenElement();
-  if (!page || !fullscreenElement) return false;
-  return fullscreenElement === page || page.contains(fullscreenElement);
+  return paintState.fullscreen;
 }
 
 function updateFullscreenUi() {
+  const page = getPage();
   const button = getFullscreenButton();
-  if (!button) return;
   const isActive = isPaintFullscreen();
+  if (page) {
+    page.classList.toggle("paint-fullscreen", isActive);
+  }
+  document.body.classList.toggle("paint-immersive-active", isActive);
+  if (!button) return;
   button.classList.toggle("active", isActive);
   button.setAttribute("aria-pressed", isActive ? "true" : "false");
+}
+
+function syncPaintPageMode() {
+  const isActive = isPaintPageActive();
+  document.body.classList.toggle("paint-page-active", isActive);
+  if (isActive) {
+    requestAnimationFrame(() => {
+      autoResizeCanvasToViewport();
+      syncResizeInputs();
+      syncGridOverlay();
+    });
+  }
+  if (!isActive && paintState.fullscreen) {
+    paintState.fullscreen = false;
+    updateFullscreenUi();
+  }
 }
 
 function handlePaintFullscreenChange() {
   updateFullscreenUi();
   updateZoomUi();
   syncGridOverlay();
-}
-
-async function requestElementFullscreen(element) {
-  if (!element) return;
-  if (typeof element.requestFullscreen === "function") {
-    await element.requestFullscreen();
-    return;
-  }
-  if (typeof element.webkitRequestFullscreen === "function") {
-    element.webkitRequestFullscreen();
-    return;
-  }
-  if (typeof element.msRequestFullscreen === "function") {
-    element.msRequestFullscreen();
-  }
-}
-
-async function exitAnyFullscreen() {
-  const doc = document;
-  if (typeof doc.exitFullscreen === "function") {
-    await doc.exitFullscreen();
-    return;
-  }
-  if (typeof doc.webkitExitFullscreen === "function") {
-    doc.webkitExitFullscreen();
-    return;
-  }
-  if (typeof doc.msExitFullscreen === "function") {
-    doc.msExitFullscreen();
-  }
 }
 
 function getTool() {
@@ -331,6 +381,66 @@ function getBackColor() {
 
 function getTextFont() {
   return byId("paint-text-font")?.value || "Manrope";
+}
+
+function getTextWeight() {
+  return paintState.textBold ? 700 : 400;
+}
+
+function getTextStyle() {
+  return paintState.textItalic ? "italic" : "normal";
+}
+
+function dedupeFonts(fonts) {
+  const seen = new Set();
+  const result = [];
+  fonts.forEach((fontName) => {
+    const name = String(fontName || "").trim();
+    if (!name) return;
+    const key = name.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    result.push(name);
+  });
+  return result;
+}
+
+function setPaintFontOptions(fonts) {
+  const select = byId("paint-text-font");
+  if (!select) return;
+  const prev = String(select.value || "").trim();
+  const uniqueFonts = dedupeFonts(fonts);
+  if (!uniqueFonts.length) return;
+  select.replaceChildren();
+  uniqueFonts.forEach((fontName) => {
+    const option = document.createElement("option");
+    option.value = fontName;
+    option.textContent = fontName;
+    select.append(option);
+  });
+  const nextValue = uniqueFonts.some((name) => name === prev) ? prev : uniqueFonts[0];
+  if (nextValue) {
+    select.value = nextValue;
+  }
+}
+
+async function getLocalFontFamilies() {
+  if (typeof window.queryLocalFonts !== "function") return [];
+  try {
+    const fonts = await window.queryLocalFonts();
+    return dedupeFonts(
+      fonts.map((fontFace) => (fontFace?.family ? String(fontFace.family) : "")),
+    ).sort((a, b) => a.localeCompare(b));
+  } catch {
+    return [];
+  }
+}
+
+async function initPaintFontOptions() {
+  setPaintFontOptions(PAINT_DEFAULT_FONTS);
+  const localFonts = await getLocalFontFamilies();
+  if (!localFonts.length) return;
+  setPaintFontOptions([...PAINT_DEFAULT_FONTS, ...localFonts]);
 }
 
 function getSnapshot() {
@@ -434,7 +544,7 @@ function setCanvasSize(width, height) {
   if (!canvas) return;
   canvas.width = Math.max(1, Math.floor(width));
   canvas.height = Math.max(1, Math.floor(height));
-  syncGridOverlay();
+  updateZoomUi();
 }
 
 function fillBackground() {
@@ -454,6 +564,30 @@ function syncResizeInputs() {
   if (!canvas || !widthInput || !heightInput) return;
   widthInput.value = String(canvas.width);
   heightInput.value = String(canvas.height);
+}
+
+function autoResizeCanvasToViewport() {
+  const canvas = getCanvas();
+  const wrap = getCanvasWrap();
+  if (!canvas || !wrap) return;
+  if (paintState.autoSizedToViewport) return;
+  if (
+    canvas.width !== 640 ||
+    canvas.height !== 360 ||
+    paintState.undoStack.length ||
+    paintState.redoStack.length
+  ) {
+    paintState.autoSizedToViewport = true;
+    return;
+  }
+  const availableWidth = Math.max(240, Math.floor(wrap.clientWidth - 16));
+  const availableHeight = Math.max(180, Math.floor(wrap.clientHeight - 16));
+  if (availableWidth !== canvas.width || availableHeight !== canvas.height) {
+    setCanvasSize(availableWidth, availableHeight);
+    fillBackground();
+  }
+  paintState.autoSizedToViewport = true;
+  syncResizeInputs();
 }
 
 function getPointer(event) {
@@ -501,6 +635,90 @@ function setupShapeStroke(ctx) {
 function drawShape(shape, x1, y1, x2, y2) {
   const ctx = getCtx();
   if (!ctx) return;
+  const left = Math.min(x1, x2);
+  const top = Math.min(y1, y2);
+  const width = Math.max(1, Math.abs(x2 - x1));
+  const height = Math.max(1, Math.abs(y2 - y1));
+  const right = left + width;
+  const bottom = top + height;
+  const centerX = left + width / 2;
+  const centerY = top + height / 2;
+
+  const strokePolygon = (points) => {
+    if (!points.length) return;
+    ctx.beginPath();
+    ctx.moveTo(points[0][0], points[0][1]);
+    for (let i = 1; i < points.length; i += 1) {
+      ctx.lineTo(points[i][0], points[i][1]);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  };
+
+  const drawStar = () => {
+    const outerRx = width / 2;
+    const outerRy = height / 2;
+    const innerRatio = 0.5;
+    const points = [];
+    for (let i = 0; i < 10; i += 1) {
+      const angle = -Math.PI / 2 + (i * Math.PI) / 5;
+      const isOuter = i % 2 === 0;
+      const rx = isOuter ? outerRx : outerRx * innerRatio;
+      const ry = isOuter ? outerRy : outerRy * innerRatio;
+      points.push([centerX + Math.cos(angle) * rx, centerY + Math.sin(angle) * ry]);
+    }
+    strokePolygon(points);
+  };
+
+  const drawArrow = (direction) => {
+    const head = Math.max(6, Math.min(width, height) * 0.42);
+    if (direction === "up") {
+      strokePolygon([
+        [centerX, top],
+        [right, top + head],
+        [centerX + width * 0.22, top + head],
+        [centerX + width * 0.22, bottom],
+        [centerX - width * 0.22, bottom],
+        [centerX - width * 0.22, top + head],
+        [left, top + head],
+      ]);
+      return;
+    }
+    if (direction === "down") {
+      strokePolygon([
+        [centerX, bottom],
+        [right, bottom - head],
+        [centerX + width * 0.22, bottom - head],
+        [centerX + width * 0.22, top],
+        [centerX - width * 0.22, top],
+        [centerX - width * 0.22, bottom - head],
+        [left, bottom - head],
+      ]);
+      return;
+    }
+    if (direction === "left") {
+      strokePolygon([
+        [left, centerY],
+        [left + head, top],
+        [left + head, centerY - height * 0.22],
+        [right, centerY - height * 0.22],
+        [right, centerY + height * 0.22],
+        [left + head, centerY + height * 0.22],
+        [left + head, bottom],
+      ]);
+      return;
+    }
+    strokePolygon([
+      [right, centerY],
+      [right - head, top],
+      [right - head, centerY - height * 0.22],
+      [left, centerY - height * 0.22],
+      [left, centerY + height * 0.22],
+      [right - head, centerY + height * 0.22],
+      [right - head, bottom],
+    ]);
+  };
+
   ctx.save();
   setupShapeStroke(ctx);
   if (shape === "rect") {
@@ -518,6 +736,16 @@ function drawShape(shape, x1, y1, x2, y2) {
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();
+  } else if (shape === "star") {
+    drawStar();
+  } else if (shape === "arrow-up") {
+    drawArrow("up");
+  } else if (shape === "arrow-down") {
+    drawArrow("down");
+  } else if (shape === "arrow-left") {
+    drawArrow("left");
+  } else if (shape === "arrow-right") {
+    drawArrow("right");
   }
   ctx.restore();
 }
@@ -570,7 +798,8 @@ function placeText(x, y) {
   ctx.save();
   ctx.globalCompositeOperation = "source-over";
   ctx.fillStyle = getColor();
-  ctx.font = `${Math.max(12, getSize() * 4)}px "${getTextFont()}", Manrope, sans-serif`;
+  const fontSize = Math.max(12, getSize() * 4);
+  ctx.font = `${getTextStyle()} ${getTextWeight()} ${fontSize}px "${getTextFont()}", Manrope, sans-serif`;
   ctx.fillText(text, x, y);
   ctx.restore();
 }
@@ -648,7 +877,16 @@ function onPointerDown(event) {
       return;
     }
   }
-  if (shapeTool === "rect" || shapeTool === "ellipse" || shapeTool === "line") {
+  if (
+    shapeTool === "rect" ||
+    shapeTool === "ellipse" ||
+    shapeTool === "line" ||
+    shapeTool === "star" ||
+    shapeTool === "arrow-up" ||
+    shapeTool === "arrow-down" ||
+    shapeTool === "arrow-left" ||
+    shapeTool === "arrow-right"
+  ) {
     const ctx = getCtx();
     const canvas = getCanvas();
     if (!ctx || !canvas) return;
@@ -701,7 +939,12 @@ function onPointerMove(event) {
   if (
     (paintState.shapeTool === "rect" ||
       paintState.shapeTool === "ellipse" ||
-      paintState.shapeTool === "line") &&
+      paintState.shapeTool === "line" ||
+      paintState.shapeTool === "star" ||
+      paintState.shapeTool === "arrow-up" ||
+      paintState.shapeTool === "arrow-down" ||
+      paintState.shapeTool === "arrow-left" ||
+      paintState.shapeTool === "arrow-right") &&
     paintState.shapeBaseImageData
   ) {
     const ctx = getCtx();
@@ -736,7 +979,9 @@ function stopDrawing(event) {
       drawShape("line", paintState.startX, paintState.startY, x, y);
       paintState.splineEndX = x;
       paintState.splineEndY = y;
-      paintState.splineBaseImageData = ctx.getImageData(0, 0, getCanvas().width, getCanvas().height);
+      // Keep original canvas as spline base so final result does not include
+      // the preview chord line (which made curves look closed).
+      paintState.splineBaseImageData = paintState.shapeBaseImageData;
       paintState.splineStage = 1;
       clearShapeBase();
       paintState.drawing = false;
@@ -754,7 +999,12 @@ function stopDrawing(event) {
     paintState.drawing &&
     (paintState.shapeTool === "rect" ||
       paintState.shapeTool === "ellipse" ||
-      paintState.shapeTool === "line") &&
+      paintState.shapeTool === "line" ||
+      paintState.shapeTool === "star" ||
+      paintState.shapeTool === "arrow-up" ||
+      paintState.shapeTool === "arrow-down" ||
+      paintState.shapeTool === "arrow-left" ||
+      paintState.shapeTool === "arrow-right") &&
     paintState.shapeBaseImageData &&
     event
   ) {
@@ -815,6 +1065,12 @@ function deleteSelectionPixels() {
 }
 
 function onPaintKeyDown(event) {
+  if (event.key === "Escape" && isPaintFullscreen()) {
+    paintState.fullscreen = false;
+    handlePaintFullscreenChange();
+    event.preventDefault();
+    return;
+  }
   if (event.key !== "Delete") return;
   if (!isPaintPageActive()) return;
   if (isEditableTarget(event.target)) return;
@@ -830,29 +1086,23 @@ export function paintOpenFileDialog() {
 export function paintTogglePanel(panel) {
   if (!PAINT_PANELS.includes(panel)) return;
   const nextPanel = paintState.activePanel === panel ? "" : panel;
-  clearSelectionIfAny();
+  const allowSelectionPanels = ["crop", "rotate", "mirror"];
+  const shouldKeepSelection = allowSelectionPanels.includes(panel);
+  if (!shouldKeepSelection) {
+    clearSelectionIfAny();
+  }
   if (paintState.activePanel === "filters" && nextPanel !== "filters") {
     clearFilterBase();
   }
   paintState.activePanel = nextPanel;
   updatePanelUi();
+  updateToolUi();
 }
 
 export async function paintToggleFullscreen() {
-  const page = getPage();
-  if (!page) return;
   clearSelectionIfAny();
-  try {
-    if (isPaintFullscreen()) {
-      await exitAnyFullscreen();
-    } else {
-      await requestElementFullscreen(page);
-    }
-  } catch {
-    // Fullscreen can be blocked by browser policy/user settings.
-  } finally {
-    updateFullscreenUi();
-  }
+  paintState.fullscreen = !paintState.fullscreen;
+  handlePaintFullscreenChange();
 }
 
 function previewFilters() {
@@ -904,7 +1154,17 @@ export function paintResetFilters() {
 }
 
 export function paintSelectShape(shape) {
-  const allowed = ["rect", "ellipse", "line", "spline"];
+  const allowed = [
+    "rect",
+    "ellipse",
+    "line",
+    "spline",
+    "star",
+    "arrow-up",
+    "arrow-down",
+    "arrow-left",
+    "arrow-right",
+  ];
   if (!allowed.includes(shape)) return;
   clearSelectionIfAny();
   clearSplineState();
@@ -931,6 +1191,18 @@ export function paintSetTool(tool) {
 export function paintToggleFontPanel() {
   if (getTool() !== "text") return;
   paintState.showFontPanel = !paintState.showFontPanel;
+  updateToolUi();
+}
+
+export function paintToggleTextBold() {
+  if (getTool() !== "text") return;
+  paintState.textBold = !paintState.textBold;
+  updateToolUi();
+}
+
+export function paintToggleTextItalic() {
+  if (getTool() !== "text") return;
+  paintState.textItalic = !paintState.textItalic;
   updateToolUi();
 }
 
@@ -1059,11 +1331,11 @@ export function paintRedo() {
 export function paintApplyCrop() {
   const canvas = getCanvas();
   if (!canvas) return;
-  clearSelectionIfAny();
-  const x = Math.max(0, Number(byId("paint-crop-x")?.value || 0));
-  const y = Math.max(0, Number(byId("paint-crop-y")?.value || 0));
-  const w = Math.max(1, Number(byId("paint-crop-w")?.value || canvas.width));
-  const h = Math.max(1, Number(byId("paint-crop-h")?.value || canvas.height));
+  const selection = getActiveSelectionBounds(canvas);
+  const x = selection ? selection.x : Math.max(0, Number(byId("paint-crop-x")?.value || 0));
+  const y = selection ? selection.y : Math.max(0, Number(byId("paint-crop-y")?.value || 0));
+  const w = selection ? selection.w : Math.max(1, Number(byId("paint-crop-w")?.value || canvas.width));
+  const h = selection ? selection.h : Math.max(1, Number(byId("paint-crop-h")?.value || canvas.height));
   const sx = Math.min(canvas.width - 1, x);
   const sy = Math.min(canvas.height - 1, y);
   const sw = Math.max(1, Math.min(w, canvas.width - sx));
@@ -1073,6 +1345,13 @@ export function paintApplyCrop() {
     sw,
     sh,
   );
+  if (selection) {
+    paintState.selection = { x: 0, y: 0, w: sw, h: sh };
+    paintState.selecting = false;
+    updateSelectionUi();
+  } else {
+    clearSelectionIfAny();
+  }
 }
 
 export function paintApplyResize() {
@@ -1091,10 +1370,36 @@ export function paintApplyResize() {
 export function paintApplyRotate() {
   const canvas = getCanvas();
   if (!canvas) return;
-  clearSelectionIfAny();
+  const selection = getActiveSelectionBounds(canvas);
   const rawAngle = Number(byId("paint-rotate-angle")?.value);
   const angle = Number.isFinite(rawAngle) ? rawAngle : 90;
   const normalized = ((angle % 360) + 360) % 360;
+  if (selection) {
+    const ctx = getCtx();
+    if (!ctx) return;
+    const src = document.createElement("canvas");
+    src.width = canvas.width;
+    src.height = canvas.height;
+    src.getContext("2d")?.drawImage(canvas, 0, 0);
+    const region = document.createElement("canvas");
+    region.width = selection.w;
+    region.height = selection.h;
+    region
+      .getContext("2d")
+      ?.drawImage(src, selection.x, selection.y, selection.w, selection.h, 0, 0, selection.w, selection.h);
+    pushUndoState();
+    ctx.drawImage(src, 0, 0);
+    ctx.save();
+    ctx.fillStyle = getBackColor();
+    ctx.fillRect(selection.x, selection.y, selection.w, selection.h);
+    ctx.translate(selection.x + selection.w / 2, selection.y + selection.h / 2);
+    ctx.rotate((normalized * Math.PI) / 180);
+    ctx.drawImage(region, -selection.w / 2, -selection.h / 2, selection.w, selection.h);
+    ctx.restore();
+    updateSelectionUi();
+    return;
+  }
+  clearSelectionIfAny();
   const swapSides = normalized === 90 || normalized === 270;
   const nextW = swapSides ? canvas.height : canvas.width;
   const nextH = swapSides ? canvas.width : canvas.height;
@@ -1110,12 +1415,43 @@ export function paintApplyRotate() {
 export function paintApplyMirror() {
   const canvas = getCanvas();
   if (!canvas) return;
-  clearSelectionIfAny();
+  const selection = getActiveSelectionBounds(canvas);
   const axisSelect = byId("paint-mirror-axis");
   const axis =
     axisSelect?.value === "vertical" || axisSelect?.value === "horizontal"
       ? axisSelect.value
       : paintState.nextMirrorAxis;
+  if (selection) {
+    const ctx = getCtx();
+    if (!ctx) return;
+    const src = document.createElement("canvas");
+    src.width = canvas.width;
+    src.height = canvas.height;
+    src.getContext("2d")?.drawImage(canvas, 0, 0);
+    const region = document.createElement("canvas");
+    region.width = selection.w;
+    region.height = selection.h;
+    region
+      .getContext("2d")
+      ?.drawImage(src, selection.x, selection.y, selection.w, selection.h, 0, 0, selection.w, selection.h);
+    pushUndoState();
+    ctx.drawImage(src, 0, 0);
+    ctx.save();
+    ctx.fillStyle = getBackColor();
+    ctx.fillRect(selection.x, selection.y, selection.w, selection.h);
+    if (axis === "vertical") {
+      ctx.translate(selection.x, selection.y + selection.h);
+      ctx.scale(1, -1);
+    } else {
+      ctx.translate(selection.x + selection.w, selection.y);
+      ctx.scale(-1, 1);
+    }
+    ctx.drawImage(region, 0, 0, selection.w, selection.h);
+    ctx.restore();
+    updateSelectionUi();
+    return;
+  }
+  clearSelectionIfAny();
   applyRasterTransform((ctx, src) => {
     ctx.save();
     if (axis === "vertical") {
@@ -1164,12 +1500,18 @@ export function initPaint() {
   if (wrap) {
     wrap.addEventListener("scroll", syncGridOverlay);
   }
-  window.addEventListener("resize", syncGridOverlay);
+  window.addEventListener("resize", () => {
+    syncGridOverlay();
+    if (isPaintPageActive()) syncResizeInputs();
+  });
 
-  document.addEventListener("fullscreenchange", handlePaintFullscreenChange);
-  document.addEventListener("webkitfullscreenchange", handlePaintFullscreenChange);
-  document.addEventListener("msfullscreenchange", handlePaintFullscreenChange);
   document.addEventListener("keydown", onPaintKeyDown);
+
+  const page = getPage();
+  if (page) {
+    const observer = new MutationObserver(syncPaintPageMode);
+    observer.observe(page, { attributes: true, attributeFilter: ["class"] });
+  }
 
   updatePanelUi();
   updateShapeUi();
@@ -1177,5 +1519,7 @@ export function initPaint() {
   updateZoomUi();
   updateGridUi();
   updateSelectionUi();
+  syncPaintPageMode();
   handlePaintFullscreenChange();
+  initPaintFontOptions();
 }

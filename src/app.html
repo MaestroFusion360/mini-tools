@@ -1296,8 +1296,9 @@
       accept="image/*"
       class="visually-hidden"
     />
+    <div class="paint-top-hover-zone" id="paint-top-hover-zone" aria-hidden="true"></div>
     <div class="paint-controls">
-      <div class="paint-toolbar paint-toolbar-actions">
+      <div class="paint-toolbar paint-toolbar-actions paint-toolbar-main">
         <button
           type="button"
           class="text-action-btn toolbar-icon-btn"
@@ -1378,9 +1379,6 @@
         >
           <svg class="icon-svg btn-icon"><use href="#i-sliders-horizontal"></use></svg>
         </button>
-      </div>
-
-      <div class="paint-toolbar paint-toolbar-actions">
         <button
           type="button"
           class="text-action-btn toolbar-icon-btn"
@@ -1463,6 +1461,20 @@
         >
           <svg class="icon-svg btn-icon"><use href="#i-grid"></use></svg>
         </button>
+        <div class="paint-common-controls" id="paint-common-controls">
+          <label class="paint-field">
+            <span>Color</span>
+            <input type="color" id="paint-color" value="#0f766e" title="Color" />
+          </label>
+          <label class="paint-field">
+            <span>BackColor</span>
+            <input type="color" id="paint-back-color" value="#ffffff" title="BackColor" />
+          </label>
+          <label class="paint-field">
+            <span>Size</span>
+            <input type="number" id="paint-size" min="1" max="64" value="6" title="Size" />
+          </label>
+        </div>
       </div>
 
       <div class="paint-panel is-hidden" id="paint-panel-draw">
@@ -1530,20 +1542,6 @@
         </div>
       </div>
 
-      <div class="paint-common-controls" id="paint-common-controls">
-        <label class="paint-field">
-          <span>Color</span>
-          <input type="color" id="paint-color" value="#0f766e" />
-        </label>
-        <label class="paint-field">
-          <span>BackColor</span>
-          <input type="color" id="paint-back-color" value="#ffffff" />
-        </label>
-        <label class="paint-field">
-          <span>Size</span>
-          <input type="number" id="paint-size" min="1" max="64" value="6" />
-        </label>
-      </div>
       <div class="paint-text-controls" id="paint-text-controls">
         <label class="paint-field paint-field-full is-hidden" id="paint-text-wrap">
           <span>Text</span>
@@ -1554,12 +1552,52 @@
           <select id="paint-text-font">
             <option value="Manrope">Manrope</option>
             <option value="Arial">Arial</option>
+            <option value="Arial Black">Arial Black</option>
+            <option value="Bahnschrift">Bahnschrift</option>
+            <option value="Calibri">Calibri</option>
+            <option value="Cambria">Cambria</option>
+            <option value="Candara">Candara</option>
+            <option value="Comic Sans MS">Comic Sans MS</option>
+            <option value="Consolas">Consolas</option>
+            <option value="Corbel">Corbel</option>
+            <option value="Courier">Courier</option>
             <option value="Georgia">Georgia</option>
             <option value="Courier New">Courier New</option>
+            <option value="Franklin Gothic Medium">Franklin Gothic Medium</option>
+            <option value="Impact">Impact</option>
+            <option value="Lucida Console">Lucida Console</option>
+            <option value="Lucida Sans Unicode">Lucida Sans Unicode</option>
+            <option value="Palatino Linotype">Palatino Linotype</option>
+            <option value="Segoe UI">Segoe UI</option>
+            <option value="Tahoma">Tahoma</option>
             <option value="Times New Roman">Times New Roman</option>
             <option value="Verdana">Verdana</option>
           </select>
         </label>
+        <div class="paint-text-style-controls is-hidden" id="paint-text-style-wrap">
+          <button
+            type="button"
+            class="text-action-btn toolbar-icon-btn"
+            id="paint-text-bold-btn"
+            onclick="paintToggleTextBold()"
+            title="Bold"
+            aria-label="Bold"
+            aria-pressed="false"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-bold"></use></svg>
+          </button>
+          <button
+            type="button"
+            class="text-action-btn toolbar-icon-btn"
+            id="paint-text-italic-btn"
+            onclick="paintToggleTextItalic()"
+            title="Italic"
+            aria-label="Italic"
+            aria-pressed="false"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-italic"></use></svg>
+          </button>
+        </div>
       </div>
 
       <div class="paint-panel is-hidden" id="paint-panel-resize">
@@ -1701,6 +1739,56 @@
             aria-label="Spline"
           >
             <svg class="icon-svg btn-icon"><use href="#i-spline"></use></svg>
+          </button>
+          <button
+            type="button"
+            class="text-action-btn toolbar-icon-btn"
+            id="paint-shape-star-btn"
+            onclick="paintSelectShape('star')"
+            title="Star"
+            aria-label="Star"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-star"></use></svg>
+          </button>
+          <button
+            type="button"
+            class="text-action-btn toolbar-icon-btn"
+            id="paint-shape-arrow-up-btn"
+            onclick="paintSelectShape('arrow-up')"
+            title="Arrow Up"
+            aria-label="Arrow Up"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-arrow-big-up"></use></svg>
+          </button>
+          <button
+            type="button"
+            class="text-action-btn toolbar-icon-btn"
+            id="paint-shape-arrow-down-btn"
+            onclick="paintSelectShape('arrow-down')"
+            title="Arrow Down"
+            aria-label="Arrow Down"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-arrow-big-down"></use></svg>
+          </button>
+          <button
+            type="button"
+            class="text-action-btn toolbar-icon-btn"
+            id="paint-shape-arrow-left-btn"
+            onclick="paintSelectShape('arrow-left')"
+            title="Arrow Left"
+            aria-label="Arrow Left"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-arrow-big-left"></use></svg>
+          </button>
+          <button
+            type="button"
+            class="text-action-btn toolbar-icon-btn"
+            id="paint-shape-arrow-right-btn"
+            onclick="paintSelectShape('arrow-right')"
+            title="Arrow Right"
+            aria-label="Arrow Right"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-arrow-big-right"></use></svg>
           </button>
         </div>
       </div>
