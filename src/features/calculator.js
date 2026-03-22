@@ -1,24 +1,21 @@
-﻿import { byId, setText } from "../core/dom.js";
+import { byId, setText } from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
+import { FEATURE_RUNTIME_STATE } from "../core/state.js";
 
-let calcVal = "0";
-let calcScientificMode = false;
-let calcMemoryValue = 0;
-let calcInitialized = false;
+const calcState = FEATURE_RUNTIME_STATE.calculator;
 const CALC_ERROR_TOKEN = "__CALC_ERROR__";
 const calcAllowed = /^[\d+\-*/().,%\s]*$/;
-const calcHistory = [];
 
 function isErrorState() {
-  return calcVal === CALC_ERROR_TOKEN;
+  return calcState.calcVal === CALC_ERROR_TOKEN;
 }
 
 function setCalcError() {
-  calcVal = CALC_ERROR_TOKEN;
+  calcState.calcVal = CALC_ERROR_TOKEN;
 }
 
 function resetErrorToZero() {
-  if (isErrorState()) calcVal = "0";
+  if (isErrorState()) calcState.calcVal = "0";
 }
 
 function formatCalcTextForDisplay(text) {
@@ -32,9 +29,9 @@ function formatCalcTextForDisplay(text) {
 function renderCalcDisplay() {
   const display = byId("calc-display");
   const preview = byId("calc-expression-preview");
-  if (display) display.textContent = formatCalcTextForDisplay(calcVal);
+  if (display) display.textContent = formatCalcTextForDisplay(calcState.calcVal);
   if (preview) {
-    preview.textContent = `${t("calcExpression")}: ${formatCalcTextForDisplay(calcVal)}`;
+    preview.textContent = `${t("calcExpression")}: ${formatCalcTextForDisplay(calcState.calcVal)}`;
   }
 }
 
@@ -45,7 +42,7 @@ function createHistoryRemoveButton(actualIndex) {
   const removeText = t("removeHistoryItem");
   button.setAttribute("aria-label", removeText);
   button.title = removeText;
-  button.textContent = "×";
+  button.innerHTML = '<svg class="icon-svg btn-icon"><use href="#i-x"></use></svg>';
   button.addEventListener("click", () => {
     calcRemoveHistoryAt(actualIndex);
   });
@@ -55,14 +52,14 @@ function createHistoryRemoveButton(actualIndex) {
 function renderCalcHistory() {
   const el = byId("calc-history");
   if (!el) return;
-  if (!calcHistory.length) {
+  if (!calcState.calcHistory.length) {
     el.textContent = t("calcEmptyHistory");
     return;
   }
   el.textContent = "";
-  const recentItems = calcHistory.slice(-10).reverse();
+  const recentItems = calcState.calcHistory.slice(-10).reverse();
   recentItems.forEach((item, visibleIndex) => {
-    const actualIndex = calcHistory.length - 1 - visibleIndex;
+    const actualIndex = calcState.calcHistory.length - 1 - visibleIndex;
     const row = document.createElement("div");
     row.className = "calc-history-item";
 
@@ -78,8 +75,8 @@ function renderCalcHistory() {
 function renderCalcMemory() {
   const el = byId("calc-memory-value");
   if (!el) return;
-  const valueText = Number.isFinite(calcMemoryValue)
-    ? calcMemoryValue.toString()
+  const valueText = Number.isFinite(calcState.calcMemoryValue)
+    ? calcState.calcMemoryValue.toString()
     : "0";
   el.textContent = `${t("calcMemoryValue")}: ${valueText}`;
 }
@@ -115,7 +112,7 @@ function evaluateExpression(rawValue) {
 
 function getCalcCurrentNumber() {
   try {
-    return evaluateExpression(calcVal);
+    return evaluateExpression(calcState.calcVal);
   } catch {
     return null;
   }
@@ -192,13 +189,13 @@ function isCalculatorPageActive() {
 }
 
 export function toggleCalcMode(toggle = true) {
-  if (toggle) calcScientificMode = !calcScientificMode;
-  byId("calc-mode-btn").textContent = calcScientificMode
+  if (toggle) calcState.calcScientificMode = !calcState.calcScientificMode;
+  byId("calc-mode-btn").textContent = calcState.calcScientificMode
     ? t("calcModeScientific")
     : t("calcModeBasic");
   document
     .querySelector(".calc-buttons")
-    .classList.toggle("calc-scientific", calcScientificMode);
+    .classList.toggle("calc-scientific", calcState.calcScientificMode);
 }
 
 export function calcInput(ch) {
@@ -206,72 +203,72 @@ export function calcInput(ch) {
   const token = String(ch || "");
   if (!token) return;
 
-  if (calcVal === "0") {
+  if (calcState.calcVal === "0") {
     if (["+", "*", "/", "%", "**", ")"].includes(token)) return;
-    if (![".", "**", "%"].includes(token)) calcVal = token;
-    else calcVal += token;
+    if (![".", "**", "%"].includes(token)) calcState.calcVal = token;
+    else calcState.calcVal += token;
     renderCalcDisplay();
     return;
   }
 
-  if (!canAppendToken(calcVal, token)) return;
-  calcVal += token;
+  if (!canAppendToken(calcState.calcVal, token)) return;
+  calcState.calcVal += token;
   renderCalcDisplay();
 }
 
 export function calcBackspace() {
   if (isErrorState()) {
-    calcVal = "0";
+    calcState.calcVal = "0";
   } else {
-    calcVal = calcVal.length > 1 ? calcVal.slice(0, -1) : "0";
+    calcState.calcVal = calcState.calcVal.length > 1 ? calcState.calcVal.slice(0, -1) : "0";
   }
   renderCalcDisplay();
 }
 
 export function calcClear() {
-  calcVal = "0";
+  calcState.calcVal = "0";
   renderCalcDisplay();
 }
 
 export function calcToggleSign() {
   resetErrorToZero();
-  calcVal = toggleSignForExpression(calcVal);
+  calcState.calcVal = toggleSignForExpression(calcState.calcVal);
   renderCalcDisplay();
 }
 
 export function calcMemoryClear() {
-  calcMemoryValue = 0;
+  calcState.calcMemoryValue = 0;
   renderCalcMemory();
 }
 
 export function calcMemoryRecall() {
-  calcVal = Number.isFinite(calcMemoryValue) ? calcMemoryValue.toString() : "0";
+  calcState.calcVal = Number.isFinite(calcState.calcMemoryValue) ? calcState.calcMemoryValue.toString() : "0";
   renderCalcDisplay();
 }
 
 export function calcMemoryAdd() {
   const current = getCalcCurrentNumber();
   if (current === null) return;
-  calcMemoryValue += current;
+  calcState.calcMemoryValue += current;
   renderCalcMemory();
 }
 
 export function calcMemorySubtract() {
   const current = getCalcCurrentNumber();
   if (current === null) return;
-  calcMemoryValue -= current;
+  calcState.calcMemoryValue -= current;
   renderCalcMemory();
 }
 
 export function calcRemoveHistoryAt(index) {
   if (!Number.isInteger(index)) return;
-  if (index < 0 || index >= calcHistory.length) return;
-  calcHistory.splice(index, 1);
+  if (index < 0 || index >= calcState.calcHistory.length) return;
+  calcState.calcHistory.splice(index, 1);
   renderCalcHistory();
 }
 
 export function calcClearHistory() {
-  calcHistory.length = 0;
+  calcState.calcHistory.length = 0;
   renderCalcHistory();
 }
 
@@ -303,8 +300,8 @@ export function calcFunction(fn) {
     const result = handler(current);
     if (!Number.isFinite(result)) throw new Error("Non-finite result");
     const exprLabel = `${fn}(${current})`;
-    calcVal = result.toString();
-    calcHistory.push(`${exprLabel} = ${calcVal}`);
+    calcState.calcVal = result.toString();
+    calcState.calcHistory.push(`${exprLabel} = ${calcState.calcVal}`);
     renderCalcHistory();
   } catch {
     setCalcError();
@@ -314,11 +311,11 @@ export function calcFunction(fn) {
 
 export function calcEquals(returnOnly = false) {
   try {
-    const result = evaluateExpression(calcVal);
+    const result = evaluateExpression(calcState.calcVal);
     const resultText = result.toString();
     if (!returnOnly) {
-      calcHistory.push(`${calcVal} = ${resultText}`);
-      calcVal = resultText;
+      calcState.calcHistory.push(`${calcState.calcVal} = ${resultText}`);
+      calcState.calcVal = resultText;
       renderCalcHistory();
       renderCalcDisplay();
     }
@@ -365,7 +362,7 @@ function applyCalculatorTranslations() {
   setText("calc-mminus-btn", t("calcMemorySubtract"));
   setText(
     "calc-mode-btn",
-    calcScientificMode ? t("calcModeScientific") : t("calcModeBasic"),
+    calcState.calcScientificMode ? t("calcModeScientific") : t("calcModeBasic"),
   );
   const historyTitle = document.querySelector(".calc-history-title");
   if (historyTitle) historyTitle.textContent = t("calcHistoryTitle");
@@ -379,9 +376,10 @@ export function initCalculator() {
   renderCalcHistory();
   renderCalcMemory();
 
-  if (!calcInitialized) {
+  if (!calcState.calcInitialized) {
     registerTranslationApplier(applyCalculatorTranslations);
     window.addEventListener("keydown", handleCalculatorKeyboard);
-    calcInitialized = true;
+    calcState.calcInitialized = true;
   }
 }
+

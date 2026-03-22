@@ -1,32 +1,23 @@
 import { byId, setText, showAppToast } from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
+import { FEATURE_RUNTIME_STATE } from "../core/state.js";
+import { formatStopwatchMilliseconds } from "./shared/time-format.js";
 
-let stopwatchRunning = false;
-let stopwatchStartAtMs = 0;
-let stopwatchElapsedMs = 0;
-let stopwatchIntervalId = null;
-const stopwatchLaps = [];
-
-function formatStopwatchDisplay(ms) {
-  const total = Math.max(0, Math.floor(ms));
-  const hours = Math.floor(total / 3600000);
-  const minutes = Math.floor((total % 3600000) / 60000);
-  const seconds = Math.floor((total % 60000) / 1000);
-  const centiseconds = Math.floor((total % 1000) / 10);
-  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(centiseconds).padStart(2, "0")}`;
-}
+const stopwatchState = FEATURE_RUNTIME_STATE.stopwatch;
 
 export function renderStopwatchDisplay() {
   const el = byId("stopwatch-display");
-  if (el) el.textContent = formatStopwatchDisplay(stopwatchElapsedMs);
+  if (el) {
+    el.textContent = formatStopwatchMilliseconds(stopwatchState.stopwatchElapsedMs);
+  }
 }
 
 export function renderStopwatchControls() {
   const startBtn = byId("stopwatch-start-btn");
   if (startBtn) {
-    startBtn.textContent = stopwatchRunning
+    startBtn.textContent = stopwatchState.stopwatchRunning
       ? t("stopwatchPause")
-      : stopwatchElapsedMs > 0
+      : stopwatchState.stopwatchElapsedMs > 0
         ? t("stopwatchResume")
         : t("stopwatchStart");
   }
@@ -35,36 +26,36 @@ export function renderStopwatchControls() {
 export function renderStopwatchLaps() {
   const holder = byId("stopwatch-laps");
   if (!holder) return;
-  if (!stopwatchLaps.length) {
+  if (!stopwatchState.stopwatchLaps.length) {
     holder.textContent = t("stopwatchNoLaps");
     return;
   }
-  holder.innerHTML = stopwatchLaps
+  holder.innerHTML = stopwatchState.stopwatchLaps
     .map(
       (lap, index) =>
-        `<div class="calc-history-item">#${index + 1}: ${formatStopwatchDisplay(lap)}</div>`,
+        `<div class="calc-history-item">#${index + 1}: ${formatStopwatchMilliseconds(lap)}</div>`,
     )
     .reverse()
     .join("");
 }
 
 function stopStopwatchInterval() {
-  if (stopwatchIntervalId) {
-    clearInterval(stopwatchIntervalId);
-    stopwatchIntervalId = null;
+  if (stopwatchState.stopwatchIntervalId) {
+    clearInterval(stopwatchState.stopwatchIntervalId);
+    stopwatchState.stopwatchIntervalId = null;
   }
 }
 
 function stopwatchTick() {
-  if (!stopwatchRunning) return;
-  stopwatchElapsedMs = Date.now() - stopwatchStartAtMs;
+  if (!stopwatchState.stopwatchRunning) return;
+  stopwatchState.stopwatchElapsedMs = Date.now() - stopwatchState.stopwatchStartAtMs;
   renderStopwatchDisplay();
 }
 
 export function toggleStopwatch() {
-  if (stopwatchRunning) {
+  if (stopwatchState.stopwatchRunning) {
     stopwatchTick();
-    stopwatchRunning = false;
+    stopwatchState.stopwatchRunning = false;
     stopStopwatchInterval();
     const message = t("stopwatchStoppedToast");
     showAppToast(message);
@@ -72,26 +63,26 @@ export function toggleStopwatch() {
     renderStopwatchControls();
     return;
   }
-  stopwatchRunning = true;
-  stopwatchStartAtMs = Date.now() - stopwatchElapsedMs;
+  stopwatchState.stopwatchRunning = true;
+  stopwatchState.stopwatchStartAtMs = Date.now() - stopwatchState.stopwatchElapsedMs;
   stopStopwatchInterval();
-  stopwatchIntervalId = setInterval(stopwatchTick, 33);
+  stopwatchState.stopwatchIntervalId = setInterval(stopwatchTick, 33);
   renderStopwatchControls();
 }
 
 export function resetStopwatch() {
-  stopwatchRunning = false;
+  stopwatchState.stopwatchRunning = false;
   stopStopwatchInterval();
-  stopwatchElapsedMs = 0;
-  stopwatchLaps.length = 0;
+  stopwatchState.stopwatchElapsedMs = 0;
+  stopwatchState.stopwatchLaps.length = 0;
   renderStopwatchDisplay();
   renderStopwatchControls();
   renderStopwatchLaps();
 }
 
 export function addStopwatchLap() {
-  if (!stopwatchRunning && stopwatchElapsedMs === 0) return;
-  stopwatchLaps.push(stopwatchElapsedMs);
+  if (!stopwatchState.stopwatchRunning && stopwatchState.stopwatchElapsedMs === 0) return;
+  stopwatchState.stopwatchLaps.push(stopwatchState.stopwatchElapsedMs);
   renderStopwatchLaps();
 }
 

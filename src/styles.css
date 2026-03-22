@@ -1192,6 +1192,16 @@ button.calc-history-remove-btn:hover {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent) inset;
 }
 
+.text-top-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .text-tools-accordion {
   display: grid;
   gap: 8px;
@@ -1260,6 +1270,14 @@ button.calc-history-remove-btn:hover {
   gap: 6px;
 }
 
+.text-transform-row {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
+}
+
 .text-encoding-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1289,6 +1307,15 @@ button.calc-history-remove-btn:hover {
   font-size: 0.8rem;
 }
 
+.text-find-row #text-find-input,
+.text-replace-row #text-replace-input {
+  min-width: 0;
+}
+
+.text-replace-row {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
 .text-find-options {
   display: flex;
   flex-wrap: wrap;
@@ -1300,8 +1327,8 @@ button.calc-history-remove-btn:hover {
   gap: 6px;
 }
 
-.text-find-row:last-of-type {
-  grid-template-columns: minmax(0, 1fr) auto minmax(120px, 1fr);
+.text-find-status-row {
+  min-height: 18px;
 }
 
 .text-action-btn {
@@ -1312,16 +1339,14 @@ button.calc-history-remove-btn:hover {
   font-weight: 700;
 }
 
-.text-copy-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+.text-copy-btn,
+.text-fullscreen-btn {
   width: 36px;
   min-width: 36px;
+  height: 36px;
   min-height: 36px;
   padding: 0;
   border-radius: 10px;
-  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1330,7 +1355,8 @@ button.calc-history-remove-btn:hover {
   border: 1px solid var(--border);
 }
 
-.text-copy-btn:hover {
+.text-copy-btn:hover,
+.text-fullscreen-btn:hover {
   background: color-mix(
     in srgb,
     var(--accent) 32%,
@@ -1339,7 +1365,9 @@ button.calc-history-remove-btn:hover {
   border-color: color-mix(in srgb, var(--accent) 56%, var(--border));
 }
 
-.text-copy-btn:active {
+.text-copy-btn:active,
+.text-fullscreen-btn:active,
+.text-fullscreen-btn.active {
   background: color-mix(
     in srgb,
     var(--accent) 62%,
@@ -1348,11 +1376,13 @@ button.calc-history-remove-btn:hover {
   border-color: color-mix(in srgb, var(--accent) 72%, var(--border));
 }
 
-.text-copy-btn:focus-visible {
+.text-copy-btn:focus-visible,
+.text-fullscreen-btn:focus-visible {
   background: color-mix(in srgb, var(--accent) 28%, var(--panel-strong));
 }
 
-.text-copy-btn .btn-icon {
+.text-copy-btn .btn-icon,
+.text-fullscreen-btn .btn-icon {
   width: 16px;
   height: 16px;
 }
@@ -1378,6 +1408,29 @@ button.calc-history-remove-btn:hover {
 .text-copy-btn.copy-ok::after,
 .text-copy-btn.copy-fail::after {
   animation: copy-feedback-in-out 0.95s ease forwards;
+}
+
+.text-input-wrap.text-input-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: var(--bg);
+  border: 0;
+  border-radius: 0;
+  padding: 14px;
+  box-shadow: var(--shadow-lg);
+}
+
+.text-input-wrap.text-input-fullscreen #text-input {
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: auto;
+  border-radius: var(--radius-md);
+}
+
+body.text-immersive-active .floating-actions,
+body.text-immersive-active .app-footer {
+  display: none;
 }
 
 @keyframes copy-feedback-in-out {
@@ -1411,7 +1464,7 @@ body.paint-page-active .container {
 #page-paint.active {
   align-items: stretch;
   gap: 10px;
-  min-height: calc(100vh - 128px);
+  min-height: calc(100dvh - 128px);
 }
 
 #page-paint.active > .header {
@@ -1782,6 +1835,13 @@ body.paint-immersive-active .app-footer {
   background: #050b15;
 }
 
+#page-media .toolbar-icon-btn {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+}
+
 /* ===== Floating UI: Header Actions, Footer, Toast ===== */
 .floating-actions {
   position: fixed;
@@ -1889,13 +1949,75 @@ body.paint-immersive-active .app-footer {
 
 /* ===== Responsive: Mobile ===== */
 @media (max-width: 520px) {
+  .page.active > .header {
+    justify-content: flex-start;
+    gap: 8px;
+    padding-left: 0;
+  }
+
+  .page.active > .header .back-btn {
+    position: static;
+    flex: 0 0 auto;
+    min-width: 72px;
+    padding-inline: 10px;
+  }
+
+  .page.active > .header h2 {
+    text-align: left;
+    min-width: 0;
+  }
+
   .paint-toolbar-actions {
     flex-wrap: nowrap;
     overflow-x: auto;
   }
 
+  .paint-toolbar-main {
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+
+  .paint-toolbar-main .paint-common-controls {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    margin-left: 0;
+    margin-top: 2px;
+    gap: 6px;
+  }
+
+  .paint-toolbar-main .paint-common-controls .paint-field {
+    gap: 4px;
+  }
+
+  .paint-toolbar-main .paint-common-controls .paint-field > span {
+    display: inline;
+  }
+
+  .paint-toolbar-main #paint-color,
+  .paint-toolbar-main #paint-back-color,
+  .paint-toolbar-main #paint-size {
+    width: 100%;
+    min-width: 0;
+  }
+
   .paint-text-controls {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  #page-media .paint-toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+
+  #page-media .toolbar-icon-btn {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
   }
 
   body {
@@ -1980,9 +2102,12 @@ body.paint-immersive-active .app-footer {
     flex: 0 0 36px;
   }
 
-  .text-find-row,
-  .text-find-row:last-of-type {
-    grid-template-columns: 1fr;
+  .text-find-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .text-replace-row {
+    grid-template-columns: minmax(0, 1fr) auto auto;
   }
 
   .text-encoding-row {

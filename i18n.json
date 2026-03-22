@@ -180,6 +180,7 @@
     "textFindCaseSensitive": "Case sensitive",
     "textFindWholeWord": "Whole word",
     "textFindWrap": "Wrap search",
+    "textReplace": "Replace",
     "textReplaceAll": "Replace all",
     "textNoMatches": "No matches",
     "textSearchEnd": "Reached the end",
@@ -275,7 +276,9 @@
     "paintZoomOut": "Zoom out",
     "paintZoomReset": "Reset zoom",
     "languageLabel": "Language",
-    "themeToggleLabel": "Toggle theme"
+    "themeToggleLabel": "Toggle theme",
+    "textFullscreen": "Fullscreen",
+    "textFullscreenExit": "Exit fullscreen"
   },
   "ru": {
     "back": "Назад",
@@ -458,6 +461,7 @@
     "textFindCaseSensitive": "С учетом регистра",
     "textFindWholeWord": "Слово целиком",
     "textFindWrap": "Зациклить поиск",
+    "textReplace": "Заменить",
     "textReplaceAll": "Заменить все",
     "textNoMatches": "Совпадений нет",
     "textSearchEnd": "Достигнут конец",
@@ -553,6 +557,8 @@
     "paintZoomOut": "Уменьшить",
     "paintZoomReset": "Сбросить масштаб",
     "languageLabel": "Язык",
-    "themeToggleLabel": "Переключить тему"
+    "themeToggleLabel": "Переключить тему",
+    "textFullscreen": "?? ???? ?????",
+    "textFullscreenExit": "????? ?? ?????????????? ??????"
   }
 }

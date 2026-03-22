@@ -10,15 +10,17 @@ const VIEWPORTS = [
 ];
 
 const PAGES = [
-  { menuButton: "#menu-weather-btn", page: "#page-weather" },
-  { menuButton: "#menu-time-btn", page: "#page-time" },
-  { menuButton: "#menu-timer-btn", page: "#page-timer" },
-  { menuButton: "#menu-stopwatch-btn", page: "#page-stopwatch" },
-  { menuButton: "#menu-calendar-btn", page: "#page-calendar" },
-  { menuButton: "#menu-converter-btn", page: "#page-converter" },
-  { menuButton: "#menu-calc-btn", page: "#page-calc" },
-  { menuButton: "#menu-text-btn", page: "#page-text" },
-  { menuButton: "#menu-currency-btn", page: "#page-currency" },
+  { menuButton: "#menu-weather-btn", page: "#page-weather", bounds: true },
+  { menuButton: "#menu-time-btn", page: "#page-time", bounds: true },
+  { menuButton: "#menu-timer-btn", page: "#page-timer", bounds: true },
+  { menuButton: "#menu-stopwatch-btn", page: "#page-stopwatch", bounds: true },
+  { menuButton: "#menu-calendar-btn", page: "#page-calendar", bounds: true },
+  { menuButton: "#menu-converter-btn", page: "#page-converter", bounds: true },
+  { menuButton: "#menu-calc-btn", page: "#page-calc", bounds: true },
+  { menuButton: "#menu-text-btn", page: "#page-text", bounds: true },
+  { menuButton: "#menu-currency-btn", page: "#page-currency", bounds: true },
+  { menuButton: "#menu-paint-btn", page: "#page-paint", bounds: false },
+  { menuButton: "#menu-media-btn", page: "#page-media", bounds: false },
 ];
 
 async function assertNoHorizontalOverflow(page) {
@@ -74,7 +76,9 @@ test.describe("layout smoke", () => {
         await page.click(item.menuButton);
         await expect(page.locator(`${item.page}.active`)).toBeVisible();
         await assertNoHorizontalOverflow(page);
-        await assertActiveLayoutBounds(page);
+        if (item.bounds) {
+          await assertActiveLayoutBounds(page);
+        }
 
         await page.click(`${item.page} .back-btn`);
         await expect(page.locator("#page-menu.active")).toBeVisible();

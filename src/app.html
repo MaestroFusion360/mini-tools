@@ -1045,16 +1045,28 @@
           placeholder="Type text..."
           oninput="analyzeText()"
         ></textarea>
-        <button
-          type="button"
-          class="text-action-btn text-copy-btn"
-          id="text-copy-btn"
-          onclick="copyTextTool()"
-          title="Copy"
-          aria-label="Copy"
-        >
-          <svg class="icon-svg btn-icon"><use href="#i-copy"></use></svg>
-        </button>
+        <div class="text-top-actions">
+          <button
+            type="button"
+            class="text-action-btn text-fullscreen-btn"
+            id="text-fullscreen-btn"
+            onclick="toggleTextInputFullscreen()"
+            title="Fullscreen"
+            aria-label="Fullscreen"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-fullscreen"></use></svg>
+          </button>
+          <button
+            type="button"
+            class="text-action-btn text-copy-btn"
+            id="text-copy-btn"
+            onclick="copyTextTool()"
+            title="Copy"
+            aria-label="Copy"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-copy"></use></svg>
+          </button>
+        </div>
       </div>
       <details class="text-tools-accordion" id="text-tools-accordion">
         <summary
@@ -1095,67 +1107,69 @@
               title="Save"
               aria-label="Save"
             >
-              Save
+              <svg class="icon-svg btn-icon"><use href="#i-save"></use></svg>
             </button>
           </div>
-          <div class="text-actions-row">
+          <div class="text-actions-row text-transform-row">
             <button
               type="button"
               class="text-action-btn"
               id="text-upper-btn"
               onclick="toUpperCaseText()"
+              title="Uppercase"
+              aria-label="Uppercase"
             >
-              UPPERCASE
+              <svg class="icon-svg btn-icon"><use href="#i-case-upper"></use></svg>
             </button>
             <button
               type="button"
               class="text-action-btn"
               id="text-lower-btn"
               onclick="toLowerCaseText()"
+              title="Lowercase"
+              aria-label="Lowercase"
             >
-              lowercase
-            </button>
-            <button
-              type="button"
-              class="text-action-btn"
-              id="text-title-btn"
-              onclick="toTitleCaseText()"
-            >
-              Title Case
+              <svg class="icon-svg btn-icon"><use href="#i-case-lower"></use></svg>
             </button>
             <button
               type="button"
               class="text-action-btn"
               id="text-sentence-btn"
               onclick="toSentenceCaseText()"
+              title="Sentence case"
+              aria-label="Sentence case"
             >
-              Sentence case
+              <svg class="icon-svg btn-icon"><use href="#i-case-sensitive"></use></svg>
             </button>
-          </div>
-          <div class="text-actions-row">
             <button
               type="button"
               class="text-action-btn"
               id="text-trim-btn"
               onclick="trimTextAction()"
+              title="Trim"
+              aria-label="Trim"
             >
-              Trim
+              <svg class="icon-svg btn-icon"><use href="#i-text-trim"></use></svg>
             </button>
             <button
               type="button"
               class="text-action-btn"
               id="text-spaces-btn"
               onclick="normalizeSpacesAction()"
+              title="Normalize spaces"
+              aria-label="Normalize spaces"
             >
-              Normalize spaces
+              <svg class="icon-svg btn-icon"><use href="#i-text-normalize"></use></svg>
             </button>
             <button
               type="button"
               class="text-action-btn"
               id="text-noempty-btn"
               onclick="removeEmptyLinesAction()"
+              title="Remove empty lines"
+              aria-label="Remove empty lines"
             >
-              Remove empty lines
+              <svg class="icon-svg btn-icon"><use href="#i-text-no-empty"></use></svg>
             </button>
           </div>
           <div class="text-find-row">
@@ -1165,8 +1179,37 @@
               class="text-action-btn"
               id="text-find-btn"
               onclick="findTextInEditor()"
+              title="Find / Next"
+              aria-label="Find / Next"
             >
-              Find / Next
+              <svg class="icon-svg btn-icon"><use href="#i-search"></use></svg>
+            </button>
+          </div>
+          <div class="text-find-row text-replace-row">
+            <input
+              type="text"
+              id="text-replace-input"
+              placeholder="Replace with..."
+            />
+            <button
+              type="button"
+              class="text-action-btn"
+              id="text-replace-btn"
+              onclick="replaceInEditor()"
+              title="Replace"
+              aria-label="Replace"
+            >
+              <svg class="icon-svg btn-icon"><use href="#i-replace"></use></svg>
+            </button>
+            <button
+              type="button"
+              class="text-action-btn"
+              id="text-replace-all-btn"
+              onclick="replaceAllInEditor()"
+              title="Replace all"
+              aria-label="Replace all"
+            >
+              <svg class="icon-svg btn-icon"><use href="#i-replace-all"></use></svg>
             </button>
           </div>
           <div class="text-find-options">
@@ -1189,20 +1232,7 @@
               >
             </label>
           </div>
-          <div class="text-find-row">
-            <input
-              type="text"
-              id="text-replace-input"
-              placeholder="Replace with..."
-            />
-            <button
-              type="button"
-              class="text-action-btn"
-              id="text-replace-all-btn"
-              onclick="replaceAllInEditor()"
-            >
-              Replace all
-            </button>
+          <div class="text-find-status-row">
             <div class="small-text" id="text-find-status"></div>
           </div>
         </div>

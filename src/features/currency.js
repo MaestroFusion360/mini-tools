@@ -1,15 +1,17 @@
 import { byId, setText } from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
+import { FEATURE_RUNTIME_STATE } from "../core/state.js";
 import { getLocale } from "../core/utils.js";
 
-let rates = { USD: 1, EUR: 0.92, RUB: 92.5, GBP: 0.79, JPY: 151.5 };
-let ratesSourceText = t("ratesSourceBuiltIn");
-let ratesUsingBuiltIn = true;
+const currencyState = FEATURE_RUNTIME_STATE.currency;
+if (!currencyState.ratesSourceText) {
+  currencyState.ratesSourceText = t("ratesSourceBuiltIn");
+}
 
 function renderRatesSource() {
   const sourceEl = byId("cur-data-source");
   if (!sourceEl) return;
-  sourceEl.textContent = `${t("ratesSourceLabel")}: ${ratesSourceText}`;
+  sourceEl.textContent = `${t("ratesSourceLabel")}: ${currencyState.ratesSourceText}`;
 }
 
 export async function loadRates(manual = false) {
@@ -20,15 +22,15 @@ export async function loadRates(manual = false) {
     const r = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
     if (!r.ok) throw new Error("Rates request failed");
     const d = await r.json();
-    if (d && d.rates) rates = d.rates;
-    ratesUsingBuiltIn = false;
-    ratesSourceText = "api.exchangerate-api.com";
+    if (d && d.rates) currencyState.rates = d.rates;
+    currencyState.ratesUsingBuiltIn = false;
+    currencyState.ratesSourceText = "api.exchangerate-api.com";
     if (status)
       status.textContent = `${t("ratesUpdated")}: ${new Date().toLocaleTimeString(getLocale(), { hour12: false })}`;
   } catch (e) {
     console.warn("Rates loading failed, fallback to built-in rates:", e);
-    ratesUsingBuiltIn = true;
-    ratesSourceText = t("ratesSourceBuiltIn");
+    currencyState.ratesUsingBuiltIn = true;
+    currencyState.ratesSourceText = t("ratesSourceBuiltIn");
     if (status) status.textContent = t("ratesFallback");
   }
   renderRatesSource();
@@ -46,15 +48,17 @@ export function convertCurrency() {
   const amt = parseFloat(byId("cur-amount").value) || 0;
   const from = byId("cur-from").value;
   const to = byId("cur-to").value;
-  const usd = amt / rates[from];
-  const res = usd * rates[to];
+  const usd = amt / currencyState.rates[from];
+  const res = usd * currencyState.rates[to];
   byId("cur-result").textContent = `= ${res.toFixed(2)} ${to}`;
 }
 
 function applyCurrencyTranslations() {
   setText("title-currency", t("currencyTitle"));
   setText("cur-refresh-btn", t("refreshServer"));
-  if (ratesUsingBuiltIn) ratesSourceText = t("ratesSourceBuiltIn");
+  if (currencyState.ratesUsingBuiltIn) {
+    currencyState.ratesSourceText = t("ratesSourceBuiltIn");
+  }
   renderRatesSource();
 }
 

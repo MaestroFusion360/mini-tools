@@ -5,18 +5,13 @@ import {
   setText,
 } from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
+import { FEATURE_RUNTIME_STATE } from "../core/state.js";
 import { getLocale } from "../core/utils.js";
 
 const CALENDAR_START_YEAR = 1970;
 const CALENDAR_END_YEAR = 2100;
 const DATE_DIFF_SYNC_INTERVAL_MS = 60000;
-let dateDiffIntervalId = null;
-
-let calendarViewDate = new Date();
-let calendarPickMode = "date1";
-let calendarPickModeTouched = false;
-let calendarPickPending = false;
-let calendarWeekStartsMonday = true;
+const calendarState = FEATURE_RUNTIME_STATE.calendar;
 
 function formatDateInputValue(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -37,7 +32,7 @@ function updateCalendarPickModeLabels() {
 
 function getCalendarWeekdayLabels() {
   const formatter = new Intl.DateTimeFormat(getLocale(), { weekday: "short" });
-  const baseDate = calendarWeekStartsMonday
+  const baseDate = calendarState.calendarWeekStartsMonday
     ? new Date(2024, 0, 1)
     : new Date(2024, 0, 7);
   return Array.from({ length: 7 }, (_, index) => {
@@ -49,7 +44,7 @@ function getCalendarWeekdayLabels() {
 
 function syncCalendarWeekStartSetting() {
   const checkbox = byId("calendar-week-start-monday");
-  calendarWeekStartsMonday = checkbox ? checkbox.checked : true;
+  calendarState.calendarWeekStartsMonday = checkbox ? checkbox.checked : true;
 }
 
 export function toggleCalendarWeekStart() {
@@ -60,63 +55,63 @@ export function toggleCalendarWeekStart() {
 export function setCalendarPickMode(mode, fromUser = true) {
   if (!["date1", "date2"].includes(mode)) return;
   if (fromUser) {
-    calendarPickModeTouched = true;
-    calendarPickPending = true;
+    calendarState.calendarPickModeTouched = true;
+    calendarState.calendarPickPending = true;
   }
-  calendarPickMode = mode;
+  calendarState.calendarPickMode = mode;
   const date1Btn = byId("calendar-pick-date1");
   const date2Btn = byId("calendar-pick-date2");
   if (date1Btn)
     date1Btn.classList.toggle(
       "active",
-      calendarPickModeTouched && mode === "date1",
+      calendarState.calendarPickModeTouched && mode === "date1",
     );
   if (date1Btn)
     date1Btn.classList.toggle(
       "pick-pending",
-      calendarPickPending && mode === "date1",
+      calendarState.calendarPickPending && mode === "date1",
     );
   if (date2Btn)
     date2Btn.classList.toggle(
       "active",
-      calendarPickModeTouched && mode === "date2",
+      calendarState.calendarPickModeTouched && mode === "date2",
     );
   if (date2Btn)
     date2Btn.classList.toggle(
       "pick-pending",
-      calendarPickPending && mode === "date2",
+      calendarState.calendarPickPending && mode === "date2",
     );
 }
 
 function applyCalendarDatePick(dateValue) {
   if (!dateValue) return;
-  if (calendarPickMode === "date1" && byId("date-use-now")?.checked) {
+  if (calendarState.calendarPickMode === "date1" && byId("date-use-now")?.checked) {
     const useNowToggle = byId("date-use-now");
     if (useNowToggle) useNowToggle.checked = false;
     syncBaseDateWithNow();
   }
-  const targetDateId = calendarPickMode;
-  const targetYearId = `${calendarPickMode}-year`;
+  const targetDateId = calendarState.calendarPickMode;
+  const targetYearId = `${calendarState.calendarPickMode}-year`;
   const targetInput = byId(targetDateId);
   if (!targetInput) return;
   targetInput.value = dateValue;
-  calendarPickPending = false;
-  setCalendarPickMode(calendarPickMode, false);
+  calendarState.calendarPickPending = false;
+  setCalendarPickMode(calendarState.calendarPickMode, false);
   syncYearSelectWithDate(targetDateId, targetYearId);
   calcDateDiff();
 }
 
 export function renderCalendar() {
   const now = new Date();
-  const year = calendarViewDate.getFullYear();
-  const month = calendarViewDate.getMonth();
+  const year = calendarState.calendarViewDate.getFullYear();
+  const month = calendarState.calendarViewDate.getMonth();
   const firstDay = new Date(year, month, 1);
   const startWeekdayRaw = firstDay.getDay();
-  const startWeekday = calendarWeekStartsMonday
+  const startWeekday = calendarState.calendarWeekStartsMonday
     ? (startWeekdayRaw + 6) % 7
     : startWeekdayRaw;
   const totalDays = daysInMonth(year, month);
-  const monthTitle = calendarViewDate.toLocaleDateString(getLocale(), {
+  const monthTitle = calendarState.calendarViewDate.toLocaleDateString(getLocale(), {
     month: "long",
     year: "numeric",
   });
@@ -174,20 +169,20 @@ export function renderCalendar() {
 
 export function changeCalendarMonth(delta) {
   if (delta < 0) {
-    calendarPickPending = false;
-    setCalendarPickMode(calendarPickMode, false);
+    calendarState.calendarPickPending = false;
+    setCalendarPickMode(calendarState.calendarPickMode, false);
   }
-  calendarViewDate = new Date(
-    calendarViewDate.getFullYear(),
-    calendarViewDate.getMonth() + delta,
+  calendarState.calendarViewDate = new Date(
+    calendarState.calendarViewDate.getFullYear(),
+    calendarState.calendarViewDate.getMonth() + delta,
     1,
   );
   renderCalendar();
 }
 
 export function goToCurrentMonth() {
-  calendarViewDate = new Date();
-  calendarViewDate.setDate(1);
+  calendarState.calendarViewDate = new Date();
+  calendarState.calendarViewDate.setDate(1);
   renderCalendar();
 }
 
@@ -375,7 +370,7 @@ function applyCalendarTranslations() {
   setLabelText("time1m", t("minutes"));
   setLabelText("time2m", t("minutes"));
   updateCalendarPickModeLabels();
-  setCalendarPickMode(calendarPickMode, false);
+  setCalendarPickMode(calendarState.calendarPickMode, false);
 
   const calcBtn = document.querySelector('button[onclick="calcDateDiff()"]');
   if (calcBtn) calcBtn.textContent = t("calculate");
@@ -409,8 +404,9 @@ export function initCalendar() {
   calcDateDiff();
   syncBaseDateWithNow();
 
-  if (dateDiffIntervalId) clearInterval(dateDiffIntervalId);
-  dateDiffIntervalId = setInterval(() => {
+  if (calendarState.dateDiffIntervalId) clearInterval(calendarState.dateDiffIntervalId);
+  calendarState.dateDiffIntervalId = setInterval(() => {
     if (byId("date-use-now")?.checked) calcDateDiff();
   }, DATE_DIFF_SYNC_INTERVAL_MS);
 }
+

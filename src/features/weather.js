@@ -6,6 +6,7 @@ import {
   t,
 } from "../core/i18n.js";
 import {
+  FEATURE_RUNTIME_STATE,
   STORAGE_KEYS,
   getStored,
   getStoredJson,
@@ -14,9 +15,7 @@ import {
 } from "../core/state.js";
 import { formatDateTime, getLocale } from "../core/utils.js";
 
-let weatherCurrentCoords = null;
-let weatherUsingApiSource = false;
-let weatherSourceText = "";
+const weatherState = FEATURE_RUNTIME_STATE.weather;
 
 const WEATHER_CITY_PRESETS = [
   { labelKey: "presetSaintPetersburg", lat: 59.9343, lon: 30.3351 },
@@ -91,7 +90,7 @@ function renderWeatherCondition(currentCode, tomorrowCode = null) {
 function renderWeatherSource() {
   const sourceEl = byId("weather-data-source");
   if (!sourceEl) return;
-  sourceEl.textContent = `${t("ratesSourceLabel")}: ${weatherSourceText}`;
+  sourceEl.textContent = `${t("ratesSourceLabel")}: ${weatherState.weatherSourceText}`;
 }
 
 function setCoordText(lat, lon) {
@@ -245,11 +244,11 @@ export function renderWeatherPresets() {
 }
 
 export function addCurrentCoordinateToFavorites() {
-  if (!weatherCurrentCoords) {
+  if (!weatherState.weatherCurrentCoords) {
     alert(t("manualCoordsHint"));
     return;
   }
-  const { lat, lon } = weatherCurrentCoords;
+  const { lat, lon } = weatherState.weatherCurrentCoords;
   const favorites = getWeatherFavorites();
   const exists = favorites.some(
     (item) =>
@@ -339,7 +338,7 @@ function loadWeatherSettings() {
 }
 
 async function refreshWeatherByCoordinates(lat, lon) {
-  weatherCurrentCoords = { lat, lon };
+  weatherState.weatherCurrentCoords = { lat, lon };
   setCoordText(lat, lon);
   await loadAddress(lat, lon);
   await loadWeather(lat, lon);
@@ -445,8 +444,8 @@ async function loadWeather(lat, lon) {
     const w = await wRes.json();
     if (!w.current || !w.daily?.sunrise?.length || !w.daily?.sunset?.length)
       throw new Error("Weather payload is incomplete");
-    weatherUsingApiSource = true;
-    weatherSourceText = "api.open-meteo.com";
+    weatherState.weatherUsingApiSource = true;
+    weatherState.weatherSourceText = "api.open-meteo.com";
     renderWeatherSource();
     byId("temp").textContent = w.current.temperature_2m;
     byId("humidity").textContent = w.current.relative_humidity_2m;
@@ -466,8 +465,8 @@ async function loadWeather(lat, lon) {
     renderForecast(w);
   } catch (e) {
     console.warn("Weather error:", e);
-    weatherUsingApiSource = false;
-    weatherSourceText = t("weatherSourceUnavailable");
+    weatherState.weatherUsingApiSource = false;
+    weatherState.weatherSourceText = t("weatherSourceUnavailable");
     renderWeatherSource();
     renderWeatherCondition(null, null);
     renderForecast();
@@ -593,8 +592,8 @@ export function refreshWeatherLocaleState() {
   const coordEl = byId("coord");
   const addressEl = byId("address");
 
-  if (weatherCurrentCoords)
-    setCoordText(weatherCurrentCoords.lat, weatherCurrentCoords.lon);
+  if (weatherState.weatherCurrentCoords)
+    setCoordText(weatherState.weatherCurrentCoords.lat, weatherState.weatherCurrentCoords.lon);
   else
     translateTextIfKnown(coordEl, [
       "manualCoordsInvalid",
@@ -650,7 +649,9 @@ function applyWeatherTranslations() {
     weatherFavHomeBtn.title = t("removeFavorite");
     weatherFavHomeBtn.setAttribute("aria-label", t("removeFavorite"));
   }
-  if (!weatherUsingApiSource) weatherSourceText = t("weatherSourceUnavailable");
+  if (!weatherState.weatherUsingApiSource) {
+    weatherState.weatherSourceText = t("weatherSourceUnavailable");
+  }
 
   renderWeatherFavorites();
   renderWeatherPresets();
@@ -660,8 +661,8 @@ function applyWeatherTranslations() {
 }
 
 export function initWeatherModule() {
-  weatherUsingApiSource = false;
-  weatherSourceText = t("weatherSourceUnavailable");
+  weatherState.weatherUsingApiSource = false;
+  weatherState.weatherSourceText = t("weatherSourceUnavailable");
   loadWeatherSettings();
   registerTranslationApplier(applyWeatherTranslations);
   initWeather();

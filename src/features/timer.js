@@ -1,12 +1,9 @@
 import { byId, setText, showAppToast } from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
+import { FEATURE_RUNTIME_STATE } from "../core/state.js";
+import { formatTimerSeconds } from "./shared/time-format.js";
 
-let timerRemainingSeconds = 60;
-let timerIntervalId = null;
-let timerRunning = false;
-let timerEndAtMs = 0;
-let timerHasStarted = false;
-let timerFinished = false;
+const timerState = FEATURE_RUNTIME_STATE.timer;
 
 function parseTimerInputValue(id, min, max) {
   const input = byId(id);
@@ -27,23 +24,11 @@ function readTimerInputs() {
   return h * 3600 + m * 60 + s;
 }
 
-function secondsToTimerParts(totalSeconds) {
-  const total = Math.max(0, Math.floor(totalSeconds));
-  return {
-    h: Math.floor(total / 3600),
-    m: Math.floor((total % 3600) / 60),
-    s: total % 60,
-  };
-}
-
-function formatTimerDisplay(totalSeconds) {
-  const { h, m, s } = secondsToTimerParts(totalSeconds);
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-}
-
 function renderTimerDisplay() {
   const display = byId("timer-display");
-  if (display) display.textContent = formatTimerDisplay(timerRemainingSeconds);
+  if (display) {
+    display.textContent = formatTimerSeconds(timerState.timerRemainingSeconds);
+  }
 }
 
 function setTimerStatus(statusKey) {
@@ -54,32 +39,32 @@ function setTimerStatus(statusKey) {
 export function renderTimerControls() {
   const startBtn = byId("timer-start-btn");
   if (startBtn)
-    startBtn.textContent = timerRunning
+    startBtn.textContent = timerState.timerRunning
       ? t("timerPause")
-      : timerHasStarted
+      : timerState.timerHasStarted
         ? t("timerResume")
         : t("timerStart");
 
-  if (timerRunning) setTimerStatus("timerRunning");
-  else if (timerFinished) setTimerStatus("timerDone");
-  else if (timerHasStarted && timerRemainingSeconds > 0)
+  if (timerState.timerRunning) setTimerStatus("timerRunning");
+  else if (timerState.timerFinished) setTimerStatus("timerDone");
+  else if (timerState.timerHasStarted && timerState.timerRemainingSeconds > 0)
     setTimerStatus("timerPaused");
   else setTimerStatus("timerReady");
 }
 
 function stopTimerInterval() {
-  if (timerIntervalId) {
-    clearInterval(timerIntervalId);
-    timerIntervalId = null;
+  if (timerState.timerIntervalId) {
+    clearInterval(timerState.timerIntervalId);
+    timerState.timerIntervalId = null;
   }
 }
 
 function onTimerFinished() {
-  timerRunning = false;
-  timerHasStarted = false;
-  timerFinished = true;
+  timerState.timerRunning = false;
+  timerState.timerHasStarted = false;
+  timerState.timerFinished = true;
   stopTimerInterval();
-  timerRemainingSeconds = 0;
+  timerState.timerRemainingSeconds = 0;
   renderTimerDisplay();
   renderTimerControls();
   const message = t("timerFinishedToast");
@@ -88,55 +73,57 @@ function onTimerFinished() {
 }
 
 function timerTick() {
-  if (!timerRunning) return;
-  timerRemainingSeconds = Math.max(
+  if (!timerState.timerRunning) return;
+  timerState.timerRemainingSeconds = Math.max(
     0,
-    Math.ceil((timerEndAtMs - Date.now()) / 1000),
+    Math.ceil((timerState.timerEndAtMs - Date.now()) / 1000),
   );
   renderTimerDisplay();
-  if (timerRemainingSeconds <= 0) onTimerFinished();
+  if (timerState.timerRemainingSeconds <= 0) onTimerFinished();
 }
 
 export function toggleTimer() {
-  if (timerRunning) {
+  if (timerState.timerRunning) {
     timerTick();
-    timerRunning = false;
+    timerState.timerRunning = false;
     stopTimerInterval();
     setTimerStatus("timerPaused");
     renderTimerControls();
     return;
   }
 
-  if (timerRemainingSeconds <= 0) timerRemainingSeconds = readTimerInputs();
-  if (timerRemainingSeconds <= 0) {
+  if (timerState.timerRemainingSeconds <= 0) {
+    timerState.timerRemainingSeconds = readTimerInputs();
+  }
+  if (timerState.timerRemainingSeconds <= 0) {
     setTimerStatus("timerInvalid");
     return;
   }
 
-  timerRunning = true;
-  timerHasStarted = true;
-  timerFinished = false;
-  timerEndAtMs = Date.now() + timerRemainingSeconds * 1000;
+  timerState.timerRunning = true;
+  timerState.timerHasStarted = true;
+  timerState.timerFinished = false;
+  timerState.timerEndAtMs = Date.now() + timerState.timerRemainingSeconds * 1000;
   stopTimerInterval();
-  timerIntervalId = setInterval(timerTick, 250);
+  timerState.timerIntervalId = setInterval(timerTick, 250);
   renderTimerControls();
 }
 
 export function resetTimer() {
-  timerRunning = false;
-  timerHasStarted = false;
-  timerFinished = false;
+  timerState.timerRunning = false;
+  timerState.timerHasStarted = false;
+  timerState.timerFinished = false;
   stopTimerInterval();
-  timerRemainingSeconds = readTimerInputs();
+  timerState.timerRemainingSeconds = readTimerInputs();
   renderTimerDisplay();
   renderTimerControls();
 }
 
 export function syncTimerFromInputs() {
-  if (timerRunning) return;
-  timerHasStarted = false;
-  timerFinished = false;
-  timerRemainingSeconds = readTimerInputs();
+  if (timerState.timerRunning) return;
+  timerState.timerHasStarted = false;
+  timerState.timerFinished = false;
+  timerState.timerRemainingSeconds = readTimerInputs();
   renderTimerDisplay();
   renderTimerControls();
 }

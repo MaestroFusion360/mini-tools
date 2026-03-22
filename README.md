@@ -83,7 +83,7 @@ calculator, text editor/analysis, and currency conversion.
 ### 🗂️ Module Responsibilities
 
 - `src/main.js`: app bootstrap and init orchestration
-- `src/core/state.js`: localStorage keys and storage helpers
+- `src/core/state.js`: localStorage keys + centralized feature runtime state
 - `src/core/dom.js`: shared DOM utilities
 - `src/core/utils.js`: shared formatting and generic helpers
 - `src/core/i18n.js`: translation loading and runtime language switching
@@ -97,10 +97,19 @@ calculator, text editor/analysis, and currency conversion.
 - `src/features/calendar.js`: calendar rendering + date diff
 - `src/features/converter.js`: unit conversion
 - `src/features/calculator.js`: calculator logic, history, keyboard input
-- `src/features/text-tools.js`: text transforms + metrics + copy feedback
+- `src/features/text-tools.js`: compatibility re-export for text editor module
+- `src/features/text-editor/index.js`: text transforms + metrics + copy feedback
+- `src/features/text-editor/state.js`: text editor runtime state slice
 - `src/features/currency.js`: rates loading and conversion
-- `src/features/paint.js`: paint canvas, tools, panels, filters, selection, fullscreen
+- `src/features/paint.js`: compatibility re-export for paint module
+- `src/features/paint/index.js`: paint module public entry
+- `src/features/paint/api.js`: exported paint actions
+- `src/features/paint/core.js`: paint internal canvas/UI/event logic
+- `src/features/paint/fonts.js`: paint font discovery/options helpers
+- `src/features/paint/pixels.js`: paint pixel/filter helpers
+- `src/features/paint/state.js`: paint runtime state + constants
 - `src/features/media-player.js`: media playlist and player controls
+- `src/features/shared/time-format.js`: shared time formatting helpers for timer/stopwatch
 - `src/core/pwa.js`: service worker registration wrapper
 
 ## 🧭 Project Structure
@@ -131,9 +140,25 @@ mini-tools/
 │       ├── converter.js
 │       ├── calculator.js
 │       ├── text-tools.js
+│       ├── text-editor/
+│       │   ├── index.js
+│       │   └── state.js
 │       ├── currency.js
 │       ├── paint.js
+│       ├── paint/
+│       │   ├── index.js
+│       │   ├── api.js
+│       │   ├── core.js
+│       │   ├── fonts.js
+│       │   ├── pixels.js
+│       │   └── state.js
 │       └── media-player.js
+│   └── tests/
+│       ├── paint.test.js
+│       ├── media-player.test.js
+│       └── layout/
+│           ├── layout.spec.js
+│           └── paint-media.spec.js
 ├── sw.js
 ├── manifest.webmanifest
 └── assets/
@@ -171,7 +196,7 @@ Install dependencies:
 npm install
 ```
 
-Run all tests once:
+Run all tests once (unit + jsdom):
 
 ```bash
 npm test
@@ -183,9 +208,15 @@ Run tests in watch mode:
 npm run test:watch
 ```
 
+New unit tests added for graphics/media modules:
+
+- `src/tests/paint.test.js`
+- `src/tests/media-player.test.js`
+
 ## 🧭 Playwright Layout Testing
 
-This project includes Playwright layout smoke tests for multiple viewport sizes.
+This project includes Playwright layout smoke tests for multiple viewport sizes
+and functional paint/media browser scenarios.
 
 Install browser binaries once:
 

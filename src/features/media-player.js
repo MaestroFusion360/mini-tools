@@ -1,11 +1,8 @@
 import { byId } from "../core/dom.js";
 import { t } from "../core/i18n.js";
+import { FEATURE_RUNTIME_STATE } from "../core/state.js";
 
-const mediaState = {
-  items: [],
-  index: -1,
-  initialized: false,
-};
+const mediaState = FEATURE_RUNTIME_STATE.mediaPlayer;
 
 function isFullscreenActive() {
   const doc = document;

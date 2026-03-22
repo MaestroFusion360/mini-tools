@@ -1,11 +1,15 @@
 import { byId, setSelectOptionText, setText } from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
-import { STORAGE_KEYS, getStored, setStored } from "../core/state.js";
+import {
+  FEATURE_RUNTIME_STATE,
+  STORAGE_KEYS,
+  getStored,
+  setStored,
+} from "../core/state.js";
 import { getLocale } from "../core/utils.js";
 
-let time24h = true;
+const worldTimeState = FEATURE_RUNTIME_STATE.worldTime;
 const WORLD_TIME_INTERVAL_MS = 1000;
-let worldTimeIntervalId = null;
 
 function isValidTimeZone(zone) {
   try {
@@ -17,18 +21,18 @@ function isValidTimeZone(zone) {
 }
 
 export function toggleTimeFormat() {
-  time24h = !time24h;
-  byId("time-format-btn").textContent = time24h
+  worldTimeState.time24h = !worldTimeState.time24h;
+  byId("time-format-btn").textContent = worldTimeState.time24h
     ? t("timeFormat24")
     : t("timeFormat12");
-  setStored(STORAGE_KEYS.timeFormat, time24h ? "24" : "12");
+  setStored(STORAGE_KEYS.timeFormat, worldTimeState.time24h ? "24" : "12");
   updateWorldTime();
 }
 
 function loadTimeFormat() {
   const savedFormat = getStored(STORAGE_KEYS.timeFormat, "24");
-  if (savedFormat === "12") time24h = false;
-  byId("time-format-btn").textContent = time24h
+  if (savedFormat === "12") worldTimeState.time24h = false;
+  byId("time-format-btn").textContent = worldTimeState.time24h
     ? t("timeFormat24")
     : t("timeFormat12");
 }
@@ -41,7 +45,7 @@ export function updateWorldTime() {
   const opts = tz === "local" ? {} : { timeZone: tz };
   const timeStr = now.toLocaleTimeString(getLocale(), {
     ...opts,
-    hour12: !time24h,
+    hour12: !worldTimeState.time24h,
   });
   byId("world-time").textContent = timeStr;
   byId("unix-time").textContent =
@@ -100,7 +104,7 @@ function applyWorldTimeTranslations() {
     "Pacific/Auckland",
     t("presetAuckland"),
   );
-  byId("time-format-btn").textContent = time24h
+  byId("time-format-btn").textContent = worldTimeState.time24h
     ? t("timeFormat24")
     : t("timeFormat12");
   updateWorldTime();
@@ -114,6 +118,11 @@ export function initWorldTime() {
   }
   registerTranslationApplier(applyWorldTimeTranslations);
   updateWorldTime();
-  if (worldTimeIntervalId) clearInterval(worldTimeIntervalId);
-  worldTimeIntervalId = setInterval(updateWorldTime, WORLD_TIME_INTERVAL_MS);
+  if (worldTimeState.worldTimeIntervalId) {
+    clearInterval(worldTimeState.worldTimeIntervalId);
+  }
+  worldTimeState.worldTimeIntervalId = setInterval(
+    updateWorldTime,
+    WORLD_TIME_INTERVAL_MS,
+  );
 }
