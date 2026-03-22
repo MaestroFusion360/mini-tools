@@ -578,22 +578,6 @@
         >
           Today
         </button>
-        <button
-          type="button"
-          class="calendar-pick-btn"
-          id="calendar-pick-date1"
-          onclick="setCalendarPickMode('date1')"
-        >
-          Date 1
-        </button>
-        <button
-          type="button"
-          class="calendar-pick-btn"
-          id="calendar-pick-date2"
-          onclick="setCalendarPickMode('date2')"
-        >
-          Date 2
-        </button>
       </div>
       <div class="calendar-grid" id="calendar-days"></div>
       <label class="checkbox-label calendar-week-start-toggle">
@@ -627,17 +611,11 @@
               type="date"
               id="date1"
               value="2025-01-01"
-              onchange="
-                syncYearSelectWithDate('date1', 'date1-year');
-                calcDateDiff();
-              "
+              onchange="onCalendarDateInputChange('date1', 'date1-year')"
             />
             <select
               id="date1-year"
-              onchange="
-                setDateYear('date1', 'date1-year');
-                calcDateDiff();
-              "
+              onchange="setDateYear('date1', 'date1-year')"
             ></select>
           </div>
           <label class="small-text" for="date1-year">Year</label>
@@ -678,17 +656,11 @@
               type="date"
               id="date2"
               value="2025-12-31"
-              onchange="
-                syncYearSelectWithDate('date2', 'date2-year');
-                calcDateDiff();
-              "
+              onchange="onCalendarDateInputChange('date2', 'date2-year')"
             />
             <select
               id="date2-year"
-              onchange="
-                setDateYear('date2', 'date2-year');
-                calcDateDiff();
-              "
+              onchange="setDateYear('date2', 'date2-year')"
             ></select>
           </div>
           <label class="small-text" for="date2-year">Year</label>
@@ -722,7 +694,7 @@
       </div>
 
       <div class="row">
-        <button class="primary flex-1" onclick="calcDateDiff()">
+        <button id="calendar-calc-btn" class="primary flex-1" onclick="calcDateDiff()">
           Calculate
         </button>
         <button
@@ -778,9 +750,19 @@
         <option value="temperature">Temperature</option>
         <option value="pressure">Pressure</option>
         <option value="energy">Energy</option>
+        <option value="data">Data</option>
+        <option value="power">Power</option>
+        <option value="time">Time</option>
+        <option value="angle">Angle</option>
       </select>
 
-      <input type="number" id="conv-val" value="1" oninput="convertUnit()" />
+      <input
+        type="text"
+        inputmode="decimal"
+        id="conv-val"
+        value="1"
+        oninput="convertUnit()"
+      />
 
       <div class="converter-precision-row">
         <label class="small-text" for="conv-precision">Precision</label>

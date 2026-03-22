@@ -1,9 +1,4 @@
-import {
-  byId,
-  setLabelText,
-  setSelectOptionText,
-  setText,
-} from "../core/dom.js";
+﻿import { byId, setLabelText, setText } from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
 import { FEATURE_RUNTIME_STATE } from "../core/state.js";
 import { getLocale } from "../core/utils.js";
@@ -11,23 +6,69 @@ import { getLocale } from "../core/utils.js";
 const CALENDAR_START_YEAR = 1970;
 const CALENDAR_END_YEAR = 2100;
 const DATE_DIFF_SYNC_INTERVAL_MS = 60000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 const calendarState = FEATURE_RUNTIME_STATE.calendar;
+
+const IDS = {
+  monthTitle: "calendar-month-year",
+  daysGrid: "calendar-days",
+  weekStartToggle: "calendar-week-start-monday",
+  dateUseNow: "date-use-now",
+  dateInclusive: "date-inclusive",
+  dateDiff: "date-diff",
+  calcButton: "calendar-calc-btn",
+  prevBtn: "calendar-prev-btn",
+  nextBtn: "calendar-next-btn",
+  swapBtn: "calendar-swap-btn",
+};
+
+const DATE_FIELDS = {
+  date1: { date: "date1", year: "date1-year", hour: "time1h", minute: "time1m" },
+  date2: { date: "date2", year: "date2-year", hour: "time2h", minute: "time2m" },
+};
+
+function ensureCalendarState() {
+  const isValidDate =
+    calendarState.calendarViewDate instanceof Date &&
+    Number.isFinite(calendarState.calendarViewDate.getTime());
+  if (!isValidDate) {
+    calendarState.calendarViewDate = new Date();
+    calendarState.calendarViewDate.setDate(1);
+  }
+  if (typeof calendarState.calendarWeekStartsMonday !== "boolean") {
+    calendarState.calendarWeekStartsMonday = true;
+  }
+  if (!["date1", "date2"].includes(calendarState.calendarPickMode)) {
+    calendarState.calendarPickMode = "date1";
+  }
+  if (typeof calendarState.calendarInitialized !== "boolean") {
+    calendarState.calendarInitialized = false;
+  }
+}
+
+function el(id) {
+  return byId(id);
+}
 
 function formatDateInputValue(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function parseDateValue(value) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
+  if (!m) return null;
+  return { year: Number(m[1]), month: Number(m[2]), day: Number(m[3]) };
+}
+
+function parseDateInputValue(dateId) {
+  return parseDateValue(el(dateId)?.value);
 }
 
 function getDateOnlyFromInput(dateId) {
   const parsed = parseDateInputValue(dateId);
   if (!parsed) return null;
   return new Date(parsed.year, parsed.month - 1, parsed.day);
-}
-
-function updateCalendarPickModeLabels() {
-  const date1Btn = byId("calendar-pick-date1");
-  const date2Btn = byId("calendar-pick-date2");
-  if (date1Btn) date1Btn.textContent = t("date1");
-  if (date2Btn) date2Btn.textContent = t("date2");
 }
 
 function getCalendarWeekdayLabels() {
@@ -43,7 +84,7 @@ function getCalendarWeekdayLabels() {
 }
 
 function syncCalendarWeekStartSetting() {
-  const checkbox = byId("calendar-week-start-monday");
+  const checkbox = el(IDS.weekStartToggle);
   calendarState.calendarWeekStartsMonday = checkbox ? checkbox.checked : true;
 }
 
@@ -52,126 +93,116 @@ export function toggleCalendarWeekStart() {
   renderCalendar();
 }
 
-export function setCalendarPickMode(mode, fromUser = true) {
+export function setCalendarPickMode(mode) {
   if (!["date1", "date2"].includes(mode)) return;
-  if (fromUser) {
-    calendarState.calendarPickModeTouched = true;
-    calendarState.calendarPickPending = true;
-  }
   calendarState.calendarPickMode = mode;
-  const date1Btn = byId("calendar-pick-date1");
-  const date2Btn = byId("calendar-pick-date2");
-  if (date1Btn)
-    date1Btn.classList.toggle(
-      "active",
-      calendarState.calendarPickModeTouched && mode === "date1",
-    );
-  if (date1Btn)
-    date1Btn.classList.toggle(
-      "pick-pending",
-      calendarState.calendarPickPending && mode === "date1",
-    );
-  if (date2Btn)
-    date2Btn.classList.toggle(
-      "active",
-      calendarState.calendarPickModeTouched && mode === "date2",
-    );
-  if (date2Btn)
-    date2Btn.classList.toggle(
-      "pick-pending",
-      calendarState.calendarPickPending && mode === "date2",
-    );
 }
 
-function applyCalendarDatePick(dateValue) {
-  if (!dateValue) return;
-  if (calendarState.calendarPickMode === "date1" && byId("date-use-now")?.checked) {
-    const useNowToggle = byId("date-use-now");
-    if (useNowToggle) useNowToggle.checked = false;
-    syncBaseDateWithNow();
-  }
-  const targetDateId = calendarState.calendarPickMode;
-  const targetYearId = `${calendarState.calendarPickMode}-year`;
-  const targetInput = byId(targetDateId);
-  if (!targetInput) return;
-  targetInput.value = dateValue;
-  calendarState.calendarPickPending = false;
-  setCalendarPickMode(calendarState.calendarPickMode, false);
-  syncYearSelectWithDate(targetDateId, targetYearId);
-  calcDateDiff();
-}
-
-export function renderCalendar() {
+function buildCalendarModel() {
   const now = new Date();
   const year = calendarState.calendarViewDate.getFullYear();
   const month = calendarState.calendarViewDate.getMonth();
   const firstDay = new Date(year, month, 1);
   const startWeekdayRaw = firstDay.getDay();
-  const startWeekday = calendarState.calendarWeekStartsMonday
+  const leadingEmpty = calendarState.calendarWeekStartsMonday
     ? (startWeekdayRaw + 6) % 7
     : startWeekdayRaw;
   const totalDays = daysInMonth(year, month);
-  const monthTitle = calendarState.calendarViewDate.toLocaleDateString(getLocale(), {
-    month: "long",
-    year: "numeric",
-  });
 
-  byId("calendar-month-year").textContent = monthTitle;
-
-  const d1Selected = getDateOnlyFromInput("date1");
-  const d2Selected = getDateOnlyFromInput("date2");
+  const d1Selected = getDateOnlyFromInput(DATE_FIELDS.date1.date);
+  const d2Selected = getDateOnlyFromInput(DATE_FIELDS.date2.date);
   const hasBoth = Boolean(d1Selected && d2Selected);
-  const rangeStart = hasBoth
-    ? d1Selected <= d2Selected
-      ? d1Selected
-      : d2Selected
-    : null;
-  const rangeEnd = hasBoth
-    ? d1Selected <= d2Selected
-      ? d2Selected
-      : d1Selected
-    : null;
+  const rangeStart = hasBoth ? (d1Selected <= d2Selected ? d1Selected : d2Selected) : null;
+  const rangeEnd = hasBoth ? (d1Selected <= d2Selected ? d2Selected : d1Selected) : null;
 
-  let html = "";
-  const wd = getCalendarWeekdayLabels();
-  wd.forEach((w) => (html += `<div class="calendar-day weekday">${w}</div>`));
-  for (let i = 0; i < startWeekday; i++)
-    html += '<div class="calendar-day empty"></div>';
-
-  for (let day = 1; day <= totalDays; day++) {
+  const days = [];
+  for (let day = 1; day <= totalDays; day += 1) {
     const dayDate = new Date(year, month, day);
     const isoDate = formatDateInputValue(dayDate);
-    const isToday = dayDate.toDateString() === now.toDateString();
-    const isDate1 =
-      d1Selected && dayDate.toDateString() === d1Selected.toDateString();
-    const isDate2 =
-      d2Selected && dayDate.toDateString() === d2Selected.toDateString();
-    const inRange =
-      rangeStart && rangeEnd && dayDate > rangeStart && dayDate < rangeEnd;
-    const classNames = ["calendar-day", "calendar-day-clickable"];
-    if (isToday) classNames.push("today");
-    if (isDate1) classNames.push("selected-start");
-    if (isDate2) classNames.push("selected-end");
-    if (inRange) classNames.push("in-range");
-    html += `<div class="${classNames.join(" ")}" data-calendar-date="${isoDate}">${day}</div>`;
+    const classes = ["calendar-day", "calendar-day-clickable"];
+    if (dayDate.toDateString() === now.toDateString()) classes.push("today");
+    if (d1Selected && dayDate.toDateString() === d1Selected.toDateString()) {
+      classes.push("selected-start");
+    }
+    if (d2Selected && dayDate.toDateString() === d2Selected.toDateString()) {
+      classes.push("selected-end");
+    }
+    if (rangeStart && rangeEnd && dayDate > rangeStart && dayDate < rangeEnd) {
+      classes.push("in-range");
+    }
+    days.push({ day, isoDate, classes: classes.join(" ") });
   }
 
-  byId("calendar-days").innerHTML = html;
-  byId("calendar-days")
-    .querySelectorAll(".calendar-day-clickable")
-    .forEach((cell) => {
-      cell.addEventListener("click", () => {
-        applyCalendarDatePick(cell.dataset.calendarDate || "");
-        renderCalendar();
-      });
-    });
+  return {
+    monthTitle: calendarState.calendarViewDate.toLocaleDateString(getLocale(), {
+      month: "long",
+      year: "numeric",
+    }),
+    weekdayLabels: getCalendarWeekdayLabels(),
+    leadingEmpty,
+    days,
+  };
+}
+
+function renderCalendarHtml(model) {
+  let html = "";
+  model.weekdayLabels.forEach((label) => {
+    html += `<div class="calendar-day weekday">${label}</div>`;
+  });
+  for (let i = 0; i < model.leadingEmpty; i += 1) {
+    html += '<div class="calendar-day empty"></div>';
+  }
+  model.days.forEach((item) => {
+    html += `<div class="${item.classes}" data-calendar-date="${item.isoDate}">${item.day}</div>`;
+  });
+  return html;
+}
+
+export function renderCalendar() {
+  const monthTitleEl = el(IDS.monthTitle);
+  const daysGridEl = el(IDS.daysGrid);
+  if (!monthTitleEl || !daysGridEl) return;
+  const model = buildCalendarModel();
+  monthTitleEl.textContent = model.monthTitle;
+  daysGridEl.innerHTML = renderCalendarHtml(model);
+}
+
+function applyCalendarDatePick(dateValue) {
+  if (!dateValue) return;
+  if (
+    calendarState.calendarPickMode === "date1" &&
+    el(IDS.dateUseNow)?.checked
+  ) {
+    const useNowToggle = el(IDS.dateUseNow);
+    if (useNowToggle) useNowToggle.checked = false;
+    syncBaseDateWithNow();
+  }
+  const target = DATE_FIELDS[calendarState.calendarPickMode];
+  if (!target) return;
+  const targetInput = el(target.date);
+  if (!targetInput) return;
+
+  targetInput.value = dateValue;
+  syncYearSelectWithDate(target.date, target.year);
+  calcDateDiff();
+  renderCalendar();
+  setCalendarPickMode(calendarState.calendarPickMode === "date1" ? "date2" : "date1");
+}
+
+function bindCalendarDayDelegation() {
+  const daysGrid = el(IDS.daysGrid);
+  if (!daysGrid || daysGrid.dataset.bound === "1") return;
+  daysGrid.dataset.bound = "1";
+  daysGrid.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const cell = target.closest(".calendar-day-clickable");
+    if (!(cell instanceof HTMLElement)) return;
+    applyCalendarDatePick(cell.dataset.calendarDate || "");
+  });
 }
 
 export function changeCalendarMonth(delta) {
-  if (delta < 0) {
-    calendarState.calendarPickPending = false;
-    setCalendarPickMode(calendarState.calendarPickMode, false);
-  }
   calendarState.calendarViewDate = new Date(
     calendarState.calendarViewDate.getFullYear(),
     calendarState.calendarViewDate.getMonth() + delta,
@@ -190,71 +221,70 @@ function daysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate();
 }
 
-function parseDateInputValue(dateId) {
-  const value = byId(dateId).value;
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!m) return null;
-  return { year: Number(m[1]), month: Number(m[2]), day: Number(m[3]) };
-}
-
 function fillYearSelect(selectId, selectedYear) {
-  const sel = byId(selectId);
-  if (!sel) return;
+  const select = el(selectId);
+  if (!select) return;
   const selected = Number(selectedYear);
   let html = "";
-  for (let y = CALENDAR_END_YEAR; y >= CALENDAR_START_YEAR; y--) {
+  for (let y = CALENDAR_END_YEAR; y >= CALENDAR_START_YEAR; y -= 1) {
     html += `<option value="${y}"${y === selected ? " selected" : ""}>${y}</option>`;
   }
-  sel.innerHTML = html;
+  select.innerHTML = html;
 }
 
 export function syncYearSelectWithDate(dateId, yearSelectId) {
   const parsed = parseDateInputValue(dateId);
   if (!parsed) return;
   fillYearSelect(yearSelectId, parsed.year);
+}
+
+export function onCalendarDateInputChange(dateId, yearSelectId) {
+  syncYearSelectWithDate(dateId, yearSelectId);
+  calcDateDiff();
   renderCalendar();
 }
 
 export function setDateYear(dateId, yearSelectId) {
-  const dateInput = byId(dateId);
-  const yearSelect = byId(yearSelectId);
+  const dateInput = el(dateId);
+  const yearSelect = el(yearSelectId);
   const parsed = parseDateInputValue(dateId);
   if (!dateInput || !yearSelect || !parsed) return;
-  const y = Number(yearSelect.value);
-  const maxDay = daysInMonth(y, parsed.month - 1);
-  const d = Math.min(parsed.day, maxDay);
-  dateInput.value = `${y}-${String(parsed.month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  const nextYear = Number(yearSelect.value);
+  const maxDay = daysInMonth(nextYear, parsed.month - 1);
+  const nextDay = Math.min(parsed.day, maxDay);
+  dateInput.value = `${nextYear}-${String(parsed.month).padStart(2, "0")}-${String(nextDay).padStart(2, "0")}`;
   syncYearSelectWithDate(dateId, yearSelectId);
   calcDateDiff();
+  renderCalendar();
 }
 
 function initDateYearSelects() {
-  const date2El = byId("date2");
-  if (date2El && (!date2El.value || date2El.value === "2025-12-31")) {
+  const date2 = el(DATE_FIELDS.date2.date);
+  if (date2 && (!date2.value || date2.value === "2025-12-31")) {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    date2El.value = formatDateInputValue(tomorrow);
+    date2.value = formatDateInputValue(tomorrow);
   }
-  syncYearSelectWithDate("date1", "date1-year");
-  syncYearSelectWithDate("date2", "date2-year");
+  syncYearSelectWithDate(DATE_FIELDS.date1.date, DATE_FIELDS.date1.year);
+  syncYearSelectWithDate(DATE_FIELDS.date2.date, DATE_FIELDS.date2.year);
 }
 
 function clampNumber(id, min, max) {
-  const el = byId(id);
-  if (!el) return min;
-  let v = Number(el.value);
-  if (!Number.isFinite(v)) v = min;
-  v = Math.max(min, Math.min(max, Math.floor(v)));
-  el.value = String(v);
-  return v;
+  const input = el(id);
+  if (!input) return min;
+  let value = Number(input.value);
+  if (!Number.isFinite(value)) value = min;
+  value = Math.max(min, Math.min(max, Math.floor(value)));
+  input.value = String(value);
+  return value;
 }
 
 function getDateTime(dateId, hourId, minuteId) {
-  const p = parseDateInputValue(dateId);
-  if (!p) return null;
+  const parsed = parseDateInputValue(dateId);
+  if (!parsed) return null;
   const h = clampNumber(hourId, 0, 23);
   const m = clampNumber(minuteId, 0, 59);
-  return new Date(p.year, p.month - 1, p.day, h, m, 0, 0);
+  return new Date(parsed.year, parsed.month - 1, parsed.day, h, m, 0, 0);
 }
 
 function diffYMD(start, end) {
@@ -284,74 +314,104 @@ function formatTime(date) {
   });
 }
 
-export function swapDates() {
-  const d1 = byId("date1").value;
-  const d2 = byId("date2").value;
-  const y1 = byId("date1-year").value;
-  const y2 = byId("date2-year").value;
-  const h1 = byId("time1h").value;
-  const h2 = byId("time2h").value;
-  const m1 = byId("time1m").value;
-  const m2 = byId("time2m").value;
+function buildDateDiffModel() {
+  const d1 = getDateTime(
+    DATE_FIELDS.date1.date,
+    DATE_FIELDS.date1.hour,
+    DATE_FIELDS.date1.minute,
+  );
+  const d2 = getDateTime(
+    DATE_FIELDS.date2.date,
+    DATE_FIELDS.date2.hour,
+    DATE_FIELDS.date2.minute,
+  );
+  if (!d1 || !d2) return null;
 
-  byId("date1").value = d2;
-  byId("date2").value = d1;
-  byId("date1-year").value = y2;
-  byId("date2-year").value = y1;
-  byId("time1h").value = h2;
-  byId("time2h").value = h1;
-  byId("time1m").value = m2;
-  byId("time2m").value = m1;
+  const inclusive = Boolean(el(IDS.dateInclusive)?.checked);
+  const ms = Math.abs(d2 - d1) + (inclusive ? DAY_MS : 0);
+  const totalMinutes = Math.floor(ms / 60000);
+  const days = Math.floor(ms / DAY_MS);
+  const weeks = Math.floor(days / 7);
+  const remDays = days % 7;
+  const hours = Math.floor((ms % DAY_MS) / (1000 * 60 * 60));
+  const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+  const start = d1 < d2 ? d1 : d2;
+  const end = d1 < d2 ? d2 : d1;
+  const startDateOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const endDateOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  // Inclusive mode should affect both elapsed totals and calendar Y/M/D breakdown.
+  if (inclusive) {
+    endDateOnly.setDate(endDateOnly.getDate() + 1);
+  }
+  const ymd = diffYMD(startDateOnly, endDateOnly);
+  const relation = d2 >= d1 ? t("relationForward") : t("relationReverse");
+
+  return { d1, d2, days, weeks, remDays, hours, minutes, ymd, relation, totalMinutes };
+}
+
+function renderDateDiff(model) {
+  const result = el(IDS.dateDiff);
+  if (!result) return;
+  if (!model) {
+    result.textContent = "--";
+    return;
+  }
+  const lines = [
+    `${model.days} ${t("dayShort")} ${model.hours} ${t("hourShort")} ${model.minutes} ${t("minShort")}`,
+    `${model.weeks} ${t("weekShort")} ${model.remDays} ${t("dayShort")}`,
+    `${model.ymd.y} ${t("yearShort")} ${model.ymd.m} ${t("monthShort")} ${model.ymd.d} ${t("dayShort")}`,
+    `${formatWeekday(model.d1)} ${formatTime(model.d1)} -> ${formatWeekday(model.d2)} ${formatTime(model.d2)}`,
+    model.relation,
+    `${t("totalMinutes")}: ${model.totalMinutes.toLocaleString(getLocale())}`,
+  ];
+  result.innerHTML = lines.join("<br>");
+}
+
+function swapInputValues(idA, idB) {
+  const a = el(idA);
+  const b = el(idB);
+  if (!a || !b) return;
+  [a.value, b.value] = [b.value, a.value];
+}
+
+export function swapDates() {
+  [
+    [DATE_FIELDS.date1.date, DATE_FIELDS.date2.date],
+    [DATE_FIELDS.date1.year, DATE_FIELDS.date2.year],
+    [DATE_FIELDS.date1.hour, DATE_FIELDS.date2.hour],
+    [DATE_FIELDS.date1.minute, DATE_FIELDS.date2.minute],
+  ].forEach(([left, right]) => swapInputValues(left, right));
   calcDateDiff();
+  renderCalendar();
 }
 
 export function syncBaseDateWithNow() {
-  const useNow = byId("date-use-now")?.checked;
-  const date1El = byId("date1");
-  const date1YearEl = byId("date1-year");
-  const time1h = byId("time1h");
-  const time1m = byId("time1m");
-  [date1El, date1YearEl, time1h, time1m].forEach((el) => {
-    if (el) el.disabled = useNow;
+  const useNow = Boolean(el(IDS.dateUseNow)?.checked);
+  const fields = [
+    el(DATE_FIELDS.date1.date),
+    el(DATE_FIELDS.date1.year),
+    el(DATE_FIELDS.date1.hour),
+    el(DATE_FIELDS.date1.minute),
+  ];
+  fields.forEach((field) => {
+    if (field) field.disabled = useNow;
   });
   if (!useNow) return;
+
   const now = new Date();
-  date1El.value = formatDateInputValue(now);
-  syncYearSelectWithDate("date1", "date1-year");
+  const date1 = el(DATE_FIELDS.date1.date);
+  const time1h = el(DATE_FIELDS.date1.hour);
+  const time1m = el(DATE_FIELDS.date1.minute);
+  if (!date1 || !time1h || !time1m) return;
+  date1.value = formatDateInputValue(now);
+  syncYearSelectWithDate(DATE_FIELDS.date1.date, DATE_FIELDS.date1.year);
   time1h.value = String(now.getHours());
   time1m.value = String(now.getMinutes());
 }
 
 export function calcDateDiff() {
   syncBaseDateWithNow();
-  const d1 = getDateTime("date1", "time1h", "time1m");
-  const d2 = getDateTime("date2", "time2h", "time2m");
-  if (!d1 || !d2) {
-    byId("date-diff").textContent = "--";
-    return;
-  }
-
-  const inclusive = byId("date-inclusive")?.checked;
-  const ms = Math.abs(d2 - d1) + (inclusive ? 24 * 60 * 60 * 1000 : 0);
-  const totalMinutes = Math.floor(ms / 60000);
-  const days = Math.floor(ms / (1000 * 60 * 60 * 24));
-  const weeks = Math.floor(days / 7);
-  const remDays = days % 7;
-  const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-  const start = d1 < d2 ? d1 : d2;
-  const end = d1 < d2 ? d2 : d1;
-  const ymd = diffYMD(start, end);
-  const relation = d2 >= d1 ? t("relationForward") : t("relationReverse");
-
-  byId("date-diff").innerHTML =
-    `${days} ${t("dayShort")} ${hours} ${t("hourShort")} ${minutes} ${t("minShort")}<br>` +
-    `${weeks} ${t("weekShort")} ${remDays} ${t("dayShort")}<br>` +
-    `${ymd.y} ${t("yearShort")} ${ymd.m} ${t("monthShort")} ${ymd.d} ${t("dayShort")}<br>` +
-    `${formatWeekday(d1)} ${formatTime(d1)} → ${formatWeekday(d2)} ${formatTime(d2)}<br>` +
-    `${relation}<br>` +
-    `${t("totalMinutes")}: ${totalMinutes.toLocaleString(getLocale())}`;
-  renderCalendar();
+  renderDateDiff(buildDateDiffModel());
 }
 
 function applyCalendarTranslations() {
@@ -361,52 +421,66 @@ function applyCalendarTranslations() {
   setText("calendar-week-start-label", t("calendarWeekStartsMonday"));
   setText("use-now-label", t("useNow"));
   setText("date-inclusive-label", t("includeBoth"));
-  setLabelText("date1", t("date1"));
-  setLabelText("date2", t("date2"));
-  setLabelText("date1-year", t("yearLabel"));
-  setLabelText("date2-year", t("yearLabel"));
-  setLabelText("time1h", t("hours"));
-  setLabelText("time2h", t("hours"));
-  setLabelText("time1m", t("minutes"));
-  setLabelText("time2m", t("minutes"));
-  updateCalendarPickModeLabels();
-  setCalendarPickMode(calendarState.calendarPickMode, false);
 
-  const calcBtn = document.querySelector('button[onclick="calcDateDiff()"]');
+  [
+    ["date1", t("date1")],
+    ["date2", t("date2")],
+    [DATE_FIELDS.date1.year, t("yearLabel")],
+    [DATE_FIELDS.date2.year, t("yearLabel")],
+    [DATE_FIELDS.date1.hour, t("hours")],
+    [DATE_FIELDS.date2.hour, t("hours")],
+    [DATE_FIELDS.date1.minute, t("minutes")],
+    [DATE_FIELDS.date2.minute, t("minutes")],
+  ].forEach(([id, text]) => setLabelText(id, text));
+
+  const calcBtn = el(IDS.calcButton);
   if (calcBtn) calcBtn.textContent = t("calculate");
 
-  const prevBtn = byId("calendar-prev-btn");
-  const nextBtn = byId("calendar-next-btn");
+  const prevBtn = el(IDS.prevBtn);
   if (prevBtn) {
     prevBtn.title = t("calendarPrev");
     prevBtn.setAttribute("aria-label", t("calendarPrev"));
   }
+  const nextBtn = el(IDS.nextBtn);
   if (nextBtn) {
     nextBtn.title = t("calendarNext");
     nextBtn.setAttribute("aria-label", t("calendarNext"));
   }
-  const swapBtn = byId("calendar-swap-btn");
+  const swapBtn = el(IDS.swapBtn);
   if (swapBtn) {
-    swapBtn.title = "Swap dates";
-    swapBtn.setAttribute("aria-label", "Swap dates");
+    const swapTitle = t("swapDates");
+    swapBtn.title = swapTitle;
+    swapBtn.setAttribute("aria-label", swapTitle);
   }
 
+  renderCalendar();
   calcDateDiff();
 }
 
-export function initCalendar() {
-  const weekStartCheckbox = byId("calendar-week-start-monday");
-  if (weekStartCheckbox) weekStartCheckbox.checked = true;
-  syncCalendarWeekStartSetting();
-  initDateYearSelects();
-  registerTranslationApplier(applyCalendarTranslations);
-  renderCalendar();
-  calcDateDiff();
-  syncBaseDateWithNow();
-
-  if (calendarState.dateDiffIntervalId) clearInterval(calendarState.dateDiffIntervalId);
+function initDateDiffAutoSync() {
+  if (calendarState.dateDiffIntervalId) {
+    clearInterval(calendarState.dateDiffIntervalId);
+  }
   calendarState.dateDiffIntervalId = setInterval(() => {
-    if (byId("date-use-now")?.checked) calcDateDiff();
+    if (!el(IDS.dateUseNow)?.checked) return;
+    calcDateDiff();
   }, DATE_DIFF_SYNC_INTERVAL_MS);
 }
 
+export function initCalendar() {
+  ensureCalendarState();
+  const weekStartCheckbox = el(IDS.weekStartToggle);
+  if (weekStartCheckbox) {
+    weekStartCheckbox.checked = calendarState.calendarWeekStartsMonday;
+  }
+  syncCalendarWeekStartSetting();
+  initDateYearSelects();
+  bindCalendarDayDelegation();
+  if (!calendarState.calendarInitialized) {
+    registerTranslationApplier(applyCalendarTranslations);
+    calendarState.calendarInitialized = true;
+  }
+  renderCalendar();
+  calcDateDiff();
+  initDateDiffAutoSync();
+}

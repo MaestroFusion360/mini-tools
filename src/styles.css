@@ -2020,6 +2020,45 @@ body.paint-immersive-active .app-footer {
     min-height: 40px;
   }
 
+  #page-calc .card {
+    border-radius: 12px;
+  }
+
+  #page-calc .result {
+    border-radius: 8px;
+  }
+
+  #page-calc .calc-btn {
+    border-radius: 8px;
+  }
+
+  #page-calc .calc-history {
+    border-radius: 8px;
+    max-height: none;
+    overflow: visible;
+  }
+
+  #page-calc .calc-history-item {
+    gap: 5px;
+    padding: 2px 0;
+  }
+
+  #page-calc .calc-history-remove-btn {
+    width: 18px;
+    min-width: 18px;
+    min-height: 18px;
+    flex: 0 0 18px;
+  }
+
+  #page-calc .calc-history-remove-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  #page-calc .calc-history-remove-btn {
+    border-radius: 5px;
+  }
+
   body {
     padding: 18px 10px 10px;
   }
@@ -2267,7 +2306,7 @@ body.paint-immersive-active .app-footer {
   .calc-btn {
     min-height: 38px;
     font-size: 0.86rem;
-    border-radius: 9px;
+    border-radius: 7px;
   }
 
   .calc-btn.scientific {
@@ -2275,9 +2314,20 @@ body.paint-immersive-active .app-footer {
   }
 
   .calc-history {
-    max-height: 34px;
+    max-height: none;
     padding: 4px;
     font-size: 0.72rem;
+    border-radius: 7px;
+    overflow: visible;
+  }
+
+  #page-calc .calc-history-item {
+    gap: 4px;
+    padding: 1px 0;
+  }
+
+  #page-calc .result {
+    border-radius: 7px;
   }
 
   #page-calc button {

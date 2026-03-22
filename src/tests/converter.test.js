@@ -19,8 +19,12 @@ function mountConverterDom() {
       <option value="temperature">Temperature</option>
       <option value="pressure">Pressure</option>
       <option value="energy">Energy</option>
+      <option value="data">Data</option>
+      <option value="power">Power</option>
+      <option value="time">Time</option>
+      <option value="angle">Angle</option>
     </select>
-    <input id="conv-val" type="number" value="1" />
+    <input id="conv-val" type="text" value="1" />
     <input id="conv-precision" type="range" min="2" max="12" value="6" />
     <span id="conv-precision-value"></span>
     <select id="conv-from"></select>
@@ -57,6 +61,10 @@ describe("converter modes", () => {
       "temperature",
       "pressure",
       "energy",
+      "data",
+      "power",
+      "time",
+      "angle",
     ].forEach((mode) => {
       typeSelect.value = mode;
       updateConvUnits();
@@ -127,6 +135,77 @@ describe("converter modes", () => {
 
     const result = document.getElementById("conv-result")?.textContent || "";
     expect(result).toContain("14.");
+  });
+
+  it("converts data units", () => {
+    document.getElementById("conv-type").value = "data";
+    updateConvUnits();
+    document.getElementById("conv-from").value = "mbit";
+    document.getElementById("conv-to").value = "mbyte";
+    document.getElementById("conv-val").value = "8";
+    convertUnit();
+
+    const result = document.getElementById("conv-result")?.textContent || "";
+    expect(result).toContain("1");
+  });
+
+  it("converts power units", () => {
+    document.getElementById("conv-type").value = "power";
+    updateConvUnits();
+    document.getElementById("conv-from").value = "kw";
+    document.getElementById("conv-to").value = "w";
+    document.getElementById("conv-val").value = "1";
+    convertUnit();
+
+    const result = document.getElementById("conv-result")?.textContent || "";
+    expect(result).toMatch(/1[,\s]?000/);
+  });
+
+  it("converts time units", () => {
+    document.getElementById("conv-type").value = "time";
+    updateConvUnits();
+    document.getElementById("conv-from").value = "h";
+    document.getElementById("conv-to").value = "min";
+    document.getElementById("conv-val").value = "1";
+    convertUnit();
+
+    const result = document.getElementById("conv-result")?.textContent || "";
+    expect(result).toContain("60");
+  });
+
+  it("converts angle units", () => {
+    document.getElementById("conv-type").value = "angle";
+    updateConvUnits();
+    document.getElementById("conv-from").value = "deg";
+    document.getElementById("conv-to").value = "rad";
+    document.getElementById("conv-val").value = "180";
+    convertUnit();
+
+    const result = document.getElementById("conv-result")?.textContent || "";
+    expect(result).toContain("3.141");
+  });
+
+  it("accepts comma decimal input", () => {
+    document.getElementById("conv-type").value = "length";
+    updateConvUnits();
+    document.getElementById("conv-from").value = "m";
+    document.getElementById("conv-to").value = "cm";
+    document.getElementById("conv-val").value = "1,5";
+    convertUnit();
+
+    const result = document.getElementById("conv-result")?.textContent || "";
+    expect(result).toContain("150");
+  });
+
+  it("keeps selected units on language re-apply", () => {
+    document.getElementById("conv-type").value = "time";
+    updateConvUnits();
+    document.getElementById("conv-from").value = "h";
+    document.getElementById("conv-to").value = "week";
+    updateConvUnits();
+
+    expect(document.getElementById("conv-from")?.value).toBe("h");
+    expect(document.getElementById("conv-to")?.value).toBe("week");
   });
 });
 

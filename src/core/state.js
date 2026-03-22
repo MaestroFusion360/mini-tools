@@ -21,6 +21,7 @@ export const FEATURE_RUNTIME_STATE = {
   calendar: {
     dateDiffIntervalId: null,
     calendarViewDate: new Date(),
+    calendarInitialized: false,
     calendarPickMode: "date1",
     calendarPickModeTouched: false,
     calendarPickPending: false,

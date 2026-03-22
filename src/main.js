@@ -6,6 +6,7 @@ import {
   setCalendarPickMode,
   toggleCalendarWeekStart,
   setDateYear,
+  onCalendarDateInputChange,
   swapDates,
   syncYearSelectWithDate,
 } from "./features/calendar.js";
@@ -144,6 +145,7 @@ function exposeGlobals() {
     calcDateDiff,
     syncYearSelectWithDate,
     setDateYear,
+    onCalendarDateInputChange,
     swapDates,
     updateConvUnits,
     convertUnit,

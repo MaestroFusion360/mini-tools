@@ -75,6 +75,7 @@
     "calendarNext": "Next month",
     "calendarToday": "Current month",
     "calendarWeekStartsMonday": "Week starts on Monday",
+    "swapDates": "Swap dates",
     "yearLabel": "Year",
     "converter": "Converter",
     "converterTitle": "Converter",
@@ -278,7 +279,11 @@
     "languageLabel": "Language",
     "themeToggleLabel": "Toggle theme",
     "textFullscreen": "Fullscreen",
-    "textFullscreenExit": "Exit fullscreen"
+    "textFullscreenExit": "Exit fullscreen",
+    "dataUnits": "Data",
+    "powerUnits": "Power",
+    "timeUnits": "Time",
+    "angleUnits": "Angle"
   },
   "ru": {
     "back": "Назад",
@@ -356,6 +361,7 @@
     "calendarNext": "Следующий месяц",
     "calendarToday": "Текущий месяц",
     "calendarWeekStartsMonday": "Начало недели с понедельника",
+    "swapDates": "Поменять даты местами",
     "yearLabel": "Год",
     "converter": "Конвертер",
     "converterTitle": "Конвертер",
@@ -558,7 +564,11 @@
     "paintZoomReset": "Сбросить масштаб",
     "languageLabel": "Язык",
     "themeToggleLabel": "Переключить тему",
-    "textFullscreen": "?? ???? ?????",
-    "textFullscreenExit": "????? ?? ?????????????? ??????"
+    "textFullscreen": "На весь экран",
+    "textFullscreenExit": "Выйти из полноэкранного режима",
+    "dataUnits": "Данные",
+    "powerUnits": "Мощность",
+    "timeUnits": "Время",
+    "angleUnits": "Угол"
   }
 }

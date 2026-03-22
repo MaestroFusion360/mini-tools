@@ -149,6 +149,46 @@ describe("calculator basics", () => {
     expect(document.getElementById("calc-display")?.textContent).toBe("Error");
   });
 
+  it("treats unary minus lower than exponentiation for -2**2", () => {
+    calcInput("-");
+    calcInput("2");
+    calcInput("**");
+    calcInput("2");
+    calcEquals();
+    expect(document.getElementById("calc-display")?.textContent).toBe("-4");
+  });
+
+  it("allows entering negative exponent: 2**-3", () => {
+    calcInput("2");
+    calcInput("**");
+    calcInput("-");
+    calcInput("3");
+    calcEquals();
+    expect(document.getElementById("calc-display")?.textContent).toBe("0.125");
+  });
+
+  it("toggle sign works with percent tail", () => {
+    calcInput("5");
+    calcInput("0");
+    calcInput("%");
+    calcToggleSign();
+    calcEquals();
+    expect(document.getElementById("calc-display")?.textContent).toBe("-0.5");
+  });
+
+  it("toggle sign works with grouped tail", () => {
+    calcInput("2");
+    calcInput("*");
+    calcInput("(");
+    calcInput("3");
+    calcInput("+");
+    calcInput("4");
+    calcInput(")");
+    calcToggleSign();
+    calcEquals();
+    expect(document.getElementById("calc-display")?.textContent).toBe("-14");
+  });
+
   it("toggle sign applies to the last operand", () => {
     calcInput("2");
     calcInput("+");
