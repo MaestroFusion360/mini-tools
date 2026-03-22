@@ -101,7 +101,15 @@ import {
   paintUndo,
 } from "./features/paint.js";
 import { applyTranslations, initI18n, toggleLanguage } from "./core/i18n.js";
-import { exitApp, initNavigation, showPage } from "./core/navigation.js";
+import {
+  closeAboutDialog,
+  closeOverflowMenu,
+  exitApp,
+  initNavigation,
+  openAboutDialog,
+  showPage,
+  toggleOverflowMenu,
+} from "./core/navigation.js";
 import { initPwa } from "./core/pwa.js";
 import {
   initStopwatch,
@@ -152,6 +160,10 @@ function exposeGlobals() {
     toggleTheme,
     toggleLanguage,
     showPage,
+    toggleOverflowMenu,
+    closeOverflowMenu,
+    openAboutDialog,
+    closeAboutDialog,
     exitApp,
     toggleWeatherManualMode,
     applyManualCoordinates,

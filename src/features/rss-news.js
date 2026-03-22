@@ -13,7 +13,8 @@ const rssState = FEATURE_RUNTIME_STATE.rssNews;
 const RSS_JSON_API = "https://api.rss2json.com/v1/api.json?rss_url=";
 const RSS_VIEW_MODES = ["all", "today", "yesterday", "week", "readLater"];
 let rssRequestSeq = 0;
-const RSS_SWIPE_READ_PX = 56;
+const RSS_SWIPE_READ_PX = 96;
+const RSS_SWIPE_MAX_PX = 180;
 const RSS_SWIPE_MAX_Y_DRIFT_PX = 42;
 
 function ensureRssState() {
@@ -252,9 +253,24 @@ function toggleRssItemReadLaterByKey(key) {
   saveRssData();
 }
 
+function purgeRssItemKeys(keys = []) {
+  if (!Array.isArray(keys) || !keys.length) return;
+  const keySet = new Set(keys.map((x) => String(x || "").trim()).filter((x) => x));
+  if (!keySet.size) return;
+  rssState.readKeys = rssState.readKeys.filter((x) => !keySet.has(x));
+  rssState.readLaterKeys = rssState.readLaterKeys.filter((x) => !keySet.has(x));
+}
+
 function buildItemCard(item, key) {
   const card = document.createElement("article");
   card.className = "rss-news-card";
+
+  const swipeAction = document.createElement("div");
+  swipeAction.className = "rss-swipe-action";
+  swipeAction.innerHTML = `<svg class="icon-svg btn-icon" aria-hidden="true"><use href="#i-check"></use></svg><span>${t("rssMarkReadSwipe")}</span>`;
+
+  const content = document.createElement("div");
+  content.className = "rss-news-content";
 
   if (isRssItemRead(item)) {
     card.classList.add("is-read");
@@ -302,7 +318,8 @@ function buildItemCard(item, key) {
     .slice(0, 220);
 
   installRssSwipeRead(card, key);
-  card.append(titleRow, meta, description);
+  content.append(titleRow, meta, description);
+  card.append(swipeAction, content);
   return card;
 }
 
@@ -372,30 +389,88 @@ function renderRssItems(items = rssState.lastItems) {
 function installRssSwipeRead(card, key) {
   let startX = 0;
   let startY = 0;
+  let currentX = 0;
   let tracking = false;
+  let committed = false;
+
+  const setSwipeX = (value) => {
+    const clamped = Math.max(0, Math.min(value, RSS_SWIPE_MAX_PX));
+    currentX = clamped;
+    card.style.setProperty("--rss-swipe-x", `${clamped}px`);
+    card.style.setProperty(
+      "--rss-swipe-progress",
+      String(Math.min(clamped / RSS_SWIPE_READ_PX, 1)),
+    );
+    card.classList.toggle("is-swipe-ready", clamped >= RSS_SWIPE_READ_PX);
+  };
+
+  const resetSwipe = () => {
+    card.classList.remove("is-swiping");
+    card.classList.remove("is-swipe-ready");
+    setSwipeX(0);
+  };
 
   const onPointerDown = (event) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (card.classList.contains("is-read")) return;
     startX = event.clientX;
     startY = event.clientY;
+    committed = false;
     tracking = true;
+    card.classList.add("is-swiping");
+    card.setPointerCapture?.(event.pointerId);
   };
+
+  const onPointerMove = (event) => {
+    if (!tracking) return;
+    const dx = event.clientX - startX;
+    const dy = Math.abs(event.clientY - startY);
+    if (dy > RSS_SWIPE_MAX_Y_DRIFT_PX && Math.abs(dy) > Math.abs(dx)) {
+      tracking = false;
+      resetSwipe();
+      return;
+    }
+    if (dx <= 0) {
+      setSwipeX(0);
+      return;
+    }
+    setSwipeX(dx);
+    event.preventDefault();
+  };
+
   const onPointerUp = (event) => {
     if (!tracking) return;
     tracking = false;
-    const dx = event.clientX - startX;
-    const dy = Math.abs(event.clientY - startY);
-    if (dx < RSS_SWIPE_READ_PX || dy > RSS_SWIPE_MAX_Y_DRIFT_PX) return;
+    if (currentX < RSS_SWIPE_READ_PX) {
+      resetSwipe();
+      return;
+    }
+    committed = true;
+    card.classList.add("is-swipe-commit");
+    card.classList.add("is-swipe-done");
+    setSwipeX(RSS_SWIPE_MAX_PX);
     markRssItemReadByKey(key);
     card.classList.add("is-read");
+    window.setTimeout(() => {
+      card.classList.remove("is-swipe-done");
+      card.classList.remove("is-swipe-commit");
+      resetSwipe();
+    }, 320);
+    card.releasePointerCapture?.(event.pointerId);
   };
+
   const onPointerCancel = () => {
     tracking = false;
+    if (!committed) resetSwipe();
   };
 
   card.addEventListener("pointerdown", onPointerDown, { passive: true });
+  card.addEventListener("pointermove", onPointerMove, { passive: false });
   card.addEventListener("pointerup", onPointerUp, { passive: true });
   card.addEventListener("pointercancel", onPointerCancel, { passive: true });
+  card.addEventListener("lostpointercapture", onPointerCancel, {
+    passive: true,
+  });
 }
 
 async function fetchRssFeed(url) {
@@ -460,6 +535,8 @@ export async function addRssFeed() {
 export async function removeRssFeed() {
   ensureRssState();
   if (!rssState.activeFeed) return;
+  const keysToPurge = rssState.lastItems.map((item) => getRssItemKey(item));
+  purgeRssItemKeys(keysToPurge);
   rssState.feeds = rssState.feeds.filter((x) => x.url !== rssState.activeFeed);
   rssState.activeFeed = rssState.feeds[0]?.url || "";
   saveRssData();

@@ -8,9 +8,14 @@ import {
 
 function mountMediaDom() {
   document.body.innerHTML = `
+    <button id="media-open-btn"></button>
     <input id="media-files-input" type="file" multiple />
+    <div id="media-drop-zone"></div>
     <select id="media-playlist"></select>
     <div id="media-now-playing"></div>
+    <div id="media-empty-state"></div>
+    <div id="media-drop-hint"></div>
+    <div id="app-toast"></div>
     <video id="media-player"></video>
   `;
 
@@ -74,5 +79,26 @@ describe("media player unit", () => {
     expect(document.getElementById("media-now-playing")?.textContent).toBe(
       "mediaNoFileSelected",
     );
+  });
+
+  it("allows adding files without clearing current playlist", () => {
+    const input = document.getElementById("media-files-input");
+    const fileA = new File(["a"], "track-a.mp3", { type: "audio/mpeg" });
+    const fileB = new File(["b"], "track-b.mp3", { type: "audio/mpeg" });
+    const fileC = new File(["c"], "track-c.mp3", { type: "audio/mpeg" });
+
+    Object.defineProperty(input, "files", {
+      configurable: true,
+      value: [fileA, fileB],
+    });
+    input.dispatchEvent(new Event("change"));
+    expect(document.getElementById("media-playlist")?.options.length).toBe(2);
+
+    Object.defineProperty(input, "files", {
+      configurable: true,
+      value: [fileC],
+    });
+    input.dispatchEvent(new Event("change"));
+    expect(document.getElementById("media-playlist")?.options.length).toBe(3);
   });
 });

@@ -186,10 +186,10 @@ mini-tools/
 Use an HTTP server (Service Worker requires non-file protocol).
 
 ```bash
-python -m http.server 8000
+http://localhost:3000
 ```
 
-Open `http://localhost:8000`.
+Open `http://localhost:3000`.
 
 ## 🧪 Testing
 

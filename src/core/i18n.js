@@ -69,6 +69,14 @@ export function applyTranslations() {
   setText("menu-todo", t("todo"));
   setText("menu-news", t("news"));
   setText("menu-exit", t("exit"));
+  setText("menu-about", t("about"));
+  setText("menu-github", t("github"));
+  setText("menu-telegram", t("telegram"));
+  setText("about-title", t("about"));
+  setText("about-app-name", t("aboutAppName"));
+  setText("about-description", t("aboutDescription"));
+  setText("about-github", t("github"));
+  setText("about-telegram", t("telegram"));
   setText("title-paint", t("paintTitle"));
   setText("title-media", t("mediaPlayerTitle"));
   setControlTooltip("paint-open-btn", t("paintOpenImage"));
@@ -124,6 +132,10 @@ export function applyTranslations() {
   setControlTooltip("media-next-btn", t("mediaNext"));
   setControlTooltip("media-clear-btn", t("mediaClearList"));
   setText("media-now-playing", t("mediaNoFileSelected"));
+  setText("media-empty-state", t("mediaEmptyState"));
+  setText("media-drop-hint", t("mediaDropHint"));
+  setControlTooltip("overflow-menu-btn", t("menu"));
+  setControlTooltip("about-close-btn", t("close"));
 
   queryAll('[data-i18n="back-btn"]').forEach((btn) => {
     btn.innerHTML = `<svg class="icon-svg btn-icon"><use href="#i-arrow-left"></use></svg><span>${t("back")}</span>`;

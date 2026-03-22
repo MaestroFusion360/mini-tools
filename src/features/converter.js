@@ -1,9 +1,4 @@
-import {
-  byId,
-  setLabelText,
-  setSelectOptionText,
-  setText,
-} from "../core/dom.js";
+import { byId, setLabelText, setSelectOptionText, setText } from "../core/dom.js";
 import { getLanguage, registerTranslationApplier, t } from "../core/i18n.js";
 import { formatNumber } from "../core/utils.js";
 
@@ -57,8 +52,9 @@ const IDS = {
 const UNIT_DEFS = {
   length: {
     mode: "factor",
-    defaults: ["m", "km"],
+    defaults: ["mm", "in"],
     presets: [
+      ["mm", "in"],
       ["m", "ft"],
       ["km", "mile"],
       ["mile", "km"],
@@ -614,6 +610,7 @@ export function convertUnit() {
 function applyConverterTranslations() {
   setText("title-converter", t("converterTitle"));
   setLabelText("conv-precision", t("precision"));
+  setText("conv-convert-btn", t("convertAction"));
   TYPE_KEYS.forEach((key) => {
     setSelectOptionText(IDS.type, key, t(TYPE_LABEL_KEYS[key] || key));
   });

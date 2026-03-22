@@ -299,10 +299,23 @@ function renderTodoNotes() {
 
 function renderTodoNoteEditorState() {
   const addBtn = byId("todo-notes-add-btn");
-  if (!addBtn) return;
-  addBtn.title = t("todoSave");
-  addBtn.setAttribute("aria-label", t("todoSave"));
-  addBtn.classList.toggle("active", Boolean(todoState.selectedNoteId));
+  const saveBtn = byId("todo-notes-save-btn");
+  const isEditing = Boolean(todoState.selectedNoteId);
+
+  if (addBtn) {
+    const addLabel = t("todoAdd");
+    addBtn.title = addLabel;
+    addBtn.setAttribute("aria-label", addLabel);
+    addBtn.classList.remove("active");
+    setText("todo-notes-add-label", addLabel);
+  }
+
+  if (saveBtn) {
+    const saveLabel = t("todoSave");
+    saveBtn.title = saveLabel;
+    saveBtn.setAttribute("aria-label", saveLabel);
+    saveBtn.classList.toggle("active", isEditing);
+  }
 }
 
 function moveById(list, fromId, toId) {
@@ -471,6 +484,28 @@ function applyEditorCommand(command) {
   document.execCommand(command, false);
 }
 
+function insertEditorLink() {
+  focusNotesEditor();
+  const rawUrl = String(prompt(t("todoNoteLinkPrompt"), "https://") || "").trim();
+  if (!rawUrl) return;
+  const normalizedUrl =
+    rawUrl.startsWith("http://") || rawUrl.startsWith("https://")
+      ? rawUrl
+      : `https://${rawUrl}`;
+
+  const selection = window.getSelection();
+  if (selection && !selection.isCollapsed) {
+    document.execCommand("createLink", false, normalizedUrl);
+    return;
+  }
+
+  document.execCommand(
+    "insertHTML",
+    false,
+    `<a href="${normalizedUrl}" target="_blank" rel="noopener noreferrer">${normalizedUrl}</a>&nbsp;`,
+  );
+}
+
 function clearNoteEditor() {
   const titleInput = byId("todo-notes-title");
   const input = getNotesEditor();
@@ -483,6 +518,10 @@ function clearNoteEditor() {
 export function todoNoteEditorAction(action) {
   ensureTodoState();
   switch (action) {
+    case "add":
+      todoState.selectedNoteId = "";
+      addTodoNote();
+      break;
     case "bold":
       applyEditorCommand("bold");
       break;
@@ -497,6 +536,9 @@ export function todoNoteEditorAction(action) {
       break;
     case "ordered":
       applyEditorCommand("insertOrderedList");
+      break;
+    case "link":
+      insertEditorLink();
       break;
     case "clear":
       clearNoteEditor();
@@ -539,12 +581,12 @@ function applyTodoTranslations() {
   setText("menu-todo", t("todo"));
   setText("title-todo", t("todoTitle"));
   setText("todo-add-btn", t("todoAdd"));
-  setText("todo-clear-done-btn", t("todoClearDone"));
+  setText("todo-clear-done-label", t("todoClearDone"));
   setText("todo-tab-tasks", t("todoTabTasks"));
   setText("todo-tab-notes", t("todoTabNotes"));
-  setText("todo-filter-all", t("todoFilterAll"));
-  setText("todo-filter-active", t("todoFilterActive"));
-  setText("todo-filter-done", t("todoFilterDone"));
+  setText("todo-filter-all-label", t("todoFilterAll"));
+  setText("todo-filter-active-label", t("todoFilterActive"));
+  setText("todo-filter-done-label", t("todoFilterDone"));
   setText("todo-notes-label", t("todoNotesLabel"));
   const notesActions = [
     ["todo-note-bold-btn", t("todoNoteBold")],
@@ -552,6 +594,8 @@ function applyTodoTranslations() {
     ["todo-note-underline-btn", t("todoNoteUnderline")],
     ["todo-note-strike-btn", t("todoNoteStrike")],
     ["todo-note-ordered-btn", t("todoNoteOrdered")],
+    ["todo-note-link-btn", t("todoNoteLink")],
+    ["todo-notes-save-btn", t("todoSave")],
     ["todo-note-clear-btn", t("todoNoteClear")],
   ];
   notesActions.forEach(([id, label]) => {

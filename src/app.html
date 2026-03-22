@@ -821,6 +821,14 @@
         </button>
         <select id="conv-to" onchange="convertUnit()"></select>
       </div>
+      <button
+        class="primary"
+        id="conv-convert-btn"
+        type="button"
+        onclick="convertUnit()"
+      >
+        Convert
+      </button>
 
       <div class="row converter-presets" id="conv-presets"></div>
 
@@ -2036,7 +2044,7 @@
       <h2 id="title-media">Media Player</h2>
     </div>
 
-    <div class="card">
+    <div class="card media-drop-zone" id="media-drop-zone">
       <input
         type="file"
         id="media-files-input"
@@ -2085,6 +2093,10 @@
 
       <select id="media-playlist" onchange="mediaPlaySelected()"></select>
       <div class="small-text" id="media-now-playing">No file selected</div>
+      <div class="small-text" id="media-drop-hint">Drop files here to load</div>
+      <div class="media-empty-state" id="media-empty-state">
+        Open files to start playback
+      </div>
       <video
         id="media-player"
         class="media-player"
@@ -2104,7 +2116,7 @@
       >
         Back
       </button>
-      <h2 id="title-todo">Todo & Notes</h2>
+      <h2 id="title-todo">Tasks</h2>
     </div>
     <div class="card">
       <div class="row">
@@ -2134,37 +2146,39 @@
           <button class="primary" id="todo-add-btn" onclick="addTodoItem()">
             Add
           </button>
-        </div>
-        <div class="row">
           <button
             id="todo-clear-done-btn"
-            class="text-action-btn"
+            class="text-action-btn todo-clear-btn"
             onclick="clearCompletedTodo()"
           >
-            Clear done
+            <svg class="icon-svg btn-icon"><use href="#i-trash"></use></svg>
+            <span id="todo-clear-done-label">Clear done</span>
           </button>
         </div>
         <div class="row">
           <button
             id="todo-filter-all"
-            class="text-action-btn active"
+            class="text-action-btn todo-filter-btn active"
             onclick="setTodoVisibility('all')"
           >
-            All
+            <svg class="icon-svg btn-icon"><use href="#i-list-todo"></use></svg>
+            <span id="todo-filter-all-label">All</span>
           </button>
           <button
             id="todo-filter-active"
-            class="text-action-btn"
+            class="text-action-btn todo-filter-btn"
             onclick="setTodoVisibility('active')"
           >
-            Active
+            <svg class="icon-svg btn-icon"><use href="#i-clock"></use></svg>
+            <span id="todo-filter-active-label">Active</span>
           </button>
           <button
             id="todo-filter-done"
-            class="text-action-btn"
+            class="text-action-btn todo-filter-btn"
             onclick="setTodoVisibility('done')"
           >
-            Done
+            <svg class="icon-svg btn-icon"><use href="#i-check"></use></svg>
+            <span id="todo-filter-done-label">Done</span>
           </button>
         </div>
         <div class="small-text" id="todo-summary"></div>
@@ -2225,10 +2239,25 @@
           </button>
           <button
             class="text-action-btn note-tool-btn"
-            id="todo-notes-add-btn"
-            onclick="onTodoNotesSave()"
+            id="todo-note-link-btn"
+            onclick="todoNoteEditorAction('link')"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-link"></use></svg>
+          </button>
+          <button
+            class="text-action-btn note-tool-btn"
+            id="todo-notes-save-btn"
+            onclick="todoNoteEditorAction('save')"
           >
             <svg class="icon-svg btn-icon"><use href="#i-save"></use></svg>
+          </button>
+          <button
+            class="primary note-tool-btn note-add-btn"
+            id="todo-notes-add-btn"
+            onclick="todoNoteEditorAction('add')"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-plus"></use></svg>
+            <span id="todo-notes-add-label">Add</span>
           </button>
           <button
             class="text-action-btn note-tool-btn"
@@ -2350,6 +2379,21 @@
   <small>© 2026 MaestroFusion360 · v1.0.0</small>
 </footer>
 
+<button
+  class="overflow-toggle"
+  onclick="toggleOverflowMenu(event)"
+  id="overflow-menu-btn"
+  title="Menu"
+  aria-label="Menu"
+  aria-expanded="false"
+>
+  <span class="hamburger-lines" aria-hidden="true">
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+  </span>
+</button>
+
 <div class="floating-actions">
   <button
     class="lang-toggle"
@@ -2368,6 +2412,102 @@
   >
     <svg class="icon-svg theme-toggle-icon"><use href="#i-moon"></use></svg>
   </button>
+</div>
+
+<div class="overflow-menu is-hidden" id="overflow-menu" role="presentation">
+  <div class="overflow-menu-panel" role="menu">
+    <a
+      class="text-action-btn overflow-menu-item"
+      id="menu-github-btn"
+      href="https://github.com/MaestroFusion360/mini-tools"
+      target="_blank"
+      rel="noopener noreferrer"
+      role="menuitem"
+    >
+      <svg class="icon-svg btn-icon"><use href="#i-github"></use></svg>
+      <span id="menu-github">GitHub</span>
+    </a>
+    <a
+      class="text-action-btn overflow-menu-item"
+      id="menu-telegram-btn"
+      href="https://t.me/MaestroFusion360"
+      target="_blank"
+      rel="noopener noreferrer"
+      role="menuitem"
+    >
+      <svg class="icon-svg btn-icon"><use href="#i-telegram"></use></svg>
+      <span id="menu-telegram">Telegram</span>
+    </a>
+    <section class="overflow-changelog">
+      <h3 class="overflow-changelog-title">CHANGELOG v1.0.0</h3>
+      <ul class="overflow-changelog-list">
+        <li>Todo + Notes with rich editor and drag-and-drop.</li>
+        <li>RSS feeds with swipe-to-read and read-later.</li>
+        <li>Weather, World Time, Timer, Stopwatch, Calendar.</li>
+        <li>Unit/Currency converters, Calculator, Text tools.</li>
+        <li>Paint editor and Media player with empty state.</li>
+        <li>PWA offline shell, themes and EN/RU translations.</li>
+      </ul>
+    </section>
+    <button
+      type="button"
+      class="text-action-btn overflow-menu-item overflow-about-btn"
+      id="menu-about-btn"
+      onclick="openAboutDialog()"
+      role="menuitem"
+    >
+      <svg class="icon-svg btn-icon"><use href="#i-info"></use></svg>
+      <span id="menu-about">About</span>
+    </button>
+  </div>
+  <button
+    type="button"
+    class="overflow-menu-backdrop"
+    aria-label="Close menu"
+    onclick="closeOverflowMenu()"
+  ></button>
+</div>
+
+<div class="about-modal is-hidden" id="about-modal" role="dialog" aria-modal="true">
+  <div class="about-modal-card card">
+    <div class="row about-header-row">
+      <h3 id="about-title">About</h3>
+      <button
+        type="button"
+        class="text-action-btn note-tool-btn"
+        id="about-close-btn"
+        onclick="closeAboutDialog()"
+        aria-label="Close"
+        title="Close"
+      >
+        <svg class="icon-svg btn-icon"><use href="#i-x"></use></svg>
+      </button>
+    </div>
+    <div class="small-text" id="about-app-name">mini-tools</div>
+    <div class="small-text" id="about-description">
+      Lightweight offline-first utility toolkit for everyday tasks.
+    </div>
+    <div class="row">
+      <a
+        class="text-action-btn overflow-menu-item"
+        href="https://github.com/MaestroFusion360/mini-tools"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <svg class="icon-svg btn-icon"><use href="#i-github"></use></svg>
+        <span id="about-github">GitHub</span>
+      </a>
+      <a
+        class="text-action-btn overflow-menu-item"
+        href="https://t.me/MaestroFusion360"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <svg class="icon-svg btn-icon"><use href="#i-telegram"></use></svg>
+        <span id="about-telegram">Telegram</span>
+      </a>
+    </div>
+  </div>
 </div>
 
 <div class="app-toast" id="app-toast" role="status" aria-live="polite"></div>
