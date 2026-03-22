@@ -332,7 +332,16 @@
     "rssLoadFailed": "Failed to load feed",
     "rssReady": "Ready",
     "rssImportInvalid": "Invalid import file",
-    "rssImportDone": "Feeds imported"
+    "rssImportDone": "Feeds imported",
+    "rssMarkAllRead": "Mark all as read",
+    "rssReadLater": "Read Later",
+    "rssReadLaterAdd": "Save for later",
+    "rssReadLaterRemove": "Remove from Read Later",
+    "rssViewAll": "All",
+    "rssGroupToday": "Today",
+    "rssGroupYesterday": "1d (Yesterday)",
+    "rssGroupWeek": "7d (Last Week)",
+    "rssGroupOlder": "Older"
   },
   "ru": {
     "back": "Назад",
@@ -667,6 +676,15 @@
     "rssLoadFailed": "Не удалось загрузить ленту",
     "rssReady": "Готово",
     "rssImportInvalid": "Некорректный файл импорта",
-    "rssImportDone": "Ленты импортированы"
+    "rssImportDone": "Ленты импортированы",
+    "rssMarkAllRead": "Отметить все как прочитанное",
+    "rssReadLater": "Читать позже",
+    "rssReadLaterAdd": "Сохранить на потом",
+    "rssReadLaterRemove": "Убрать из Читать позже",
+    "rssViewAll": "Все",
+    "rssGroupToday": "Сегодня",
+    "rssGroupYesterday": "1d (Вчера)",
+    "rssGroupWeek": "7d (Последняя неделя)",
+    "rssGroupOlder": "Старые"
   }
 }

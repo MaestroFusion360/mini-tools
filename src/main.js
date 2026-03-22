@@ -68,6 +68,8 @@ import {
   importRssFeeds,
   loadRssFeed,
   onRssFeedChange,
+  onRssViewModeChange,
+  markAllRssRead,
   removeRssFeed,
 } from "./features/rss-news.js";
 import {
@@ -251,6 +253,8 @@ function exposeGlobals() {
     removeRssFeed,
     loadRssFeed,
     onRssFeedChange,
+    onRssViewModeChange,
+    markAllRssRead,
     exportRssFeeds,
     importRssFeeds,
     handleRssImportFile,

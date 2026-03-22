@@ -2262,34 +2262,65 @@
           type="text"
           placeholder="https://example.com/feed.xml"
         />
-        <button class="primary" id="rss-load-btn" onclick="loadRssFeed()">
-          Load
-        </button>
       </div>
-      <div class="row">
-        <button class="text-action-btn" id="rss-add-btn" onclick="addRssFeed()">
-          Add feed
+      <div class="row rss-actions-row">
+        <button
+          class="primary rss-action-btn"
+          id="rss-load-btn"
+          onclick="loadRssFeed()"
+          title="Load"
+          aria-label="Load"
+        >
+          <svg class="icon-svg btn-icon"><use href="#i-download"></use></svg>
         </button>
         <button
-          class="text-action-btn"
+          class="text-action-btn rss-action-btn"
+          id="rss-add-btn"
+          onclick="addRssFeed()"
+          title="Add feed"
+          aria-label="Add feed"
+        >
+          <svg class="icon-svg btn-icon">
+            <use href="#i-folder-plus"></use>
+          </svg>
+        </button>
+        <button
+          class="text-action-btn rss-action-btn"
           id="rss-remove-btn"
           onclick="removeRssFeed()"
+          title="Remove feed"
+          aria-label="Remove feed"
         >
-          Remove feed
+          <svg class="icon-svg btn-icon">
+            <use href="#i-folder-minus"></use>
+          </svg>
         </button>
         <button
-          class="text-action-btn"
+          class="text-action-btn rss-action-btn"
           id="rss-import-btn"
           onclick="importRssFeeds()"
+          title="Import"
+          aria-label="Import"
         >
-          Import
+          <svg class="icon-svg btn-icon"><use href="#i-file-up"></use></svg>
         </button>
         <button
-          class="text-action-btn"
+          class="text-action-btn rss-action-btn"
           id="rss-export-btn"
           onclick="exportRssFeeds()"
+          title="Export"
+          aria-label="Export"
         >
-          Export
+          <svg class="icon-svg btn-icon"><use href="#i-file-down"></use></svg>
+        </button>
+        <button
+          class="text-action-btn rss-action-btn"
+          id="rss-mark-all-btn"
+          onclick="markAllRssRead()"
+          title="Mark all as read"
+          aria-label="Mark all as read"
+        >
+          <svg class="icon-svg btn-icon"><use href="#i-check"></use></svg>
         </button>
       </div>
       <input
@@ -2299,6 +2330,15 @@
         class="visually-hidden"
         onchange="handleRssImportFile(event)"
       />
+      <div class="row rss-tools-row">
+        <select id="rss-view-mode" onchange="onRssViewModeChange()">
+          <option value="all">All</option>
+          <option value="today">Today</option>
+          <option value="yesterday">Yesterday</option>
+          <option value="week">Last Week</option>
+          <option value="readLater">Read Later</option>
+        </select>
+      </div>
       <select id="rss-feeds" onchange="onRssFeedChange()"></select>
       <div class="small-text" id="rss-status"></div>
       <div id="rss-items"></div>

@@ -114,6 +114,8 @@ export const FEATURE_RUNTIME_STATE = {
     activeFeed: "",
     lastItems: [],
     readKeys: [],
+    readLaterKeys: [],
+    viewMode: "all",
     initialized: false,
   },
   weather: {

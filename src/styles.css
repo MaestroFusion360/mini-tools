@@ -2117,14 +2117,84 @@ button.todo-remove-btn:hover {
   opacity: 0.58;
 }
 
+.rss-tools-row #rss-view-mode {
+  flex: 1;
+  min-width: 170px;
+}
+
+.rss-actions-row {
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
+}
+
+.rss-action-btn {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border-radius: 10px;
+  padding: 0;
+  flex: 0 0 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rss-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rss-group-title {
+  margin: 0;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.rss-group-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rss-news-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
 .rss-news-title {
   color: var(--text);
   font-weight: 700;
   text-decoration: none;
+  flex: 1;
+  min-width: 0;
 }
 
 .rss-news-title:hover {
   text-decoration: underline;
+}
+
+.rss-read-later-btn {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  min-height: 32px;
+  border-radius: 8px;
+  flex: 0 0 32px;
+}
+
+.rss-read-later-btn.is-active {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
+  background: color-mix(in srgb, var(--accent) 16%, var(--panel-strong));
 }
 
 .theme-toggle,
