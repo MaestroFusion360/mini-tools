@@ -81,5 +81,28 @@ describe("stopwatch modes", () => {
       "stopwatchNoLaps",
     );
   });
+
+  it("renders start control on init and repeated init is safe", () => {
+    initStopwatch();
+    initStopwatch();
+    expect(document.getElementById("stopwatch-start-btn")?.textContent).toBe(
+      "stopwatchStart",
+    );
+  });
+
+  it("keeps only latest 100 laps", () => {
+    toggleStopwatch();
+    for (let i = 0; i < 120; i += 1) {
+      vi.advanceTimersByTime(10);
+      addStopwatchLap();
+    }
+
+    const lapItems = document.querySelectorAll(
+      "#stopwatch-laps .calc-history-item",
+    );
+    expect(lapItems.length).toBe(100);
+    expect(lapItems[0]?.textContent).toContain("#100:");
+    expect(lapItems[99]?.textContent).toContain("#1:");
+  });
 });
 

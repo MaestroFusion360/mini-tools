@@ -4,6 +4,18 @@ import { FEATURE_RUNTIME_STATE } from "../core/state.js";
 
 const mediaState = FEATURE_RUNTIME_STATE.mediaPlayer;
 
+function ensureMediaState() {
+  if (!Array.isArray(mediaState.items)) {
+    mediaState.items = [];
+  }
+  if (!Number.isInteger(mediaState.index)) {
+    mediaState.index = -1;
+  }
+  if (typeof mediaState.initialized !== "boolean") {
+    mediaState.initialized = false;
+  }
+}
+
 function isFullscreenActive() {
   const doc = document;
   return Boolean(
@@ -14,6 +26,7 @@ function isFullscreenActive() {
 }
 
 function recoverAfterFullscreenExit() {
+  ensureMediaState();
   const player = getPlayer();
   if (!player) return;
 
@@ -24,10 +37,6 @@ function recoverAfterFullscreenExit() {
   }
   player.blur();
   player.style.pointerEvents = "auto";
-  document.documentElement.style.pointerEvents = "";
-  document.body.style.pointerEvents = "";
-  document.documentElement.style.overflow = "";
-  document.body.style.overflow = "";
 
   // Toggle controls to force refresh of native video UI layer.
   const hadControls = player.controls;
@@ -56,6 +65,7 @@ function getNowLabel() {
 }
 
 function refreshPlaylistUi() {
+  ensureMediaState();
   const select = getPlaylist();
   if (!select) return;
   select.innerHTML = "";
@@ -78,6 +88,7 @@ function refreshPlaylistUi() {
 }
 
 function updateNowPlaying() {
+  ensureMediaState();
   const label = getNowLabel();
   if (!label) return;
   if (mediaState.index < 0 || !mediaState.items[mediaState.index]) {
@@ -88,6 +99,7 @@ function updateNowPlaying() {
 }
 
 function playIndex(nextIndex) {
+  ensureMediaState();
   const player = getPlayer();
   if (!player) return;
   if (nextIndex < 0 || nextIndex >= mediaState.items.length) return;
@@ -95,12 +107,15 @@ function playIndex(nextIndex) {
   const item = mediaState.items[nextIndex];
   player.src = item.url;
   player.load();
-  player.play().catch(() => {});
+  player.play().catch((err) => {
+    console.debug("Media play() was blocked:", err);
+  });
   refreshPlaylistUi();
   updateNowPlaying();
 }
 
 function revokeAllUrls() {
+  ensureMediaState();
   mediaState.items.forEach((item) => URL.revokeObjectURL(item.url));
 }
 
@@ -109,12 +124,14 @@ export function mediaOpenFilesDialog() {
 }
 
 export function mediaPlaySelected() {
+  ensureMediaState();
   const selected = Number(getPlaylist()?.value || -1);
   if (!Number.isInteger(selected) || selected < 0) return;
   playIndex(selected);
 }
 
 export function mediaPrev() {
+  ensureMediaState();
   if (!mediaState.items.length) return;
   const next =
     mediaState.index <= 0 ? mediaState.items.length - 1 : mediaState.index - 1;
@@ -122,12 +139,14 @@ export function mediaPrev() {
 }
 
 export function mediaNext() {
+  ensureMediaState();
   if (!mediaState.items.length) return;
   const next = (mediaState.index + 1) % mediaState.items.length;
   playIndex(next);
 }
 
 export function mediaClearPlaylist() {
+  ensureMediaState();
   revokeAllUrls();
   mediaState.items = [];
   mediaState.index = -1;
@@ -142,6 +161,7 @@ export function mediaClearPlaylist() {
 }
 
 export function initMediaPlayer() {
+  ensureMediaState();
   if (mediaState.initialized) return;
   mediaState.initialized = true;
 

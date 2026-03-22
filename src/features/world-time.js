@@ -11,6 +11,18 @@ import { getLocale } from "../core/utils.js";
 const worldTimeState = FEATURE_RUNTIME_STATE.worldTime;
 const WORLD_TIME_INTERVAL_MS = 1000;
 
+function ensureWorldTimeState() {
+  if (typeof worldTimeState.time24h !== "boolean") {
+    worldTimeState.time24h = true;
+  }
+  if (!Object.prototype.hasOwnProperty.call(worldTimeState, "worldTimeIntervalId")) {
+    worldTimeState.worldTimeIntervalId = null;
+  }
+  if (typeof worldTimeState.worldTimeInitialized !== "boolean") {
+    worldTimeState.worldTimeInitialized = false;
+  }
+}
+
 function isValidTimeZone(zone) {
   try {
     Intl.DateTimeFormat(undefined, { timeZone: zone });
@@ -21,23 +33,32 @@ function isValidTimeZone(zone) {
 }
 
 export function toggleTimeFormat() {
+  ensureWorldTimeState();
   worldTimeState.time24h = !worldTimeState.time24h;
-  byId("time-format-btn").textContent = worldTimeState.time24h
-    ? t("timeFormat24")
-    : t("timeFormat12");
+  const formatBtn = byId("time-format-btn");
+  if (formatBtn) {
+    formatBtn.textContent = worldTimeState.time24h
+      ? t("timeFormat24")
+      : t("timeFormat12");
+  }
   setStored(STORAGE_KEYS.timeFormat, worldTimeState.time24h ? "24" : "12");
   updateWorldTime();
 }
 
 function loadTimeFormat() {
+  ensureWorldTimeState();
   const savedFormat = getStored(STORAGE_KEYS.timeFormat, "24");
-  if (savedFormat === "12") worldTimeState.time24h = false;
-  byId("time-format-btn").textContent = worldTimeState.time24h
-    ? t("timeFormat24")
-    : t("timeFormat12");
+  worldTimeState.time24h = savedFormat !== "12";
+  const formatBtn = byId("time-format-btn");
+  if (formatBtn) {
+    formatBtn.textContent = worldTimeState.time24h
+      ? t("timeFormat24")
+      : t("timeFormat12");
+  }
 }
 
 export function updateWorldTime() {
+  ensureWorldTimeState();
   const tzSelect = byId("timezone-select");
   if (!tzSelect) return;
   const tz = tzSelect.value;
@@ -47,9 +68,12 @@ export function updateWorldTime() {
     ...opts,
     hour12: !worldTimeState.time24h,
   });
-  byId("world-time").textContent = timeStr;
-  byId("unix-time").textContent =
-    `${t("unixLabel")}: ${Math.floor(now.getTime() / 1000)}`;
+  const worldTimeEl = byId("world-time");
+  if (worldTimeEl) worldTimeEl.textContent = timeStr;
+  const unixTimeEl = byId("unix-time");
+  if (unixTimeEl) {
+    unixTimeEl.textContent = `${t("unixLabel")}: ${Math.floor(now.getTime() / 1000)}`;
+  }
 }
 
 function applyWorldTimeTranslations() {
@@ -104,19 +128,26 @@ function applyWorldTimeTranslations() {
     "Pacific/Auckland",
     t("presetAuckland"),
   );
-  byId("time-format-btn").textContent = worldTimeState.time24h
-    ? t("timeFormat24")
-    : t("timeFormat12");
+  const formatBtn = byId("time-format-btn");
+  if (formatBtn) {
+    formatBtn.textContent = worldTimeState.time24h
+      ? t("timeFormat24")
+      : t("timeFormat12");
+  }
   updateWorldTime();
 }
 
 export function initWorldTime() {
+  ensureWorldTimeState();
   loadTimeFormat();
   const select = byId("timezone-select");
   if (select && !isValidTimeZone(select.value) && select.value !== "local") {
     select.value = "local";
   }
-  registerTranslationApplier(applyWorldTimeTranslations);
+  if (!worldTimeState.worldTimeInitialized) {
+    registerTranslationApplier(applyWorldTimeTranslations);
+    worldTimeState.worldTimeInitialized = true;
+  }
   updateWorldTime();
   if (worldTimeState.worldTimeIntervalId) {
     clearInterval(worldTimeState.worldTimeIntervalId);

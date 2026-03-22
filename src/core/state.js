@@ -79,6 +79,7 @@ export const FEATURE_RUNTIME_STATE = {
     stopwatchElapsedMs: 0,
     stopwatchIntervalId: null,
     stopwatchLaps: [],
+    stopwatchInitialized: false,
   },
   textEditor: {
     textCopyFeedbackTimer: null,
@@ -97,15 +98,20 @@ export const FEATURE_RUNTIME_STATE = {
     timerEndAtMs: 0,
     timerHasStarted: false,
     timerFinished: false,
+    timerInitialized: false,
   },
   weather: {
     weatherCurrentCoords: null,
     weatherUsingApiSource: false,
     weatherSourceText: "",
+    weatherCurrentCode: null,
+    weatherTomorrowCode: null,
+    weatherInitialized: false,
   },
   worldTime: {
     time24h: true,
     worldTimeIntervalId: null,
+    worldTimeInitialized: false,
   },
 };
 

@@ -1869,15 +1869,16 @@ body.paint-immersive-active .app-footer {
 
 .app-toast {
   position: fixed;
-  left: 50%;
+  right: max(14px, env(safe-area-inset-right));
   bottom: max(14px, env(safe-area-inset-bottom));
-  transform: translateX(-50%) translateY(12px);
-  background: color-mix(in srgb, var(--panel-strong) 95%, transparent);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 999px;
-  padding: 8px 14px;
-  font-size: 0.82rem;
+  transform: translateY(12px);
+  background: #14b8a6;
+  border: 1px solid #14b8a6;
+  color: #fff;
+  border-radius: 0;
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: 600;
   box-shadow: var(--shadow-md);
   opacity: 0;
   pointer-events: none;
@@ -1889,7 +1890,7 @@ body.paint-immersive-active .app-footer {
 
 .app-toast.show {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
 }
 
 .theme-toggle,

@@ -2,6 +2,7 @@
 import {
   addCurrentCoordinateToFavorites,
   applyManualCoordinates,
+  initWeatherModule,
   removeFavoriteCoordinateDialog,
   renderWeatherFavorites,
   renderWeatherPresets,
@@ -38,6 +39,7 @@ function mountWeatherDom() {
     <div id="temp"></div>
     <div id="humidity"></div>
     <div id="wind"></div>
+    <div id="pressure"></div>
     <div id="sunrise"></div>
     <div id="sunset"></div>
     <div id="weather-condition"></div>
@@ -60,6 +62,7 @@ function createWeatherPayload() {
       temperature_2m: 12,
       relative_humidity_2m: 76,
       wind_speed_10m: 6,
+      pressure_msl: 1013.2,
       weather_code: 3,
     },
     hourly: {
@@ -148,6 +151,7 @@ describe("weather module", () => {
     expect(document.getElementById("coord")?.textContent).toContain("55.7558");
     expect(document.getElementById("address")?.textContent).toContain("Moscow");
     expect(document.getElementById("temp")?.textContent).toBe("12");
+    expect(document.getElementById("pressure")?.textContent).toBe("760");
     expect(document.getElementById("forecast-morning")?.textContent).toContain(
       "8",
     );
@@ -210,6 +214,34 @@ describe("weather module", () => {
     expect(
       document.getElementById("weather-presets-list")?.children.length,
     ).toBeGreaterThan(20);
+  });
+
+  it("uses weather source label and localized favorite action titles", async () => {
+    installFetchMock();
+    document.getElementById("weather-lat").value = "55.7558";
+    document.getElementById("weather-lon").value = "37.6173";
+    await applyManualCoordinates();
+    addCurrentCoordinateToFavorites();
+    renderWeatherFavorites();
+
+    const sourceText = document.getElementById("weather-data-source")?.textContent;
+    expect(sourceText).toContain("weatherSourceLabel");
+
+    const actionButtons = document.querySelectorAll(
+      "#weather-favorites-list .weather-fav-mini-btn",
+    );
+    expect(actionButtons.length).toBeGreaterThanOrEqual(3);
+    expect(actionButtons[0]?.getAttribute("aria-label")).toMatch(
+      /weather(HomePoint|SetAsHome)/,
+    );
+    expect(actionButtons[1]?.getAttribute("aria-label")).toBe("weatherRename");
+    expect(actionButtons[2]?.getAttribute("aria-label")).toBe("weatherDelete");
+  });
+
+  it("initWeatherModule is safe when called repeatedly", () => {
+    installFetchMock();
+    expect(() => initWeatherModule()).not.toThrow();
+    expect(() => initWeatherModule()).not.toThrow();
   });
 });
 

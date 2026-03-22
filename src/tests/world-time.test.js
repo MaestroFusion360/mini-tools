@@ -70,5 +70,16 @@ describe("world time modes", () => {
     expect(worldTime.length).toBeGreaterThan(0);
     expect(unixText).toContain("unixLabel:");
   });
+
+  it("initWorldTime is safe when called repeatedly", async () => {
+    mountWorldTimeDom("local");
+    const { initWorldTime } = await importWorldTimeModule();
+
+    expect(() => initWorldTime()).not.toThrow();
+    expect(() => initWorldTime()).not.toThrow();
+    expect(document.getElementById("time-format-btn")?.textContent).toBe(
+      "timeFormat24",
+    );
+  });
 });
 

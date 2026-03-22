@@ -96,5 +96,13 @@ describe("timer modes", () => {
       "timerFinishedToast",
     );
   });
+
+  it("initTimer can be called repeatedly without breaking controls", () => {
+    initTimer();
+    initTimer();
+    expect(document.getElementById("timer-start-btn")?.textContent).toBe(
+      "timerStart",
+    );
+  });
 });
 

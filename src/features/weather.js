@@ -1,4 +1,4 @@
-import { byId, setIcon, setText } from "../core/dom.js";
+﻿import { byId, setIcon, setText } from "../core/dom.js";
 import {
   registerTranslationApplier,
   getLanguage,
@@ -16,6 +16,34 @@ import {
 import { formatDateTime, getLocale } from "../core/utils.js";
 
 const weatherState = FEATURE_RUNTIME_STATE.weather;
+let weatherRequestSeq = 0;
+const HPA_TO_MMHG = 0.75006156;
+
+function ensureWeatherState() {
+  if (typeof weatherState.weatherUsingApiSource !== "boolean") {
+    weatherState.weatherUsingApiSource = false;
+  }
+  if (typeof weatherState.weatherSourceText !== "string") {
+    weatherState.weatherSourceText = "";
+  }
+  if (
+    weatherState.weatherCurrentCoords &&
+    (typeof weatherState.weatherCurrentCoords !== "object" ||
+      !Number.isFinite(weatherState.weatherCurrentCoords.lat) ||
+      !Number.isFinite(weatherState.weatherCurrentCoords.lon))
+  ) {
+    weatherState.weatherCurrentCoords = null;
+  }
+  if (!Number.isFinite(weatherState.weatherCurrentCode)) {
+    weatherState.weatherCurrentCode = null;
+  }
+  if (!Number.isFinite(weatherState.weatherTomorrowCode)) {
+    weatherState.weatherTomorrowCode = null;
+  }
+  if (typeof weatherState.weatherInitialized !== "boolean") {
+    weatherState.weatherInitialized = false;
+  }
+}
 
 const WEATHER_CITY_PRESETS = [
   { labelKey: "presetSaintPetersburg", lat: 59.9343, lon: 30.3351 },
@@ -78,6 +106,10 @@ function getWeatherCodeLabel(code) {
 }
 
 function renderWeatherCondition(currentCode, tomorrowCode = null) {
+  weatherState.weatherCurrentCode = Number.isFinite(currentCode) ? currentCode : null;
+  weatherState.weatherTomorrowCode = Number.isFinite(tomorrowCode)
+    ? tomorrowCode
+    : null;
   const conditionEl = byId("weather-condition");
   if (conditionEl) {
     conditionEl.textContent = `${t("weatherCondition")}: ${getWeatherCodeLabel(currentCode)}`;
@@ -90,13 +122,13 @@ function renderWeatherCondition(currentCode, tomorrowCode = null) {
 function renderWeatherSource() {
   const sourceEl = byId("weather-data-source");
   if (!sourceEl) return;
-  sourceEl.textContent = `${t("ratesSourceLabel")}: ${weatherState.weatherSourceText}`;
+  sourceEl.textContent = `${t("weatherSourceLabel")}: ${weatherState.weatherSourceText}`;
 }
 
 function setCoordText(lat, lon) {
-  byId("coord").textContent = `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
+  const coordEl = byId("coord");
+  if (coordEl) coordEl.textContent = `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
 }
-
 function setWeatherManualUI(manual) {
   const latInput = byId("weather-lat");
   const lonInput = byId("weather-lon");
@@ -158,8 +190,10 @@ async function applyFavoriteCoordinates(lat, lon) {
   if (toggle) toggle.checked = true;
   setStored(STORAGE_KEYS.weatherMode, "1");
   setWeatherManualUI(true);
-  byId("weather-lat").value = String(lat);
-  byId("weather-lon").value = String(lon);
+  const latInput = byId("weather-lat");
+  const lonInput = byId("weather-lon");
+  if (latInput) latInput.value = String(lat);
+  if (lonInput) lonInput.value = String(lon);
   await applyManualCoordinates();
 }
 
@@ -195,7 +229,7 @@ export function renderWeatherFavorites() {
     homeBtn.className = `icon-btn weather-fav-mini-btn${item.isHome ? " active" : ""}`;
     homeBtn.innerHTML =
       '<svg class="icon-svg btn-icon"><use href="#i-house"></use></svg>';
-    homeBtn.title = item.isHome ? "Home point" : "Set as home";
+    homeBtn.title = item.isHome ? t("weatherHomePoint") : t("weatherSetAsHome");
     homeBtn.setAttribute("aria-label", homeBtn.title);
     homeBtn.onclick = () => setFavoriteHome(idx);
 
@@ -204,7 +238,7 @@ export function renderWeatherFavorites() {
     editBtn.className = "icon-btn weather-fav-mini-btn";
     editBtn.innerHTML =
       '<svg class="icon-svg btn-icon"><use href="#i-pen"></use></svg>';
-    editBtn.title = "Rename";
+    editBtn.title = t("weatherRename");
     editBtn.setAttribute("aria-label", editBtn.title);
     editBtn.onclick = () => renameFavoriteCoordinate(idx);
 
@@ -213,7 +247,7 @@ export function renderWeatherFavorites() {
     deleteBtn.className = "icon-btn weather-fav-mini-btn";
     deleteBtn.innerHTML =
       '<svg class="icon-svg btn-icon"><use href="#i-x"></use></svg>';
-    deleteBtn.title = "Delete";
+    deleteBtn.title = t("weatherDelete");
     deleteBtn.setAttribute("aria-label", deleteBtn.title);
     deleteBtn.onclick = () => removeFavoriteCoordinateAt(idx);
 
@@ -338,10 +372,11 @@ function loadWeatherSettings() {
 }
 
 async function refreshWeatherByCoordinates(lat, lon) {
+  const requestId = ++weatherRequestSeq;
   weatherState.weatherCurrentCoords = { lat, lon };
   setCoordText(lat, lon);
-  await loadAddress(lat, lon);
-  await loadWeather(lat, lon);
+  await loadAddress(lat, lon, requestId);
+  await loadWeather(lat, lon, requestId);
   updateTimestamp();
 }
 
@@ -358,8 +393,10 @@ export function toggleWeatherManualMode() {
 export async function applyManualCoordinates() {
   const coords = getManualCoords();
   if (!coords) {
-    byId("coord").textContent = t("manualCoordsInvalid");
-    byId("address").textContent = t("manualCoordsHint");
+    const coordEl = byId("coord");
+    const addressEl = byId("address");
+    if (coordEl) coordEl.textContent = t("manualCoordsInvalid");
+    if (addressEl) addressEl.textContent = t("manualCoordsHint");
     return;
   }
   setStored(STORAGE_KEYS.weatherManualLat, String(coords.lat));
@@ -368,6 +405,7 @@ export async function applyManualCoordinates() {
 }
 
 export async function initWeather() {
+  ensureWeatherState();
   updateTimestamp();
   await loadCurrentTime();
 
@@ -411,11 +449,13 @@ export async function initWeather() {
 }
 
 function setLocationError(message) {
-  byId("coord").textContent = message;
-  byId("address").textContent = t("geoCheckPermissions");
+  const coordEl = byId("coord");
+  const addressEl = byId("address");
+  if (coordEl) coordEl.textContent = message;
+  if (addressEl) addressEl.textContent = t("geoCheckPermissions");
 }
 
-async function loadAddress(lat, lon) {
+async function loadAddress(lat, lon, requestId = weatherRequestSeq) {
   try {
     const addrRes = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=${getLanguage()}`,
@@ -429,42 +469,63 @@ async function loadAddress(lat, lon) {
     else if (a.village) parts.push(a.village);
     if (a.state) parts.push(a.state);
     if (a.country) parts.push(a.country);
-    byId("address").textContent = parts.join(", ") || t("addressNotFound");
+    if (requestId !== weatherRequestSeq) return;
+    const addressEl = byId("address");
+    if (addressEl) {
+      addressEl.textContent = parts.join(", ") || t("addressNotFound");
+    }
   } catch {
-    byId("address").textContent = t("addressUnavailable");
+    if (requestId !== weatherRequestSeq) return;
+    const addressEl = byId("address");
+    if (addressEl) addressEl.textContent = t("addressUnavailable");
   }
 }
 
-async function loadWeather(lat, lon) {
+async function loadWeather(lat, lon, requestId = weatherRequestSeq) {
   try {
     const wRes = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&hourly=temperature_2m&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,pressure_msl,weather_code&hourly=temperature_2m&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`,
     );
     if (!wRes.ok) throw new Error("Weather request failed");
     const w = await wRes.json();
     if (!w.current || !w.daily?.sunrise?.length || !w.daily?.sunset?.length)
       throw new Error("Weather payload is incomplete");
+    if (requestId !== weatherRequestSeq) return;
     weatherState.weatherUsingApiSource = true;
     weatherState.weatherSourceText = "api.open-meteo.com";
     renderWeatherSource();
-    byId("temp").textContent = w.current.temperature_2m;
-    byId("humidity").textContent = w.current.relative_humidity_2m;
-    byId("wind").textContent = w.current.wind_speed_10m;
-    byId("sunrise").textContent = new Date(
+    const tempEl = byId("temp");
+    if (tempEl) tempEl.textContent = w.current.temperature_2m;
+    const humidityEl = byId("humidity");
+    if (humidityEl) humidityEl.textContent = w.current.relative_humidity_2m;
+    const windEl = byId("wind");
+    if (windEl) windEl.textContent = w.current.wind_speed_10m;
+    const pressureEl = byId("pressure");
+    if (pressureEl) {
+      pressureEl.textContent = Number.isFinite(w.current.pressure_msl)
+        ? String(Math.round(w.current.pressure_msl * HPA_TO_MMHG))
+        : "--";
+    }
+    const sunriseEl = byId("sunrise");
+    if (sunriseEl) sunriseEl.textContent = new Date(
       w.daily.sunrise[0],
     ).toLocaleTimeString(getLocale(), {
       hour: "2-digit",
       minute: "2-digit",
       hour12: false,
     });
-    byId("sunset").textContent = new Date(w.daily.sunset[0]).toLocaleTimeString(
-      getLocale(),
-      { hour: "2-digit", minute: "2-digit", hour12: false },
-    );
+    const sunsetEl = byId("sunset");
+    if (sunsetEl) {
+      sunsetEl.textContent = new Date(w.daily.sunset[0]).toLocaleTimeString(
+        getLocale(),
+        { hour: "2-digit", minute: "2-digit", hour12: false },
+      );
+    }
     renderWeatherCondition(w.current.weather_code, w.daily.weather_code?.[1]);
     renderForecast(w);
   } catch (e) {
     console.warn("Weather error:", e);
+    if (requestId !== weatherRequestSeq) return;
     weatherState.weatherUsingApiSource = false;
     weatherState.weatherSourceText = t("weatherSourceUnavailable");
     renderWeatherSource();
@@ -563,7 +624,9 @@ async function loadCurrentTime() {
     if (!tRes.ok) throw new Error("Time request failed");
     const data = await tRes.json();
     const d = new Date(data.datetime);
-    byId("time").textContent = formatDateTime(d, {
+    const timeEl = byId("time");
+    if (!timeEl) return;
+    timeEl.textContent = formatDateTime(d, {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -573,7 +636,8 @@ async function loadCurrentTime() {
       hour12: false,
     });
   } catch {
-    byId("time").textContent = formatDateTime(new Date());
+    const timeEl = byId("time");
+    if (timeEl) timeEl.textContent = formatDateTime(new Date());
   }
 }
 
@@ -615,8 +679,10 @@ export function refreshWeatherLocaleState() {
 }
 
 function updateTimestamp() {
-  byId("timestamp").textContent =
-    `${t("updatedAt")}: ${formatDateTime(new Date())}`;
+  const timestampEl = byId("timestamp");
+  if (timestampEl) {
+    timestampEl.textContent = `${t("updatedAt")}: ${formatDateTime(new Date())}`;
+  }
 }
 
 function applyWeatherTranslations() {
@@ -628,7 +694,6 @@ function applyWeatherTranslations() {
   setText("forecast-day-label", t("forecastDay"));
   setText("forecast-evening-label", t("forecastEvening"));
   setText("forecast-tomorrow-label", t("forecastTomorrow"));
-  setText("forecast-tomorrow-desc", t("weatherConditionUnknown"));
   setText("sunrise-label", t("sunrise"));
   setText("sunset-label", t("sunset"));
   setText("weather-manual-label", t("weatherManualLabel"));
@@ -656,14 +721,23 @@ function applyWeatherTranslations() {
   renderWeatherFavorites();
   renderWeatherPresets();
   renderWeatherSource();
-  renderWeatherCondition(null, null);
+  renderWeatherCondition(
+    weatherState.weatherCurrentCode,
+    weatherState.weatherTomorrowCode,
+  );
   refreshWeatherLocaleState();
 }
 
 export function initWeatherModule() {
-  weatherState.weatherUsingApiSource = false;
-  weatherState.weatherSourceText = t("weatherSourceUnavailable");
+  ensureWeatherState();
+  if (!weatherState.weatherSourceText) {
+    weatherState.weatherSourceText = t("weatherSourceUnavailable");
+  }
   loadWeatherSettings();
-  registerTranslationApplier(applyWeatherTranslations);
+  if (!weatherState.weatherInitialized) {
+    registerTranslationApplier(applyWeatherTranslations);
+    weatherState.weatherInitialized = true;
+  }
   initWeather();
 }
+
