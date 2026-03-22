@@ -263,7 +263,8 @@ function getTextMetrics(text) {
 }
 
 function formatReadTime(readMins) {
-  if (readMins < 1) return getLanguage() === "ru" ? "<1 \u043c\u0438\u043d" : "<1 min";
+  if (readMins < 1)
+    return getLanguage() === "ru" ? "<1 \u043c\u0438\u043d" : "<1 min";
   const totalMins = Math.ceil(readMins);
   if (totalMins < 60)
     return getLanguage() === "ru"
@@ -428,13 +429,15 @@ function runFind(query, next = false) {
   if (shouldAdvance) {
     if (
       !options.wrap &&
-      textEditorState.textFindState.activeIndex >= textEditorState.textFindState.matches.length - 1
+      textEditorState.textFindState.activeIndex >=
+        textEditorState.textFindState.matches.length - 1
     ) {
       setFindStatus(t("textSearchEnd"));
       return;
     }
     textEditorState.textFindState.activeIndex =
-      (textEditorState.textFindState.activeIndex + 1) % textEditorState.textFindState.matches.length;
+      (textEditorState.textFindState.activeIndex + 1) %
+      textEditorState.textFindState.matches.length;
   } else if (textEditorState.textFindState.activeIndex < 0) {
     const fromCaret = textEditorState.textFindState.matches.findIndex(
       (match) => match.start >= (input.selectionStart || 0),
@@ -705,7 +708,10 @@ export async function toggleTextInputFullscreen(force) {
         await wrap.requestFullscreen();
         nativeEntered =
           document.fullscreenElement === wrap ||
-          Boolean(document.fullscreenElement && wrap.contains(document.fullscreenElement));
+          Boolean(
+            document.fullscreenElement &&
+            wrap.contains(document.fullscreenElement),
+          );
       } catch {}
     }
     textEditorState.textNativeFullscreenActive = nativeEntered;
@@ -855,7 +861,10 @@ export function initTextTools() {
       if (!wrap) return;
       const nativeActive =
         document.fullscreenElement === wrap ||
-        Boolean(document.fullscreenElement && wrap.contains(document.fullscreenElement));
+        Boolean(
+          document.fullscreenElement &&
+          wrap.contains(document.fullscreenElement),
+        );
       if (nativeActive) {
         textEditorState.textNativeFullscreenActive = true;
         setTextInputFullscreenUi(true);
@@ -871,5 +880,3 @@ export function initTextTools() {
   bindTextDragAndDrop();
   analyzeText();
 }
-
-

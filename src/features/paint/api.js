@@ -1,5 +1,11 @@
 import { byId } from "../../core/dom.js";
-import { MAX_HISTORY, MAX_ZOOM, MIN_ZOOM, PAINT_PANELS, paintState } from "./state.js";
+import {
+  MAX_HISTORY,
+  MAX_ZOOM,
+  MIN_ZOOM,
+  PAINT_PANELS,
+  paintState,
+} from "./state.js";
 import {
   applyRasterTransform,
   buildFilterString,
@@ -70,7 +76,12 @@ function previewFilters() {
   const canvas = getCanvas();
   if (!ctx || !canvas) return;
   if (!paintState.filterBaseImageData) {
-    paintState.filterBaseImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    paintState.filterBaseImageData = ctx.getImageData(
+      0,
+      0,
+      canvas.width,
+      canvas.height,
+    );
   }
   const values = getFilterValues();
   const base = paintState.filterBaseImageData;
@@ -106,7 +117,11 @@ export function paintResetFilters() {
   if (paintState.filterBaseImageData && ctx) {
     ctx.putImageData(paintState.filterBaseImageData, 0, 0);
   }
-  ["paint-filter-brightness", "paint-filter-contrast", "paint-filter-saturation"].forEach((id) => {
+  [
+    "paint-filter-brightness",
+    "paint-filter-contrast",
+    "paint-filter-saturation",
+  ].forEach((id) => {
     const input = byId(id);
     if (input) input.value = "0";
   });
@@ -212,7 +227,11 @@ export function paintCopySelection() {
   const canvas = getCanvas();
   const ctx = getCtx();
   if (!canvas || !ctx) return;
-  if (paintState.selection && paintState.selection.w > 0 && paintState.selection.h > 0) {
+  if (
+    paintState.selection &&
+    paintState.selection.w > 0 &&
+    paintState.selection.h > 0
+  ) {
     const sx = Math.max(0, Math.floor(paintState.selection.x));
     const sy = Math.max(0, Math.floor(paintState.selection.y));
     const sw = Math.max(1, Math.floor(paintState.selection.w));
@@ -298,10 +317,18 @@ export function paintApplyCrop() {
   const canvas = getCanvas();
   if (!canvas) return;
   const selection = getActiveSelectionBounds(canvas);
-  const x = selection ? selection.x : Math.max(0, Number(byId("paint-crop-x")?.value || 0));
-  const y = selection ? selection.y : Math.max(0, Number(byId("paint-crop-y")?.value || 0));
-  const w = selection ? selection.w : Math.max(1, Number(byId("paint-crop-w")?.value || canvas.width));
-  const h = selection ? selection.h : Math.max(1, Number(byId("paint-crop-h")?.value || canvas.height));
+  const x = selection
+    ? selection.x
+    : Math.max(0, Number(byId("paint-crop-x")?.value || 0));
+  const y = selection
+    ? selection.y
+    : Math.max(0, Number(byId("paint-crop-y")?.value || 0));
+  const w = selection
+    ? selection.w
+    : Math.max(1, Number(byId("paint-crop-w")?.value || canvas.width));
+  const h = selection
+    ? selection.h
+    : Math.max(1, Number(byId("paint-crop-h")?.value || canvas.height));
   const sx = Math.min(canvas.width - 1, x);
   const sy = Math.min(canvas.height - 1, y);
   const sw = Math.max(1, Math.min(w, canvas.width - sx));
@@ -352,7 +379,17 @@ export function paintApplyRotate() {
     region.height = selection.h;
     region
       .getContext("2d")
-      ?.drawImage(src, selection.x, selection.y, selection.w, selection.h, 0, 0, selection.w, selection.h);
+      ?.drawImage(
+        src,
+        selection.x,
+        selection.y,
+        selection.w,
+        selection.h,
+        0,
+        0,
+        selection.w,
+        selection.h,
+      );
     pushUndoState();
     ctx.drawImage(src, 0, 0);
     ctx.save();
@@ -360,7 +397,13 @@ export function paintApplyRotate() {
     ctx.fillRect(selection.x, selection.y, selection.w, selection.h);
     ctx.translate(selection.x + selection.w / 2, selection.y + selection.h / 2);
     ctx.rotate((normalized * Math.PI) / 180);
-    ctx.drawImage(region, -selection.w / 2, -selection.h / 2, selection.w, selection.h);
+    ctx.drawImage(
+      region,
+      -selection.w / 2,
+      -selection.h / 2,
+      selection.w,
+      selection.h,
+    );
     ctx.restore();
     updateSelectionUi();
     return;
@@ -369,13 +412,17 @@ export function paintApplyRotate() {
   const swapSides = normalized === 90 || normalized === 270;
   const nextW = swapSides ? canvas.height : canvas.width;
   const nextH = swapSides ? canvas.width : canvas.height;
-  applyRasterTransform((ctx, src) => {
-    ctx.save();
-    ctx.translate(nextW / 2, nextH / 2);
-    ctx.rotate((normalized * Math.PI) / 180);
-    ctx.drawImage(src, -src.width / 2, -src.height / 2);
-    ctx.restore();
-  }, nextW, nextH);
+  applyRasterTransform(
+    (ctx, src) => {
+      ctx.save();
+      ctx.translate(nextW / 2, nextH / 2);
+      ctx.rotate((normalized * Math.PI) / 180);
+      ctx.drawImage(src, -src.width / 2, -src.height / 2);
+      ctx.restore();
+    },
+    nextW,
+    nextH,
+  );
 }
 
 export function paintApplyMirror() {
@@ -399,7 +446,17 @@ export function paintApplyMirror() {
     region.height = selection.h;
     region
       .getContext("2d")
-      ?.drawImage(src, selection.x, selection.y, selection.w, selection.h, 0, 0, selection.w, selection.h);
+      ?.drawImage(
+        src,
+        selection.x,
+        selection.y,
+        selection.w,
+        selection.h,
+        0,
+        0,
+        selection.w,
+        selection.h,
+      );
     pushUndoState();
     ctx.drawImage(src, 0, 0);
     ctx.save();
@@ -418,17 +475,21 @@ export function paintApplyMirror() {
     return;
   }
   clearSelectionIfAny();
-  applyRasterTransform((ctx, src) => {
-    ctx.save();
-    if (axis === "vertical") {
-      ctx.scale(1, -1);
-      ctx.drawImage(src, 0, -src.height);
-    } else {
-      ctx.scale(-1, 1);
-      ctx.drawImage(src, -src.width, 0);
-    }
-    ctx.restore();
-  }, canvas.width, canvas.height);
+  applyRasterTransform(
+    (ctx, src) => {
+      ctx.save();
+      if (axis === "vertical") {
+        ctx.scale(1, -1);
+        ctx.drawImage(src, 0, -src.height);
+      } else {
+        ctx.scale(-1, 1);
+        ctx.drawImage(src, -src.width, 0);
+      }
+      ctx.restore();
+    },
+    canvas.width,
+    canvas.height,
+  );
   if (!axisSelect) {
     paintState.nextMirrorAxis =
       axis === "horizontal" ? "vertical" : "horizontal";
@@ -456,7 +517,11 @@ export function initPaint() {
     });
   }
 
-  ["paint-filter-brightness", "paint-filter-contrast", "paint-filter-saturation"].forEach((id) => {
+  [
+    "paint-filter-brightness",
+    "paint-filter-contrast",
+    "paint-filter-saturation",
+  ].forEach((id) => {
     const inputEl = byId(id);
     if (!inputEl) return;
     inputEl.addEventListener("input", previewFilters);
@@ -489,4 +554,3 @@ export function initPaint() {
   handlePaintFullscreenChange();
   initPaintFontOptions();
 }
-

@@ -199,38 +199,86 @@ describe("paint unit", () => {
 
   it("toggles draw panel visibility and button state", () => {
     paintTogglePanel("draw");
-    expect(document.getElementById("paint-panel-draw")?.classList.contains("is-hidden")).toBe(false);
-    expect(document.getElementById("paint-panel-draw-btn")?.getAttribute("aria-pressed")).toBe("true");
+    expect(
+      document
+        .getElementById("paint-panel-draw")
+        ?.classList.contains("is-hidden"),
+    ).toBe(false);
+    expect(
+      document
+        .getElementById("paint-panel-draw-btn")
+        ?.getAttribute("aria-pressed"),
+    ).toBe("true");
 
     paintTogglePanel("draw");
-    expect(document.getElementById("paint-panel-draw")?.classList.contains("is-hidden")).toBe(true);
-    expect(document.getElementById("paint-panel-draw-btn")?.getAttribute("aria-pressed")).toBe("false");
+    expect(
+      document
+        .getElementById("paint-panel-draw")
+        ?.classList.contains("is-hidden"),
+    ).toBe(true);
+    expect(
+      document
+        .getElementById("paint-panel-draw-btn")
+        ?.getAttribute("aria-pressed"),
+    ).toBe("false");
   });
 
   it("updates active tool button for eraser", () => {
     paintSetTool("eraser");
-    expect(document.getElementById("paint-tool-eraser-btn")?.classList.contains("active")).toBe(true);
-    expect(document.getElementById("paint-tool-eraser-btn")?.getAttribute("aria-pressed")).toBe("true");
-    expect(document.getElementById("paint-tool-brush-btn")?.classList.contains("active")).toBe(false);
+    expect(
+      document
+        .getElementById("paint-tool-eraser-btn")
+        ?.classList.contains("active"),
+    ).toBe(true);
+    expect(
+      document
+        .getElementById("paint-tool-eraser-btn")
+        ?.getAttribute("aria-pressed"),
+    ).toBe("true");
+    expect(
+      document
+        .getElementById("paint-tool-brush-btn")
+        ?.classList.contains("active"),
+    ).toBe(false);
   });
 
   it("changes zoom label on zoom in/out/reset", () => {
-    expect(document.getElementById("paint-zoom-label")?.textContent).toBe("100%");
+    expect(document.getElementById("paint-zoom-label")?.textContent).toBe(
+      "100%",
+    );
     paintZoomIn();
-    expect(document.getElementById("paint-zoom-label")?.textContent).toBe("125%");
+    expect(document.getElementById("paint-zoom-label")?.textContent).toBe(
+      "125%",
+    );
     paintZoomOut();
-    expect(document.getElementById("paint-zoom-label")?.textContent).toBe("100%");
+    expect(document.getElementById("paint-zoom-label")?.textContent).toBe(
+      "100%",
+    );
     paintZoomReset();
-    expect(document.getElementById("paint-zoom-label")?.textContent).toBe("100%");
+    expect(document.getElementById("paint-zoom-label")?.textContent).toBe(
+      "100%",
+    );
   });
 
   it("toggles grid class and aria state", () => {
     paintToggleGrid();
-    expect(document.getElementById("paint-canvas-wrap")?.classList.contains("paint-grid-enabled")).toBe(true);
-    expect(document.getElementById("paint-grid-btn")?.getAttribute("aria-pressed")).toBe("true");
+    expect(
+      document
+        .getElementById("paint-canvas-wrap")
+        ?.classList.contains("paint-grid-enabled"),
+    ).toBe(true);
+    expect(
+      document.getElementById("paint-grid-btn")?.getAttribute("aria-pressed"),
+    ).toBe("true");
 
     paintToggleGrid();
-    expect(document.getElementById("paint-canvas-wrap")?.classList.contains("paint-grid-enabled")).toBe(false);
-    expect(document.getElementById("paint-grid-btn")?.getAttribute("aria-pressed")).toBe("false");
+    expect(
+      document
+        .getElementById("paint-canvas-wrap")
+        ?.classList.contains("paint-grid-enabled"),
+    ).toBe(false);
+    expect(
+      document.getElementById("paint-grid-btn")?.getAttribute("aria-pressed"),
+    ).toBe("false");
   });
 });

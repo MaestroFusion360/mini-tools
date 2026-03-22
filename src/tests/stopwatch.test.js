@@ -1,4 +1,4 @@
-﻿import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   addStopwatchLap,
   initStopwatch,
@@ -105,4 +105,3 @@ describe("stopwatch modes", () => {
     expect(lapItems[99]?.textContent).toContain("#1:");
   });
 });
-

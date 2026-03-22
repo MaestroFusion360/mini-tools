@@ -1,4 +1,4 @@
-﻿import { byId, setIcon, setText } from "../core/dom.js";
+import { byId, setIcon, setText } from "../core/dom.js";
 import {
   registerTranslationApplier,
   getLanguage,
@@ -106,7 +106,9 @@ function getWeatherCodeLabel(code) {
 }
 
 function renderWeatherCondition(currentCode, tomorrowCode = null) {
-  weatherState.weatherCurrentCode = Number.isFinite(currentCode) ? currentCode : null;
+  weatherState.weatherCurrentCode = Number.isFinite(currentCode)
+    ? currentCode
+    : null;
   weatherState.weatherTomorrowCode = Number.isFinite(tomorrowCode)
     ? tomorrowCode
     : null;
@@ -507,13 +509,15 @@ async function loadWeather(lat, lon, requestId = weatherRequestSeq) {
         : "--";
     }
     const sunriseEl = byId("sunrise");
-    if (sunriseEl) sunriseEl.textContent = new Date(
-      w.daily.sunrise[0],
-    ).toLocaleTimeString(getLocale(), {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
+    if (sunriseEl)
+      sunriseEl.textContent = new Date(w.daily.sunrise[0]).toLocaleTimeString(
+        getLocale(),
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        },
+      );
     const sunsetEl = byId("sunset");
     if (sunsetEl) {
       sunsetEl.textContent = new Date(w.daily.sunset[0]).toLocaleTimeString(
@@ -657,7 +661,10 @@ export function refreshWeatherLocaleState() {
   const addressEl = byId("address");
 
   if (weatherState.weatherCurrentCoords)
-    setCoordText(weatherState.weatherCurrentCoords.lat, weatherState.weatherCurrentCoords.lon);
+    setCoordText(
+      weatherState.weatherCurrentCoords.lat,
+      weatherState.weatherCurrentCoords.lon,
+    );
   else
     translateTextIfKnown(coordEl, [
       "manualCoordsInvalid",
@@ -740,4 +747,3 @@ export function initWeatherModule() {
   }
   initWeather();
 }
-

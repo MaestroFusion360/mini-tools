@@ -13,6 +13,22 @@
     <div class="menu-grid">
       <button
         class="menu-btn"
+        onclick="showPage('page-todo')"
+        id="menu-todo-btn"
+      >
+        <svg class="icon-svg menu-icon"><use href="#i-list-todo"></use></svg
+        ><span id="menu-todo">Todo</span>
+      </button>
+      <button
+        class="menu-btn"
+        onclick="showPage('page-news')"
+        id="menu-news-btn"
+      >
+        <svg class="icon-svg menu-icon"><use href="#i-rss"></use></svg
+        ><span id="menu-news">News</span>
+      </button>
+      <button
+        class="menu-btn"
         onclick="showPage('page-weather')"
         id="menu-weather-btn"
       >
@@ -703,7 +719,11 @@
       </div>
 
       <div class="row">
-        <button id="calendar-calc-btn" class="primary flex-1" onclick="calcDateDiff()">
+        <button
+          id="calendar-calc-btn"
+          class="primary flex-1"
+          onclick="calcDateDiff()"
+        >
           Calculate
         </button>
         <button
@@ -1045,7 +1065,9 @@
             title="Fullscreen"
             aria-label="Fullscreen"
           >
-            <svg class="icon-svg btn-icon"><use href="#i-fullscreen"></use></svg>
+            <svg class="icon-svg btn-icon">
+              <use href="#i-fullscreen"></use>
+            </svg>
           </button>
           <button
             type="button"
@@ -1110,7 +1132,9 @@
               title="Uppercase"
               aria-label="Uppercase"
             >
-              <svg class="icon-svg btn-icon"><use href="#i-case-upper"></use></svg>
+              <svg class="icon-svg btn-icon">
+                <use href="#i-case-upper"></use>
+              </svg>
             </button>
             <button
               type="button"
@@ -1120,7 +1144,9 @@
               title="Lowercase"
               aria-label="Lowercase"
             >
-              <svg class="icon-svg btn-icon"><use href="#i-case-lower"></use></svg>
+              <svg class="icon-svg btn-icon">
+                <use href="#i-case-lower"></use>
+              </svg>
             </button>
             <button
               type="button"
@@ -1130,7 +1156,9 @@
               title="Sentence case"
               aria-label="Sentence case"
             >
-              <svg class="icon-svg btn-icon"><use href="#i-case-sensitive"></use></svg>
+              <svg class="icon-svg btn-icon">
+                <use href="#i-case-sensitive"></use>
+              </svg>
             </button>
             <button
               type="button"
@@ -1140,7 +1168,9 @@
               title="Trim"
               aria-label="Trim"
             >
-              <svg class="icon-svg btn-icon"><use href="#i-text-trim"></use></svg>
+              <svg class="icon-svg btn-icon">
+                <use href="#i-text-trim"></use>
+              </svg>
             </button>
             <button
               type="button"
@@ -1150,7 +1180,9 @@
               title="Normalize spaces"
               aria-label="Normalize spaces"
             >
-              <svg class="icon-svg btn-icon"><use href="#i-text-normalize"></use></svg>
+              <svg class="icon-svg btn-icon">
+                <use href="#i-text-normalize"></use>
+              </svg>
             </button>
             <button
               type="button"
@@ -1160,7 +1192,9 @@
               title="Remove empty lines"
               aria-label="Remove empty lines"
             >
-              <svg class="icon-svg btn-icon"><use href="#i-text-no-empty"></use></svg>
+              <svg class="icon-svg btn-icon">
+                <use href="#i-text-no-empty"></use>
+              </svg>
             </button>
           </div>
           <div class="text-find-row">
@@ -1200,7 +1234,9 @@
               title="Replace all"
               aria-label="Replace all"
             >
-              <svg class="icon-svg btn-icon"><use href="#i-replace-all"></use></svg>
+              <svg class="icon-svg btn-icon">
+                <use href="#i-replace-all"></use>
+              </svg>
             </button>
           </div>
           <div class="text-find-options">
@@ -1317,7 +1353,11 @@
       accept="image/*"
       class="visually-hidden"
     />
-    <div class="paint-top-hover-zone" id="paint-top-hover-zone" aria-hidden="true"></div>
+    <div
+      class="paint-top-hover-zone"
+      id="paint-top-hover-zone"
+      aria-hidden="true"
+    ></div>
     <div class="paint-controls">
       <div class="paint-toolbar paint-toolbar-actions paint-toolbar-main">
         <button
@@ -1370,7 +1410,9 @@
           title="Paste"
           aria-label="Paste"
         >
-          <svg class="icon-svg btn-icon"><use href="#i-clipboard-paste"></use></svg>
+          <svg class="icon-svg btn-icon">
+            <use href="#i-clipboard-paste"></use>
+          </svg>
         </button>
         <button
           type="button"
@@ -1388,7 +1430,9 @@
           title="Resize"
           aria-label="Resize"
         >
-          <svg class="icon-svg btn-icon"><use href="#i-image-upscale"></use></svg>
+          <svg class="icon-svg btn-icon">
+            <use href="#i-image-upscale"></use>
+          </svg>
         </button>
         <button
           type="button"
@@ -1398,7 +1442,9 @@
           title="Filters"
           aria-label="Filters"
         >
-          <svg class="icon-svg btn-icon"><use href="#i-sliders-horizontal"></use></svg>
+          <svg class="icon-svg btn-icon">
+            <use href="#i-sliders-horizontal"></use>
+          </svg>
         </button>
         <button
           type="button"
@@ -1426,7 +1472,9 @@
           title="Select"
           aria-label="Select"
         >
-          <svg class="icon-svg btn-icon"><use href="#i-square-dashed"></use></svg>
+          <svg class="icon-svg btn-icon">
+            <use href="#i-square-dashed"></use>
+          </svg>
         </button>
         <button
           type="button"
@@ -1485,15 +1533,32 @@
         <div class="paint-common-controls" id="paint-common-controls">
           <label class="paint-field">
             <span>Color</span>
-            <input type="color" id="paint-color" value="#0f766e" title="Color" />
+            <input
+              type="color"
+              id="paint-color"
+              value="#0f766e"
+              title="Color"
+            />
           </label>
           <label class="paint-field">
             <span>BackColor</span>
-            <input type="color" id="paint-back-color" value="#ffffff" title="BackColor" />
+            <input
+              type="color"
+              id="paint-back-color"
+              value="#ffffff"
+              title="BackColor"
+            />
           </label>
           <label class="paint-field">
             <span>Size</span>
-            <input type="number" id="paint-size" min="1" max="64" value="6" title="Size" />
+            <input
+              type="number"
+              id="paint-size"
+              min="1"
+              max="64"
+              value="6"
+              title="Size"
+            />
           </label>
         </div>
       </div>
@@ -1508,7 +1573,9 @@
             title="Brush"
             aria-label="Brush"
           >
-            <svg class="icon-svg btn-icon"><use href="#i-brush-cleaning"></use></svg>
+            <svg class="icon-svg btn-icon">
+              <use href="#i-brush-cleaning"></use>
+            </svg>
           </button>
           <button
             type="button"
@@ -1538,7 +1605,9 @@
             title="Fonts"
             aria-label="Fonts"
           >
-            <svg class="icon-svg btn-icon"><use href="#i-type-outline"></use></svg>
+            <svg class="icon-svg btn-icon">
+              <use href="#i-type-outline"></use>
+            </svg>
           </button>
           <button
             type="button"
@@ -1558,17 +1627,25 @@
             title="Fill"
             aria-label="Fill"
           >
-            <svg class="icon-svg btn-icon"><use href="#i-paint-bucket"></use></svg>
+            <svg class="icon-svg btn-icon">
+              <use href="#i-paint-bucket"></use>
+            </svg>
           </button>
         </div>
       </div>
 
       <div class="paint-text-controls" id="paint-text-controls">
-        <label class="paint-field paint-field-full is-hidden" id="paint-text-wrap">
+        <label
+          class="paint-field paint-field-full is-hidden"
+          id="paint-text-wrap"
+        >
           <span>Text</span>
           <input type="text" id="paint-text" placeholder="Text to draw" />
         </label>
-        <label class="paint-field paint-field-full is-hidden" id="paint-font-wrap">
+        <label
+          class="paint-field paint-field-full is-hidden"
+          id="paint-font-wrap"
+        >
           <span>Font</span>
           <select id="paint-text-font">
             <option value="Manrope">Manrope</option>
@@ -1584,7 +1661,9 @@
             <option value="Courier">Courier</option>
             <option value="Georgia">Georgia</option>
             <option value="Courier New">Courier New</option>
-            <option value="Franklin Gothic Medium">Franklin Gothic Medium</option>
+            <option value="Franklin Gothic Medium">
+              Franklin Gothic Medium
+            </option>
             <option value="Impact">Impact</option>
             <option value="Lucida Console">Lucida Console</option>
             <option value="Lucida Sans Unicode">Lucida Sans Unicode</option>
@@ -1595,7 +1674,10 @@
             <option value="Verdana">Verdana</option>
           </select>
         </label>
-        <div class="paint-text-style-controls is-hidden" id="paint-text-style-wrap">
+        <div
+          class="paint-text-style-controls is-hidden"
+          id="paint-text-style-wrap"
+        >
           <button
             type="button"
             class="text-action-btn toolbar-icon-btn"
@@ -1650,10 +1732,34 @@
 
       <div class="paint-panel is-hidden" id="paint-panel-crop">
         <div class="paint-toolbar paint-toolbar-grid">
-          <input type="number" id="paint-crop-x" min="0" value="0" placeholder="crop x" />
-          <input type="number" id="paint-crop-y" min="0" value="0" placeholder="crop y" />
-          <input type="number" id="paint-crop-w" min="1" value="300" placeholder="crop w" />
-          <input type="number" id="paint-crop-h" min="1" value="200" placeholder="crop h" />
+          <input
+            type="number"
+            id="paint-crop-x"
+            min="0"
+            value="0"
+            placeholder="crop x"
+          />
+          <input
+            type="number"
+            id="paint-crop-y"
+            min="0"
+            value="0"
+            placeholder="crop y"
+          />
+          <input
+            type="number"
+            id="paint-crop-w"
+            min="1"
+            value="300"
+            placeholder="crop w"
+          />
+          <input
+            type="number"
+            id="paint-crop-h"
+            min="1"
+            value="200"
+            placeholder="crop h"
+          />
           <button
             type="button"
             class="text-action-btn toolbar-icon-btn"
@@ -1688,8 +1794,12 @@
       <div class="paint-panel is-hidden" id="paint-panel-mirror">
         <div class="paint-toolbar paint-toolbar-grid">
           <select id="paint-mirror-axis">
-            <option value="horizontal" id="paint-mirror-opt-horizontal">Horizontal</option>
-            <option value="vertical" id="paint-mirror-opt-vertical">Vertical</option>
+            <option value="horizontal" id="paint-mirror-opt-horizontal">
+              Horizontal
+            </option>
+            <option value="vertical" id="paint-mirror-opt-vertical">
+              Vertical
+            </option>
           </select>
           <button
             type="button"
@@ -1704,19 +1814,56 @@
       <div class="paint-panel is-hidden" id="paint-panel-filters">
         <div class="paint-toolbar paint-toolbar-grid paint-filters-grid">
           <label class="paint-range-control">
-            <span><svg class="icon-svg btn-icon"><use href="#i-sun-dim"></use></svg></span>
-            <input type="range" id="paint-filter-brightness" min="-100" max="100" value="0" />
+            <span
+              ><svg class="icon-svg btn-icon"><use href="#i-sun-dim"></use></svg
+            ></span>
+            <input
+              type="range"
+              id="paint-filter-brightness"
+              min="-100"
+              max="100"
+              value="0"
+            />
           </label>
           <label class="paint-range-control">
-            <span><svg class="icon-svg btn-icon"><use href="#i-contrast"></use></svg></span>
-            <input type="range" id="paint-filter-contrast" min="-100" max="100" value="0" />
+            <span
+              ><svg class="icon-svg btn-icon">
+                <use href="#i-contrast"></use></svg
+            ></span>
+            <input
+              type="range"
+              id="paint-filter-contrast"
+              min="-100"
+              max="100"
+              value="0"
+            />
           </label>
           <label class="paint-range-control">
-            <span><svg class="icon-svg btn-icon"><use href="#i-blend"></use></svg></span>
-            <input type="range" id="paint-filter-saturation" min="-100" max="100" value="0" />
+            <span
+              ><svg class="icon-svg btn-icon"><use href="#i-blend"></use></svg
+            ></span>
+            <input
+              type="range"
+              id="paint-filter-saturation"
+              min="-100"
+              max="100"
+              value="0"
+            />
           </label>
-          <button type="button" class="text-action-btn" onclick="paintApplyFilters()">Apply</button>
-          <button type="button" class="text-action-btn" onclick="paintResetFilters()">Reset</button>
+          <button
+            type="button"
+            class="text-action-btn"
+            onclick="paintApplyFilters()"
+          >
+            Apply
+          </button>
+          <button
+            type="button"
+            class="text-action-btn"
+            onclick="paintResetFilters()"
+          >
+            Reset
+          </button>
         </div>
       </div>
       <div class="paint-panel is-hidden" id="paint-panel-shapes">
@@ -1729,7 +1876,9 @@
             title="Rectangle"
             aria-label="Rectangle"
           >
-            <svg class="icon-svg btn-icon"><use href="#i-rectangle-horizontal"></use></svg>
+            <svg class="icon-svg btn-icon">
+              <use href="#i-rectangle-horizontal"></use>
+            </svg>
           </button>
           <button
             type="button"
@@ -1749,7 +1898,9 @@
             title="Line"
             aria-label="Line"
           >
-            <svg class="icon-svg btn-icon"><use href="#i-line-dot-right-horizontal"></use></svg>
+            <svg class="icon-svg btn-icon">
+              <use href="#i-line-dot-right-horizontal"></use>
+            </svg>
           </button>
           <button
             type="button"
@@ -1779,7 +1930,9 @@
             title="Arrow Up"
             aria-label="Arrow Up"
           >
-            <svg class="icon-svg btn-icon"><use href="#i-arrow-big-up"></use></svg>
+            <svg class="icon-svg btn-icon">
+              <use href="#i-arrow-big-up"></use>
+            </svg>
           </button>
           <button
             type="button"
@@ -1789,7 +1942,9 @@
             title="Arrow Down"
             aria-label="Arrow Down"
           >
-            <svg class="icon-svg btn-icon"><use href="#i-arrow-big-down"></use></svg>
+            <svg class="icon-svg btn-icon">
+              <use href="#i-arrow-big-down"></use>
+            </svg>
           </button>
           <button
             type="button"
@@ -1799,7 +1954,9 @@
             title="Arrow Left"
             aria-label="Arrow Left"
           >
-            <svg class="icon-svg btn-icon"><use href="#i-arrow-big-left"></use></svg>
+            <svg class="icon-svg btn-icon">
+              <use href="#i-arrow-big-left"></use>
+            </svg>
           </button>
           <button
             type="button"
@@ -1809,7 +1966,9 @@
             title="Arrow Right"
             aria-label="Arrow Right"
           >
-            <svg class="icon-svg btn-icon"><use href="#i-arrow-big-right"></use></svg>
+            <svg class="icon-svg btn-icon">
+              <use href="#i-arrow-big-right"></use>
+            </svg>
           </button>
         </div>
       </div>
@@ -1851,8 +2010,16 @@
     </div>
     <div class="paint-canvas-wrap" id="paint-canvas-wrap">
       <canvas id="paint-canvas" width="640" height="360"></canvas>
-      <div id="paint-grid-overlay" class="paint-grid-overlay" aria-hidden="true"></div>
-      <div id="paint-selection-overlay" class="paint-selection-overlay is-hidden" aria-hidden="true"></div>
+      <div
+        id="paint-grid-overlay"
+        class="paint-grid-overlay"
+        aria-hidden="true"
+      ></div>
+      <div
+        id="paint-selection-overlay"
+        class="paint-selection-overlay is-hidden"
+        aria-hidden="true"
+      ></div>
     </div>
   </div>
 
@@ -1892,7 +2059,9 @@
           id="media-prev-btn"
           onclick="mediaPrev()"
         >
-          <svg class="icon-svg btn-icon"><use href="#i-chevron-left"></use></svg>
+          <svg class="icon-svg btn-icon">
+            <use href="#i-chevron-left"></use>
+          </svg>
         </button>
         <button
           type="button"
@@ -1900,7 +2069,9 @@
           id="media-next-btn"
           onclick="mediaNext()"
         >
-          <svg class="icon-svg btn-icon"><use href="#i-chevron-right"></use></svg>
+          <svg class="icon-svg btn-icon">
+            <use href="#i-chevron-right"></use>
+          </svg>
         </button>
         <button
           type="button"
@@ -1914,7 +2085,223 @@
 
       <select id="media-playlist" onchange="mediaPlaySelected()"></select>
       <div class="small-text" id="media-now-playing">No file selected</div>
-      <video id="media-player" class="media-player" controls preload="metadata"></video>
+      <video
+        id="media-player"
+        class="media-player"
+        controls
+        preload="metadata"
+      ></video>
+    </div>
+  </div>
+
+  <!-- TODO / NOTES -->
+  <div class="page" id="page-todo">
+    <div class="header">
+      <button
+        class="back-btn"
+        onclick="showPage('page-menu')"
+        data-i18n="back-btn"
+      >
+        Back
+      </button>
+      <h2 id="title-todo">Todo & Notes</h2>
+    </div>
+    <div class="card">
+      <div class="row">
+        <button
+          id="todo-tab-tasks"
+          class="text-action-btn active"
+          onclick="setTodoTab('tasks')"
+        >
+          Tasks
+        </button>
+        <button
+          id="todo-tab-notes"
+          class="text-action-btn"
+          onclick="setTodoTab('notes')"
+        >
+          Notes
+        </button>
+      </div>
+      <div id="todo-tasks-panel">
+        <div class="row">
+          <input
+            id="todo-input"
+            type="text"
+            placeholder="Add task..."
+            onkeydown="onTodoInputKeydown(event)"
+          />
+          <button class="primary" id="todo-add-btn" onclick="addTodoItem()">
+            Add
+          </button>
+        </div>
+        <div class="row">
+          <button
+            id="todo-clear-done-btn"
+            class="text-action-btn"
+            onclick="clearCompletedTodo()"
+          >
+            Clear done
+          </button>
+        </div>
+        <div class="row">
+          <button
+            id="todo-filter-all"
+            class="text-action-btn active"
+            onclick="setTodoVisibility('all')"
+          >
+            All
+          </button>
+          <button
+            id="todo-filter-active"
+            class="text-action-btn"
+            onclick="setTodoVisibility('active')"
+          >
+            Active
+          </button>
+          <button
+            id="todo-filter-done"
+            class="text-action-btn"
+            onclick="setTodoVisibility('done')"
+          >
+            Done
+          </button>
+        </div>
+        <div class="small-text" id="todo-summary"></div>
+        <div id="todo-list"></div>
+      </div>
+      <div id="todo-notes-panel" hidden>
+        <div class="small-text" id="todo-notes-label">Notes</div>
+        <div class="row">
+          <input id="todo-notes-title" type="text" placeholder="Title..." />
+        </div>
+        <div class="row notes-input-row">
+          <div
+            id="todo-notes-input"
+            class="note-editor"
+            contenteditable="true"
+            onkeydown="onTodoNotesInputKeydown(event)"
+          ></div>
+        </div>
+        <div class="row note-toolbar-row">
+          <button
+            class="text-action-btn note-tool-btn"
+            id="todo-note-bold-btn"
+            onclick="todoNoteEditorAction('bold')"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-bold"></use></svg>
+          </button>
+          <button
+            class="text-action-btn note-tool-btn"
+            id="todo-note-italic-btn"
+            onclick="todoNoteEditorAction('italic')"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-italic"></use></svg>
+          </button>
+          <button
+            class="text-action-btn note-tool-btn"
+            id="todo-note-underline-btn"
+            onclick="todoNoteEditorAction('underline')"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-baseline"></use></svg>
+          </button>
+          <button
+            class="text-action-btn note-tool-btn"
+            id="todo-note-strike-btn"
+            onclick="todoNoteEditorAction('strike')"
+          >
+            <svg class="icon-svg btn-icon">
+              <use href="#i-strikethrough"></use>
+            </svg>
+          </button>
+          <button
+            class="text-action-btn note-tool-btn"
+            id="todo-note-ordered-btn"
+            onclick="todoNoteEditorAction('ordered')"
+          >
+            <svg class="icon-svg btn-icon">
+              <use href="#i-list-ordered"></use>
+            </svg>
+          </button>
+          <button
+            class="text-action-btn note-tool-btn"
+            id="todo-notes-add-btn"
+            onclick="onTodoNotesSave()"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-save"></use></svg>
+          </button>
+          <button
+            class="text-action-btn note-tool-btn"
+            id="todo-note-clear-btn"
+            onclick="todoNoteEditorAction('clear')"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-trash"></use></svg>
+          </button>
+        </div>
+        <div id="todo-notes-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RSS NEWS -->
+  <div class="page" id="page-news">
+    <div class="header">
+      <button
+        class="back-btn"
+        onclick="showPage('page-menu')"
+        data-i18n="back-btn"
+      >
+        Back
+      </button>
+      <h2 id="title-news">RSS News</h2>
+    </div>
+    <div class="card">
+      <div class="row">
+        <input
+          id="rss-url"
+          type="text"
+          placeholder="https://example.com/feed.xml"
+        />
+        <button class="primary" id="rss-load-btn" onclick="loadRssFeed()">
+          Load
+        </button>
+      </div>
+      <div class="row">
+        <button class="text-action-btn" id="rss-add-btn" onclick="addRssFeed()">
+          Add feed
+        </button>
+        <button
+          class="text-action-btn"
+          id="rss-remove-btn"
+          onclick="removeRssFeed()"
+        >
+          Remove feed
+        </button>
+        <button
+          class="text-action-btn"
+          id="rss-import-btn"
+          onclick="importRssFeeds()"
+        >
+          Import
+        </button>
+        <button
+          class="text-action-btn"
+          id="rss-export-btn"
+          onclick="exportRssFeeds()"
+        >
+          Export
+        </button>
+      </div>
+      <input
+        id="rss-import-input"
+        type="file"
+        accept=".json,application/json"
+        class="visually-hidden"
+        onchange="handleRssImportFile(event)"
+      />
+      <select id="rss-feeds" onchange="onRssFeedChange()"></select>
+      <div class="small-text" id="rss-status"></div>
+      <div id="rss-items"></div>
     </div>
   </div>
 </div>

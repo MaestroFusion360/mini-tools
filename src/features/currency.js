@@ -84,7 +84,11 @@ export async function loadRates(manual = false) {
     const r = await fetch(RATES_API_URL);
     if (!r.ok) throw new Error("Rates request failed");
     const d = await r.json();
-    if (!d?.rates || typeof d.rates !== "object" || !Object.keys(d.rates).length) {
+    if (
+      !d?.rates ||
+      typeof d.rates !== "object" ||
+      !Object.keys(d.rates).length
+    ) {
       throw new Error("Invalid rates payload");
     }
     currencyState.rates = d.rates;

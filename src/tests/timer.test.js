@@ -1,4 +1,4 @@
-﻿import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   initTimer,
   resetTimer,
@@ -105,4 +105,3 @@ describe("timer modes", () => {
     );
   });
 });
-

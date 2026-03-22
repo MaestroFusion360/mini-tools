@@ -40,7 +40,9 @@ describe("media player unit", () => {
     const playlist = document.getElementById("media-playlist");
     expect(playlist.disabled).toBe(true);
     expect(playlist.options.length).toBe(1);
-    expect(document.getElementById("media-now-playing")?.textContent).toBe("mediaNoFileSelected");
+    expect(document.getElementById("media-now-playing")?.textContent).toBe(
+      "mediaNoFileSelected",
+    );
   });
 
   it("loads files, plays first, supports next and clear", async () => {
@@ -57,14 +59,20 @@ describe("media player unit", () => {
     const playlist = document.getElementById("media-playlist");
     expect(playlist.disabled).toBe(false);
     expect(playlist.options.length).toBe(2);
-    expect(document.getElementById("media-now-playing")?.textContent).toContain("track-a.mp3");
+    expect(document.getElementById("media-now-playing")?.textContent).toContain(
+      "track-a.mp3",
+    );
 
     mediaNext();
-    expect(document.getElementById("media-now-playing")?.textContent).toContain("track-b.mp3");
+    expect(document.getElementById("media-now-playing")?.textContent).toContain(
+      "track-b.mp3",
+    );
 
     mediaClearPlaylist();
     expect(playlist.disabled).toBe(true);
     expect(playlist.options.length).toBe(1);
-    expect(document.getElementById("media-now-playing")?.textContent).toBe("mediaNoFileSelected");
+    expect(document.getElementById("media-now-playing")?.textContent).toBe(
+      "mediaNoFileSelected",
+    );
   });
 });

@@ -1,4 +1,4 @@
-﻿import { readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const data = JSON.parse(readFileSync("i18n.json", "utf8"));
@@ -25,4 +25,3 @@ describe("i18n dictionary", () => {
     }
   });
 });
-

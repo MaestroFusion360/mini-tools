@@ -1,4 +1,4 @@
-﻿import { byId, setLabelText, setText } from "../core/dom.js";
+import { byId, setLabelText, setText } from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
 import { FEATURE_RUNTIME_STATE } from "../core/state.js";
 import { getLocale } from "../core/utils.js";
@@ -24,8 +24,18 @@ const IDS = {
 };
 
 const DATE_FIELDS = {
-  date1: { date: "date1", year: "date1-year", hour: "time1h", minute: "time1m" },
-  date2: { date: "date2", year: "date2-year", hour: "time2h", minute: "time2m" },
+  date1: {
+    date: "date1",
+    year: "date1-year",
+    hour: "time1h",
+    minute: "time1m",
+  },
+  date2: {
+    date: "date2",
+    year: "date2-year",
+    hour: "time2h",
+    minute: "time2m",
+  },
 };
 
 function ensureCalendarState() {
@@ -112,8 +122,16 @@ function buildCalendarModel() {
   const d1Selected = getDateOnlyFromInput(DATE_FIELDS.date1.date);
   const d2Selected = getDateOnlyFromInput(DATE_FIELDS.date2.date);
   const hasBoth = Boolean(d1Selected && d2Selected);
-  const rangeStart = hasBoth ? (d1Selected <= d2Selected ? d1Selected : d2Selected) : null;
-  const rangeEnd = hasBoth ? (d1Selected <= d2Selected ? d2Selected : d1Selected) : null;
+  const rangeStart = hasBoth
+    ? d1Selected <= d2Selected
+      ? d1Selected
+      : d2Selected
+    : null;
+  const rangeEnd = hasBoth
+    ? d1Selected <= d2Selected
+      ? d2Selected
+      : d1Selected
+    : null;
 
   const days = [];
   for (let day = 1; day <= totalDays; day += 1) {
@@ -186,7 +204,9 @@ function applyCalendarDatePick(dateValue) {
   syncYearSelectWithDate(target.date, target.year);
   calcDateDiff();
   renderCalendar();
-  setCalendarPickMode(calendarState.calendarPickMode === "date1" ? "date2" : "date1");
+  setCalendarPickMode(
+    calendarState.calendarPickMode === "date1" ? "date2" : "date1",
+  );
 }
 
 function bindCalendarDayDelegation() {
@@ -337,8 +357,16 @@ function buildDateDiffModel() {
   const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
   const start = d1 < d2 ? d1 : d2;
   const end = d1 < d2 ? d2 : d1;
-  const startDateOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-  const endDateOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  const startDateOnly = new Date(
+    start.getFullYear(),
+    start.getMonth(),
+    start.getDate(),
+  );
+  const endDateOnly = new Date(
+    end.getFullYear(),
+    end.getMonth(),
+    end.getDate(),
+  );
   // Inclusive mode should affect both elapsed totals and calendar Y/M/D breakdown.
   if (inclusive) {
     endDateOnly.setDate(endDateOnly.getDate() + 1);
@@ -346,7 +374,18 @@ function buildDateDiffModel() {
   const ymd = diffYMD(startDateOnly, endDateOnly);
   const relation = d2 >= d1 ? t("relationForward") : t("relationReverse");
 
-  return { d1, d2, days, weeks, remDays, hours, minutes, ymd, relation, totalMinutes };
+  return {
+    d1,
+    d2,
+    days,
+    weeks,
+    remDays,
+    hours,
+    minutes,
+    ymd,
+    relation,
+    totalMinutes,
+  };
 }
 
 function renderDateDiff(model) {

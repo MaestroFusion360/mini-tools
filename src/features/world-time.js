@@ -15,7 +15,9 @@ function ensureWorldTimeState() {
   if (typeof worldTimeState.time24h !== "boolean") {
     worldTimeState.time24h = true;
   }
-  if (!Object.prototype.hasOwnProperty.call(worldTimeState, "worldTimeIntervalId")) {
+  if (
+    !Object.prototype.hasOwnProperty.call(worldTimeState, "worldTimeIntervalId")
+  ) {
     worldTimeState.worldTimeIntervalId = null;
   }
   if (typeof worldTimeState.worldTimeInitialized !== "boolean") {

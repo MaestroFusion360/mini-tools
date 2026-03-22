@@ -1,4 +1,4 @@
-﻿import { expect, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const VIEWPORTS = [
   { width: 320, height: 740 },
@@ -40,7 +40,9 @@ async function assertActiveLayoutBounds(page) {
     if (!active) return [];
 
     const nodes = [
-      ...active.querySelectorAll(".card, .menu-btn, button, input, select, textarea"),
+      ...active.querySelectorAll(
+        ".card, .menu-btn, button, input, select, textarea",
+      ),
     ];
 
     return nodes
@@ -64,7 +66,9 @@ async function assertActiveLayoutBounds(page) {
 
 test.describe("layout smoke", () => {
   for (const viewport of VIEWPORTS) {
-    test(`responsive layout ${viewport.width}x${viewport.height}`, async ({ page }) => {
+    test(`responsive layout ${viewport.width}x${viewport.height}`, async ({
+      page,
+    }) => {
       await page.setViewportSize(viewport);
       await page.goto("/");
       await page.waitForSelector("#app .page.active");

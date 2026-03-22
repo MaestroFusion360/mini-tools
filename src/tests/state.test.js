@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   getStored,
   getStoredJson,
@@ -22,4 +22,3 @@ describe("state storage helpers", () => {
     expect(getStoredJson("bad", [])).toEqual([]);
   });
 });
-

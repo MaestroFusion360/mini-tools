@@ -138,7 +138,8 @@ export function toggleTimer() {
   timerState.timerRunning = true;
   timerState.timerHasStarted = true;
   timerState.timerFinished = false;
-  timerState.timerEndAtMs = Date.now() + timerState.timerRemainingSeconds * 1000;
+  timerState.timerEndAtMs =
+    Date.now() + timerState.timerRemainingSeconds * 1000;
   stopTimerInterval();
   timerState.timerIntervalId = setInterval(timerTick, 250);
   renderTimerControls();

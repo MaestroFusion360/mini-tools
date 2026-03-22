@@ -104,15 +104,23 @@ test.describe("paint and media behavior", () => {
     const options = page.locator("#media-playlist option");
     await expect(options).toHaveCount(2);
     await expect(page.locator("#media-playlist")).toBeEnabled();
-    await expect(page.locator("#media-now-playing")).toContainText("sample-a.wav");
+    await expect(page.locator("#media-now-playing")).toContainText(
+      "sample-a.wav",
+    );
 
     await page.click("#media-next-btn");
-    await expect(page.locator("#media-now-playing")).toContainText("sample-b.wav");
+    await expect(page.locator("#media-now-playing")).toContainText(
+      "sample-b.wav",
+    );
 
     await page.click("#media-clear-btn");
     await expect(page.locator("#media-playlist")).toBeDisabled();
     await expect(page.locator("#media-playlist option")).toHaveCount(1);
-    await expect(page.locator("#media-now-playing")).not.toContainText("sample-a.wav");
-    await expect(page.locator("#media-now-playing")).not.toContainText("sample-b.wav");
+    await expect(page.locator("#media-now-playing")).not.toContainText(
+      "sample-a.wav",
+    );
+    await expect(page.locator("#media-now-playing")).not.toContainText(
+      "sample-b.wav",
+    );
   });
 });

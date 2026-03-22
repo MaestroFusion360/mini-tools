@@ -46,6 +46,31 @@ import {
   mediaPrev,
 } from "./features/media-player.js";
 import {
+  addTodoItem,
+  addTodoNote,
+  clearCompletedTodo,
+  initTodoNotes,
+  onTodoInputKeydown,
+  onTodoNotesInput,
+  onTodoNotesSave,
+  onTodoNotesInputKeydown,
+  removeTodoNote,
+  todoNoteEditorAction,
+  setTodoVisibility,
+  setTodoTab,
+  toggleTodoItem,
+} from "./features/todo-notes.js";
+import {
+  addRssFeed,
+  exportRssFeeds,
+  handleRssImportFile,
+  initRssNews,
+  importRssFeeds,
+  loadRssFeed,
+  onRssFeedChange,
+  removeRssFeed,
+} from "./features/rss-news.js";
+import {
   initPaint,
   paintApplyFilters,
   paintApplyCrop,
@@ -210,6 +235,25 @@ function exposeGlobals() {
     mediaPrev,
     mediaNext,
     mediaClearPlaylist,
+    addTodoItem,
+    addTodoNote,
+    clearCompletedTodo,
+    onTodoInputKeydown,
+    onTodoNotesInput,
+    onTodoNotesSave,
+    onTodoNotesInputKeydown,
+    removeTodoNote,
+    todoNoteEditorAction,
+    setTodoVisibility,
+    setTodoTab,
+    toggleTodoItem,
+    addRssFeed,
+    removeRssFeed,
+    loadRssFeed,
+    onRssFeedChange,
+    exportRssFeeds,
+    importRssFeeds,
+    handleRssImportFile,
   });
 }
 
@@ -252,6 +296,8 @@ async function initApp() {
   initCurrency();
   initPaint();
   initMediaPlayer();
+  initTodoNotes();
+  initRssNews();
   initPwa();
 
   applyTranslations();

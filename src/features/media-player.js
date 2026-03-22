@@ -20,8 +20,8 @@ function isFullscreenActive() {
   const doc = document;
   return Boolean(
     doc.fullscreenElement ||
-      doc.webkitFullscreenElement ||
-      doc.msFullscreenElement
+    doc.webkitFullscreenElement ||
+    doc.msFullscreenElement,
   );
 }
 

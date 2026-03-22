@@ -1,10 +1,11 @@
 <!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD039 -->
 
 # <img src="assets/icon.svg" alt="Mobile Tools" height="24" /> Mobile Tools
 
 Mobile Tools is a vanilla JavaScript PWA with everyday utilities in one app:
 weather, world time, timer, stopwatch, calendar/date diff, unit converter,
-calculator, text editor/analysis, and currency conversion.
+calculator, text editor/analysis, currency conversion, todo/notes, and RSS news.
 
 - [ Mobile Tools](#-mobile-tools)
   - [✨ Features](#-features)
@@ -21,6 +22,16 @@ calculator, text editor/analysis, and currency conversion.
 
 ## ✨ Features
 
+- Todo + Notes 📋:
+  - task list with visibility groups (All/Active/Done)
+  - drag&drop sorting for tasks
+  - notes cards with title + rich text editor
+  - drag&drop sorting for notes cards
+- RSS news 📰:
+  - feed list management (add/remove/load)
+  - import/export feeds JSON
+  - news cards view (not history list)
+  - swipe-right to mark item as read (muted card state)
 - Weather 🌤️:
   - geolocation + reverse geocoding
   - manual coordinates mode
@@ -109,6 +120,8 @@ calculator, text editor/analysis, and currency conversion.
 - `src/features/paint/pixels.js`: paint pixel/filter helpers
 - `src/features/paint/state.js`: paint runtime state + constants
 - `src/features/media-player.js`: media playlist and player controls
+- `src/features/todo-notes.js`: todo tasks + notes cards/editor
+- `src/features/rss-news.js`: RSS feed management and news cards
 - `src/features/shared/time-format.js`: shared time formatting helpers for timer/stopwatch
 - `src/core/pwa.js`: service worker registration wrapper
 
@@ -152,10 +165,14 @@ mini-tools/
 │       │   ├── fonts.js
 │       │   ├── pixels.js
 │       │   └── state.js
-│       └── media-player.js
+│       ├── media-player.js
+│       ├── todo-notes.js
+│       └── rss-news.js
 │   └── tests/
 │       ├── paint.test.js
 │       ├── media-player.test.js
+│       ├── todo-notes.test.js
+│       ├── rss-news.test.js
 │       └── layout/
 │           ├── layout.spec.js
 │           └── paint-media.spec.js
@@ -168,57 +185,41 @@ mini-tools/
 
 Use an HTTP server (Service Worker requires non-file protocol).
 
-Python:
-
 ```bash
 python -m http.server 8000
 ```
 
-Node.js:
-
-```bash
-npx serve .
-```
-
 Open `http://localhost:8000`.
-
-Format all project files with Prettier:
-
-```bash
-npx prettier --write .
-```
 
 ## 🧪 Testing
 
-Install dependencies:
-
 ```bash
 npm install
-```
-
-Run all tests once (unit + jsdom):
-
-```bash
 npm test
 ```
 
-Run tests in watch mode:
+Watch mode:
 
 ```bash
 npm run test:watch
 ```
 
-New unit tests added for graphics/media modules:
+Format:
+
+```bash
+npx prettier --write .
+```
+
+New unit tests:
 
 - `src/tests/paint.test.js`
 - `src/tests/media-player.test.js`
+- `src/tests/todo-notes.test.js`
+- `src/tests/rss-news.test.js`
 
 ## 🧭 Playwright Layout Testing
 
-This project includes Playwright layout smoke tests for multiple viewport sizes
-and functional paint/media browser scenarios.
-
-Install browser binaries once:
+Setup once:
 
 ```bash
 npx playwright install chromium
@@ -228,18 +229,6 @@ Run layout tests:
 
 ```bash
 npm run test:layout
-```
-
-Open HTML report:
-
-```bash
-npx playwright show-report
-```
-
-Run with visible browser (headed mode):
-
-```bash
-npx playwright test --headed
 ```
 
 ## 📍 Geolocation Notes (Chrome/Firefox)
@@ -260,8 +249,8 @@ The app already handles denied/failed location and supports manual coordinates a
 - Nominatim / OpenStreetMap (reverse geocoding)
 - WorldTimeAPI (location time)
 - ExchangeRate-API (currency rates)
-
-If any network request fails, the app falls back safely where possible.
+- rss2json (RSS feed parsing proxy)
+  If any network request fails, the app falls back safely where possible.
 
 ## 📄 License
 

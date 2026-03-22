@@ -66,6 +66,8 @@ export function applyTranslations() {
   setText("menu-currency", t("currency"));
   setText("menu-paint", t("paint"));
   setText("menu-media", t("mediaPlayer"));
+  setText("menu-todo", t("todo"));
+  setText("menu-news", t("news"));
   setText("menu-exit", t("exit"));
   setText("title-paint", t("paintTitle"));
   setText("title-media", t("mediaPlayerTitle"));

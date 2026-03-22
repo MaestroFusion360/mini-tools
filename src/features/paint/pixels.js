@@ -39,7 +39,12 @@ export function floodFillOnCanvas(ctx, canvas, x, y, fillHexColor) {
   const targetB = data[idx + 2];
   const targetA = data[idx + 3];
   const fill = hexToRgb(fillHexColor);
-  if (targetR === fill.r && targetG === fill.g && targetB === fill.b && targetA === 255) {
+  if (
+    targetR === fill.r &&
+    targetG === fill.g &&
+    targetB === fill.b &&
+    targetA === 255
+  ) {
     return;
   }
 

@@ -1,4 +1,4 @@
-﻿import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   addCurrentCoordinateToFavorites,
   applyManualCoordinates,
@@ -224,7 +224,9 @@ describe("weather module", () => {
     addCurrentCoordinateToFavorites();
     renderWeatherFavorites();
 
-    const sourceText = document.getElementById("weather-data-source")?.textContent;
+    const sourceText = document.getElementById(
+      "weather-data-source",
+    )?.textContent;
     expect(sourceText).toContain("weatherSourceLabel");
 
     const actionButtons = document.querySelectorAll(
@@ -244,4 +246,3 @@ describe("weather module", () => {
     expect(() => initWeatherModule()).not.toThrow();
   });
 });
-

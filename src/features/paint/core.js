@@ -72,7 +72,11 @@ function deactivateSelectionMode() {
 }
 
 function clearSelectionIfAny() {
-  if (paintState.selectionMode || paintState.selection || paintState.selecting) {
+  if (
+    paintState.selectionMode ||
+    paintState.selection ||
+    paintState.selecting
+  ) {
     deactivateSelectionMode();
   }
 }
@@ -83,7 +87,12 @@ function getActiveSelectionBounds(canvas = getCanvas()) {
   const rawY = Number(paintState.selection.y);
   const rawW = Number(paintState.selection.w);
   const rawH = Number(paintState.selection.h);
-  if (!Number.isFinite(rawX) || !Number.isFinite(rawY) || !Number.isFinite(rawW) || !Number.isFinite(rawH)) {
+  if (
+    !Number.isFinite(rawX) ||
+    !Number.isFinite(rawY) ||
+    !Number.isFinite(rawW) ||
+    !Number.isFinite(rawH)
+  ) {
     return null;
   }
   const x = Math.max(0, Math.floor(rawX));
@@ -105,7 +114,10 @@ function updateZoomUi() {
       canvas.style.height = "auto";
     } else {
       const nextWidth = Math.max(1, Math.round(canvas.width * paintState.zoom));
-      const nextHeight = Math.max(1, Math.round(canvas.height * paintState.zoom));
+      const nextHeight = Math.max(
+        1,
+        Math.round(canvas.height * paintState.zoom),
+      );
       canvas.style.width = `${nextWidth}px`;
       canvas.style.height = `${nextHeight}px`;
     }
@@ -150,7 +162,10 @@ function updateSelectionUi() {
   const canvas = getCanvas();
   if (button) {
     button.classList.toggle("active", paintState.selectionMode);
-    button.setAttribute("aria-pressed", paintState.selectionMode ? "true" : "false");
+    button.setAttribute(
+      "aria-pressed",
+      paintState.selectionMode ? "true" : "false",
+    );
   }
   if (!overlay || !wrap || !canvas || !paintState.selection) {
     if (overlay) overlay.classList.add("is-hidden");
@@ -189,7 +204,9 @@ function updateShapeUi() {
 
 function updateToolUi() {
   const tool = getTool();
-  const showTextUi = tool === "text" && (paintState.activePanel === "" || paintState.activePanel === "draw");
+  const showTextUi =
+    tool === "text" &&
+    (paintState.activePanel === "" || paintState.activePanel === "draw");
   const brushBtn = byId("paint-tool-brush-btn");
   const eraserBtn = byId("paint-tool-eraser-btn");
   const textBtn = byId("paint-tool-text-btn");
@@ -499,7 +516,10 @@ function drawShape(shape, x1, y1, x2, y2) {
       const isOuter = i % 2 === 0;
       const rx = isOuter ? outerRx : outerRx * innerRatio;
       const ry = isOuter ? outerRy : outerRy * innerRatio;
-      points.push([centerX + Math.cos(angle) * rx, centerY + Math.sin(angle) * ry]);
+      points.push([
+        centerX + Math.cos(angle) * rx,
+        centerY + Math.sin(angle) * ry,
+      ]);
     }
     strokePolygon(points);
   };
@@ -601,7 +621,12 @@ function splineStrokeTo(x, y) {
   ctx.globalCompositeOperation = "source-over";
   ctx.beginPath();
   ctx.moveTo(paintState.splineLastMidX, paintState.splineLastMidY);
-  ctx.quadraticCurveTo(paintState.splineLastX, paintState.splineLastY, midX, midY);
+  ctx.quadraticCurveTo(
+    paintState.splineLastX,
+    paintState.splineLastY,
+    midX,
+    midY,
+  );
   ctx.stroke();
   ctx.restore();
   paintState.splineLastX = x;
@@ -618,7 +643,12 @@ function drawSplineCurve(controlX, controlY) {
   setupShapeStroke(ctx);
   ctx.beginPath();
   ctx.moveTo(paintState.startX, paintState.startY);
-  ctx.quadraticCurveTo(controlX, controlY, paintState.splineEndX, paintState.splineEndY);
+  ctx.quadraticCurveTo(
+    controlX,
+    controlY,
+    paintState.splineEndX,
+    paintState.splineEndY,
+  );
   ctx.stroke();
   ctx.restore();
 }
@@ -703,7 +733,12 @@ function onPointerDown(event) {
       paintState.drawing = true;
       paintState.startX = x;
       paintState.startY = y;
-      paintState.shapeBaseImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      paintState.shapeBaseImageData = ctx.getImageData(
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+      );
       return;
     }
     if (paintState.splineStage === 1 && paintState.splineBaseImageData) {
@@ -728,7 +763,12 @@ function onPointerDown(event) {
     paintState.drawing = true;
     paintState.startX = x;
     paintState.startY = y;
-    paintState.shapeBaseImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    paintState.shapeBaseImageData = ctx.getImageData(
+      0,
+      0,
+      canvas.width,
+      canvas.height,
+    );
     return;
   }
   if (tool === "text") {
@@ -743,7 +783,11 @@ function onPointerDown(event) {
 
 function onPointerMove(event) {
   const { x, y } = getPointer(event);
-  if (paintState.selectionMode && paintState.selecting && paintState.selection) {
+  if (
+    paintState.selectionMode &&
+    paintState.selecting &&
+    paintState.selection
+  ) {
     const sx = paintState.selection.x;
     const sy = paintState.selection.y;
     paintState.selection = {
@@ -795,7 +839,11 @@ function onPointerMove(event) {
 function stopDrawing(event) {
   if (paintState.selectionMode && paintState.selecting) {
     paintState.selecting = false;
-    if (!paintState.selection || paintState.selection.w < 1 || paintState.selection.h < 1) {
+    if (
+      !paintState.selection ||
+      paintState.selection.w < 1 ||
+      paintState.selection.h < 1
+    ) {
       clearSelection();
     }
     updateSelectionUi();
@@ -846,7 +894,13 @@ function stopDrawing(event) {
     const ctx = getCtx();
     if (ctx) {
       ctx.putImageData(paintState.shapeBaseImageData, 0, 0);
-      drawShape(paintState.shapeTool, paintState.startX, paintState.startY, x, y);
+      drawShape(
+        paintState.shapeTool,
+        paintState.startX,
+        paintState.startY,
+        x,
+        y,
+      );
     }
   }
   clearShapeBase();
@@ -893,7 +947,12 @@ function deleteSelectionPixels() {
   ctx.save();
   ctx.globalCompositeOperation = "source-over";
   ctx.fillStyle = getBackColor();
-  ctx.fillRect(x, y, Math.min(w, canvas.width - x), Math.min(h, canvas.height - y));
+  ctx.fillRect(
+    x,
+    y,
+    Math.min(w, canvas.width - x),
+    Math.min(h, canvas.height - y),
+  );
   ctx.restore();
   return true;
 }
@@ -961,4 +1020,3 @@ export {
   updateToolUi,
   updateZoomUi,
 };
-

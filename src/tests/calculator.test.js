@@ -61,9 +61,9 @@ describe("calculator basics", () => {
     calcInput("2");
     calcInput("*");
     calcInput("3");
-    expect(document.getElementById("calc-expression-preview")?.textContent).toContain(
-      "2x3",
-    );
+    expect(
+      document.getElementById("calc-expression-preview")?.textContent,
+    ).toContain("2x3");
     calcEquals();
     const history = document.getElementById("calc-history")?.textContent || "";
     expect(history).toContain("2x3 = 6");

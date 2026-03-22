@@ -41,7 +41,9 @@ async function getLocalFontFamilies() {
   try {
     const fonts = await window.queryLocalFonts();
     return dedupeFonts(
-      fonts.map((fontFace) => (fontFace?.family ? String(fontFace.family) : "")),
+      fonts.map((fontFace) =>
+        fontFace?.family ? String(fontFace.family) : "",
+      ),
     ).sort((a, b) => a.localeCompare(b));
   } catch {
     return [];

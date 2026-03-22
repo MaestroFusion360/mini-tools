@@ -1,4 +1,4 @@
-﻿import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 function mountWorldTimeDom(zone = "local") {
   document.body.innerHTML = `
@@ -82,4 +82,3 @@ describe("world time modes", () => {
     );
   });
 });
-

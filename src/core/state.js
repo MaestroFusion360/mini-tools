@@ -8,6 +8,8 @@ export const STORAGE_KEYS = {
   weatherManualLat: "weatherManualLat",
   weatherManualLon: "weatherManualLon",
   weatherFavorites: "weatherFavorites",
+  todoNotesData: "todoNotesData",
+  rssNewsData: "rssNewsData",
 };
 
 export const FEATURE_RUNTIME_STATE = {
@@ -91,6 +93,13 @@ export const FEATURE_RUNTIME_STATE = {
       activeIndex: -1,
     },
   },
+  todoNotes: {
+    items: [],
+    notes: [],
+    activeTab: "tasks",
+    visibilityMode: "all",
+    initialized: false,
+  },
   timer: {
     timerRemainingSeconds: 60,
     timerIntervalId: null,
@@ -99,6 +108,13 @@ export const FEATURE_RUNTIME_STATE = {
     timerHasStarted: false,
     timerFinished: false,
     timerInitialized: false,
+  },
+  rssNews: {
+    feeds: [],
+    activeFeed: "",
+    lastItems: [],
+    readKeys: [],
+    initialized: false,
   },
   weather: {
     weatherCurrentCoords: null,

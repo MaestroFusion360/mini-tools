@@ -1893,6 +1893,240 @@ body.paint-immersive-active .app-footer {
   transform: translateY(0);
 }
 
+/* ===== Todo / RSS ===== */
+#todo-list,
+#todo-notes-list,
+#rss-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#todo-tasks-panel,
+#todo-notes-panel {
+  display: grid;
+  gap: 10px;
+}
+
+#todo-tasks-panel[hidden],
+#todo-notes-panel[hidden] {
+  display: none !important;
+}
+
+#todo-tasks-panel .row,
+#todo-notes-panel .row {
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+#todo-tasks-panel .row > input,
+#todo-notes-panel .row > input {
+  flex: 1 1 240px;
+}
+
+.notes-input-row {
+  align-items: flex-start;
+}
+
+.note-toolbar-row {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.notes-input-row .note-editor {
+  flex: 1 1 100%;
+  min-height: 132px;
+}
+
+.note-editor {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--panel-soft) 88%, transparent);
+  padding: 10px 12px;
+  outline: none;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.note-editor:focus {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+}
+
+.note-editor:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-soft);
+}
+
+.note-editor ol {
+  margin: 0.25em 0;
+  padding-inline-start: 0.8em;
+}
+
+.note-editor ol li {
+  list-style-position: inside;
+}
+
+.note-tool-btn {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.note-tool-btn .btn-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.todo-task-item,
+.todo-note-card,
+.rss-news-card {
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel-soft) 88%, transparent);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+
+.todo-task-item.is-dragging,
+.todo-note-card.is-dragging {
+  opacity: 0.65;
+}
+
+.todo-task-item.todo-drop-target,
+.todo-note-card.todo-drop-target {
+  border-color: color-mix(in srgb, var(--accent) 52%, var(--border));
+}
+
+.todo-task-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.todo-task-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.todo-task-text.done {
+  text-decoration: line-through;
+  opacity: 0.65;
+}
+
+.todo-task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.todo-remove-btn {
+  width: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  border: 0;
+  background: inherit !important;
+  color: var(--text-soft);
+  border-radius: 6px;
+  box-shadow: none;
+  flex: 0 0 22px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.todo-remove-btn .btn-icon {
+  width: 14px;
+  height: 14px;
+}
+
+button.todo-remove-btn:hover {
+  background: inherit !important;
+  border-color: transparent !important;
+  color: var(--danger);
+}
+
+.todo-note-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+}
+
+.todo-note-card.active {
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
+}
+
+.todo-note-text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  #todo-tasks-panel .row > button,
+  #todo-notes-panel .notes-input-row > button {
+    flex: 1 1 100%;
+  }
+
+  #todo-list .todo-task-actions {
+    width: auto;
+    margin-left: auto;
+    flex-wrap: nowrap;
+  }
+
+  .note-toolbar-row .note-tool-btn {
+    flex: 0 0 36px;
+  }
+
+  .todo-note-card {
+    min-height: 40px;
+    padding: 8px 10px;
+  }
+
+  .todo-task-item {
+    min-height: 40px;
+    padding: 8px 10px;
+    flex-wrap: nowrap;
+  }
+
+  .todo-task-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.rss-news-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  touch-action: pan-y;
+}
+
+.rss-news-card.is-read {
+  opacity: 0.58;
+}
+
+.rss-news-title {
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.rss-news-title:hover {
+  text-decoration: underline;
+}
+
 .theme-toggle,
 .lang-toggle {
   width: 42px;

@@ -25,7 +25,9 @@ function ensureStopwatchState() {
   ) {
     stopwatchState.stopwatchStartAtMs = 0;
   }
-  if (!Object.prototype.hasOwnProperty.call(stopwatchState, "stopwatchIntervalId")) {
+  if (
+    !Object.prototype.hasOwnProperty.call(stopwatchState, "stopwatchIntervalId")
+  ) {
     stopwatchState.stopwatchIntervalId = null;
   }
   if (typeof stopwatchState.stopwatchInitialized !== "boolean") {
@@ -37,7 +39,9 @@ export function renderStopwatchDisplay() {
   ensureStopwatchState();
   const el = byId("stopwatch-display");
   if (el) {
-    el.textContent = formatStopwatchMilliseconds(stopwatchState.stopwatchElapsedMs);
+    el.textContent = formatStopwatchMilliseconds(
+      stopwatchState.stopwatchElapsedMs,
+    );
   }
 }
 
@@ -80,7 +84,8 @@ function stopStopwatchInterval() {
 
 function stopwatchTick() {
   if (!stopwatchState.stopwatchRunning) return;
-  stopwatchState.stopwatchElapsedMs = Date.now() - stopwatchState.stopwatchStartAtMs;
+  stopwatchState.stopwatchElapsedMs =
+    Date.now() - stopwatchState.stopwatchStartAtMs;
   renderStopwatchDisplay();
 }
 
@@ -96,7 +101,8 @@ export function toggleStopwatch() {
     return;
   }
   stopwatchState.stopwatchRunning = true;
-  stopwatchState.stopwatchStartAtMs = Date.now() - stopwatchState.stopwatchElapsedMs;
+  stopwatchState.stopwatchStartAtMs =
+    Date.now() - stopwatchState.stopwatchElapsedMs;
   stopStopwatchInterval();
   stopwatchState.stopwatchIntervalId = setInterval(stopwatchTick, 33);
   renderStopwatchControls();
@@ -115,7 +121,11 @@ export function resetStopwatch() {
 
 export function addStopwatchLap() {
   ensureStopwatchState();
-  if (!stopwatchState.stopwatchRunning && stopwatchState.stopwatchElapsedMs === 0) return;
+  if (
+    !stopwatchState.stopwatchRunning &&
+    stopwatchState.stopwatchElapsedMs === 0
+  )
+    return;
   stopwatchState.stopwatchLaps.push(stopwatchState.stopwatchElapsedMs);
   if (stopwatchState.stopwatchLaps.length > MAX_STOPWATCH_LAPS) {
     stopwatchState.stopwatchLaps.splice(

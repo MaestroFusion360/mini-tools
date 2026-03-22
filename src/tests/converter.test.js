@@ -1,4 +1,4 @@
-﻿import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
   convertUnit,
   initConverter,
@@ -208,4 +208,3 @@ describe("converter modes", () => {
     expect(document.getElementById("conv-to")?.value).toBe("week");
   });
 });
-

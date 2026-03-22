@@ -18,8 +18,10 @@ const OPERATORS = {
 function ensureCalculatorState() {
   if (!Array.isArray(calcState.calcHistory)) calcState.calcHistory = [];
   if (typeof calcState.calcVal !== "string") calcState.calcVal = "0";
-  if (typeof calcState.calcHasError !== "boolean") calcState.calcHasError = false;
-  if (typeof calcState.calcInitialized !== "boolean") calcState.calcInitialized = false;
+  if (typeof calcState.calcHasError !== "boolean")
+    calcState.calcHasError = false;
+  if (typeof calcState.calcInitialized !== "boolean")
+    calcState.calcInitialized = false;
   if (
     typeof calcState.calcMemoryValue !== "number" ||
     !Number.isFinite(calcState.calcMemoryValue)
@@ -72,7 +74,8 @@ function renderCalcDisplay() {
   const expressionText = formatCalcTextForDisplay(getExpression());
   const displayText = isErrorState() ? getCalcErrorLabel() : expressionText;
   if (display) display.textContent = displayText;
-  if (preview) preview.textContent = `${t("calcExpression")}: ${expressionText}`;
+  if (preview)
+    preview.textContent = `${t("calcExpression")}: ${expressionText}`;
 }
 
 function normalizeHistoryEntry(entry) {
@@ -102,7 +105,8 @@ function createHistoryRemoveButton(actualIndex) {
   const removeText = t("removeHistoryItem");
   button.setAttribute("aria-label", removeText);
   button.title = removeText;
-  button.innerHTML = '<svg class="icon-svg btn-icon"><use href="#i-x"></use></svg>';
+  button.innerHTML =
+    '<svg class="icon-svg btn-icon"><use href="#i-x"></use></svg>';
   button.addEventListener("click", () => {
     calcRemoveHistoryAt(actualIndex);
   });
@@ -127,7 +131,9 @@ function renderCalcHistory() {
     const normalized = normalizeHistoryEntry(entry);
     const expressionText = formatCalcTextForDisplay(normalized.expression);
     const resultText = formatCalcTextForDisplay(normalized.result);
-    const displayText = normalized.result ? `${expressionText} = ${resultText}` : expressionText;
+    const displayText = normalized.result
+      ? `${expressionText} = ${resultText}`
+      : expressionText;
 
     const text = document.createElement("span");
     text.className = "calc-history-entry";
@@ -148,14 +154,22 @@ function renderCalcMemory() {
 }
 
 function pushHistoryEntry(expression, result) {
-  calcState.calcHistory.push({ expression: String(expression), result: String(result) });
+  calcState.calcHistory.push({
+    expression: String(expression),
+    result: String(result),
+  });
   if (calcState.calcHistory.length > MAX_HISTORY_ITEMS) {
-    calcState.calcHistory.splice(0, calcState.calcHistory.length - MAX_HISTORY_ITEMS);
+    calcState.calcHistory.splice(
+      0,
+      calcState.calcHistory.length - MAX_HISTORY_ITEMS,
+    );
   }
 }
 
 function isOperatorToken(token) {
-  return Object.prototype.hasOwnProperty.call(OPERATORS, token) && token !== "u-";
+  return (
+    Object.prototype.hasOwnProperty.call(OPERATORS, token) && token !== "u-"
+  );
 }
 
 function canAppendToken(current, token) {
@@ -374,7 +388,10 @@ function toRpn(tokens) {
     }
 
     let op = token.value;
-    if (op === "-" && ["start", "operator", "leftParen"].includes(previousType)) {
+    if (
+      op === "-" &&
+      ["start", "operator", "leftParen"].includes(previousType)
+    ) {
       op = "u-";
     }
     if (op === "%" && !["number", "rightParen"].includes(previousType)) {
@@ -469,7 +486,8 @@ function evaluateExpression(rawExpression) {
 }
 
 function isUnaryMinusToken(tokens, index) {
-  if (!Number.isInteger(index) || index < 0 || index >= tokens.length) return false;
+  if (!Number.isInteger(index) || index < 0 || index >= tokens.length)
+    return false;
   const token = tokens[index];
   if (!token || token.type !== "operator" || token.value !== "-") return false;
   if (index === 0) return true;
@@ -514,7 +532,10 @@ export function toggleCalcMode(toggle = true) {
 
   const buttonsWrap = document.querySelector(".calc-buttons");
   if (buttonsWrap) {
-    buttonsWrap.classList.toggle("calc-scientific", calcState.calcScientificMode);
+    buttonsWrap.classList.toggle(
+      "calc-scientific",
+      calcState.calcScientificMode,
+    );
   }
 }
 
@@ -678,7 +699,9 @@ export function calcEquals(returnOnly = false) {
 
 function shouldIgnoreCalculatorHotkeys(target) {
   if (!target || !(target instanceof Element)) return false;
-  return Boolean(target.closest('input, textarea, select, [contenteditable="true"]'));
+  return Boolean(
+    target.closest('input, textarea, select, [contenteditable="true"]'),
+  );
 }
 
 const KEY_ACTIONS = {

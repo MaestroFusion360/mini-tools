@@ -1,4 +1,4 @@
-﻿import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   analyzeText,
   copyTextTool,
@@ -173,4 +173,3 @@ describe("text tools", () => {
     URL.revokeObjectURL = originalRevokeObjectURL;
   });
 });
-
