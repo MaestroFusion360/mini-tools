@@ -76,7 +76,9 @@ function safeRateCode(code) {
 }
 
 function getCurrencyName(code) {
-  const normalizedCode = String(code || "").trim().toUpperCase();
+  const normalizedCode = String(code || "")
+    .trim()
+    .toUpperCase();
   const lang = getLanguage() === "ru" ? "ru" : "en";
   return CURRENCY_NAMES[normalizedCode]?.[lang] || normalizedCode;
 }
@@ -181,9 +183,7 @@ function renderCurrencyFavoriteButton(fromCode, toCode) {
   const to = safeRateCode(toCode).toUpperCase();
   const isFavorite = hasCurrencyFavoritePair(from, to);
   favoriteBtn.classList.toggle("active", isFavorite);
-  const label = isFavorite
-    ? t("currencyPresetRemove")
-    : t("currencyPresetAdd");
+  const label = isFavorite ? t("currencyPresetRemove") : t("currencyPresetAdd");
   favoriteBtn.title = label;
   favoriteBtn.setAttribute("aria-label", label);
 }

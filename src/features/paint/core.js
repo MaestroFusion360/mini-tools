@@ -1,9 +1,5 @@
 import { byId } from "../../core/dom.js";
-import {
-  MAX_HISTORY,
-  PAINT_PANELS,
-  paintState,
-} from "./state.js";
+import { MAX_HISTORY, PAINT_PANELS, paintState } from "./state.js";
 import { initPaintFontOptions } from "./fonts.js";
 import {
   buildFilterString,

@@ -133,7 +133,9 @@ function loadTodoData() {
 }
 
 function normalizeTodoSearchQuery(value) {
-  return String(value || "").trim().toLowerCase();
+  return String(value || "")
+    .trim()
+    .toLowerCase();
 }
 
 function getTodoSearchQuery() {

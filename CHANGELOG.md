@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased - 2026-03-23
+## v1.0.3 - 2026-03-23
 
 ### Highlights
 
@@ -27,7 +27,7 @@
   - Added ESLint setup (`eslint.config.js`, `npm run lint`, `npm run lint:fix`) and cleaned existing warnings.
   - Updated Service Worker strategy for `src/*` files to prefer fresh network responses.
 
-## v1.1.2 - 2026-03-23
+## v1.0.2 - 2026-03-23
 
 ### Added
 

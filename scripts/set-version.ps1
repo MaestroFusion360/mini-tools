@@ -26,7 +26,7 @@ function Write-Utf8NoBom {
   [System.IO.File]::WriteAllText($Path, $Content, [System.Text.UTF8Encoding]::new($false))
 }
 
-function Replace-VersionLine {
+function Update-VersionLine {
   param(
     [Parameter(Mandatory = $true)][string]$Path,
     [Parameter(Mandatory = $true)][string]$Label,
@@ -65,7 +65,7 @@ $appHtml = Join-Path $repoRoot "src/app.html"
 $readme = Join-Path $repoRoot "README.md"
 
 # 1) package.json
-Replace-VersionLine `
+Update-VersionLine `
   -Path $packageJson `
   -Label "package.json" `
   -VersionLinePattern '^(\s*"version"\s*:\s*")(\d+\.\d+\.\d+)("\s*,\s*)$' `
@@ -81,7 +81,7 @@ Replace-VersionLine `
   }
 
 # 2) src/data/app-meta.json
-Replace-VersionLine `
+Update-VersionLine `
   -Path $appMetaJson `
   -Label "src/data/app-meta.json" `
   -VersionLinePattern '^(\s*"version"\s*:\s*")(\d+\.\d+\.\d+)("\s*,\s*)$' `
@@ -120,9 +120,12 @@ if (Test-Path -LiteralPath $appHtml) {
 # 4) README version line
 if (Test-Path -LiteralPath $readme) {
   $raw = Get-Content -LiteralPath $readme -Raw -Encoding UTF8
+  $readmePrefix = [regex]::Escape("**Current app version: **")
+  $readmeSuffix = [regex]::Escape("**.")
+  $readmeVersionPattern = "($readmePrefix)\d+\.\d+\.\d+($readmeSuffix)"
   $updated = [regex]::Replace(
     $raw,
-    '(\*\*Current app version:\s*\*\*)\d+\.\d+\.\d+(\*\*\.)',
+    $readmeVersionPattern,
     {
       param($m)
       return $m.Groups[1].Value + $TargetVersion + $m.Groups[2].Value

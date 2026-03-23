@@ -20,5 +20,5 @@ export const DEFAULT_RSS_FEEDS = [
   {
     url: "https://www.sport.ru/rssfeeds/football.rss",
     title: "Sport.ru - Футбол",
-  }
+  },
 ];

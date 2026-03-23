@@ -56,7 +56,8 @@ function parseImportPayload(raw) {
 
   if (isObject(todoNotes)) result.todoNotes = todoNotes;
   if (isObject(rssNews)) result.rssNews = rssNews;
-  if (Array.isArray(weatherFavorites)) result.weatherFavorites = weatherFavorites;
+  if (Array.isArray(weatherFavorites))
+    result.weatherFavorites = weatherFavorites;
   if (isObject(budget)) result.budget = budget;
   if (isObject(calculator)) result.calculator = calculator;
   if (isObject(converterPresets)) result.converterPresets = converterPresets;
