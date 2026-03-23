@@ -10,12 +10,15 @@ const emojiState = {
   query: "",
   category: "all",
   items: [],
+  renderFrameId: null,
+  renderToken: 0,
 };
 
 const EMOJI_DATA_URL = "./src/data/emoji-catalog.json";
 const TWEMOJI_BASE_URL =
   "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg";
 const EMOJI_FILTER_DEBOUNCE_MS = 120;
+const EMOJI_RENDER_BATCH_SIZE = 120;
 const EMOJI_CATEGORIES = new Set([
   "smileys",
   "people",
@@ -75,6 +78,17 @@ function scheduleEmojiGridRender() {
   }, EMOJI_FILTER_DEBOUNCE_MS);
 }
 
+function clearEmojiRenderFrame() {
+  if (emojiState.renderFrameId !== null) {
+    if (typeof window.cancelAnimationFrame === "function") {
+      window.cancelAnimationFrame(emojiState.renderFrameId);
+    } else {
+      clearTimeout(emojiState.renderFrameId);
+    }
+    emojiState.renderFrameId = null;
+  }
+}
+
 function toTwemojiCodepoint(emojiChar) {
   return Array.from(String(emojiChar || ""))
     .map((symbol) => symbol.codePointAt(0).toString(16))
@@ -121,6 +135,9 @@ function renderEmojiStatus(count) {
 function renderEmojiGrid() {
   const grid = byId("emoji-grid");
   if (!grid) return;
+  clearEmojiRenderFrame();
+  emojiState.renderToken += 1;
+  const token = emojiState.renderToken;
 
   if (!emojiState.loaded && !emojiState.items.length) {
     setEmojiGridMessage(t("emojiLoading"));
@@ -135,8 +152,7 @@ function renderEmojiGrid() {
     return;
   }
 
-  const fragment = document.createDocumentFragment();
-  items.forEach((item) => {
+  const createEmojiButton = (item) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "emoji-item";
@@ -174,9 +190,33 @@ function renderEmojiGrid() {
     iconWrap.append(iconImg, fallback);
     button.append(iconWrap, name);
     button.dataset.emoji = item.emoji;
-    fragment.append(button);
-  });
-  grid.replaceChildren(fragment);
+    return button;
+  };
+
+  grid.replaceChildren();
+  let index = 0;
+
+  const appendBatch = () => {
+    if (token !== emojiState.renderToken) return;
+    const fragment = document.createDocumentFragment();
+    const end = Math.min(index + EMOJI_RENDER_BATCH_SIZE, items.length);
+    while (index < end) {
+      fragment.append(createEmojiButton(items[index]));
+      index += 1;
+    }
+    grid.append(fragment);
+    if (index < items.length) {
+      if (typeof window.requestAnimationFrame === "function") {
+        emojiState.renderFrameId = window.requestAnimationFrame(appendBatch);
+      } else {
+        emojiState.renderFrameId = window.setTimeout(appendBatch, 16);
+      }
+      return;
+    }
+    emojiState.renderFrameId = null;
+  };
+
+  appendBatch();
 }
 
 function bindEmojiGridCopyHandler() {
@@ -294,7 +334,9 @@ function applyEmojiTranslations() {
     });
   }
 
-  renderEmojiGrid();
+  if (emojiState.loaded || emojiState.items.length) {
+    renderEmojiStatus(getFilteredEmoji().length);
+  }
 }
 
 export async function initEmojiCatalog() {

@@ -5,6 +5,7 @@
 ### Fixed
 
 - Weather: pressure unit localization fixed (`mmHg` / `мм рт. ст.`) when switching app language.
+- Performance: reduced mobile UI lag (deferred heavy modules + lighter emoji rendering).
 
 ### Docs
 

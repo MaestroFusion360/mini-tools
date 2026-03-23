@@ -347,6 +347,32 @@ async function loadAppTemplate() {
   appRoot.innerHTML = `${iconsHtml}\n${appHtml}`;
 }
 
+const deferredPageInitializers = new Map([
+  ["page-paint", () => initPaint()],
+  ["page-media", () => initMediaPlayer()],
+  ["page-news", () => initRssNews()],
+  ["page-emoji", () => void initEmojiCatalog()],
+]);
+const initializedDeferredPages = new Set();
+
+function ensureDeferredPageInitialized(pageId = "") {
+  const init = deferredPageInitializers.get(String(pageId || ""));
+  if (!init || initializedDeferredPages.has(pageId)) return;
+  initializedDeferredPages.add(pageId);
+  init();
+  applyTranslations();
+}
+
+function installDeferredPageInitialization() {
+  document.addEventListener("app:pagechange", (event) => {
+    const nextPageId = event?.detail?.id;
+    if (typeof nextPageId !== "string" || !nextPageId) return;
+    ensureDeferredPageInitialized(nextPageId);
+  });
+  const activePageId = document.querySelector(".page.active")?.id || "";
+  if (activePageId) ensureDeferredPageInitialized(activePageId);
+}
+
 async function initApp() {
   await loadAppTemplate();
   initTheme();
@@ -358,6 +384,7 @@ async function initApp() {
   exposeGlobals();
 
   initNavigation();
+  installDeferredPageInitialization();
   initWeatherModule();
   initWorldTime();
   initTimer();
@@ -367,12 +394,8 @@ async function initApp() {
   initCalculator();
   initTextTools();
   initCurrency();
-  initPaint();
-  initMediaPlayer();
   initTodoNotes();
-  initRssNews();
   initQrGenerator();
-  await initEmojiCatalog();
   initBudget();
   initPwa();
 

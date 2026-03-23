@@ -1,6 +1,10 @@
 {
   "entries": [
     {
+      "en": "Performance: reduced mobile UI lag (deferred heavy modules + lighter emoji rendering).",
+      "ru": "Производительность: уменьшены лаги интерфейса на мобильных (отложен запуск тяжелых модулей и облегчен рендер emoji)."
+    },
+    {
       "en": "Weather: fixed pressure unit localization when switching app language (mmHg / мм рт. ст.).",
       "ru": "Погода: исправлена локализация единицы давления при смене языка приложения (mmHg / мм рт. ст.)."
     },

@@ -50,6 +50,11 @@ export function showPage(id) {
   setStored(STORAGE_KEYS.lastPage, id);
   closeOverflowMenu();
   closeAboutDialog();
+  document.dispatchEvent(
+    new CustomEvent("app:pagechange", {
+      detail: { id },
+    }),
+  );
 }
 
 export function loadLastPage() {
