@@ -74,7 +74,9 @@ describe("rss news module", () => {
     document.getElementById("rss-url").value = "https://example.com/feed.xml";
     await addRssFeed();
 
-    expect(document.getElementById("rss-feeds")?.options.length).toBeGreaterThanOrEqual(2);
+    expect(
+      document.getElementById("rss-feeds")?.options.length,
+    ).toBeGreaterThanOrEqual(2);
     const itemsText = document.getElementById("rss-items")?.textContent || "";
     expect(itemsText).toContain("News 1");
     expect(itemsText).toContain("News 2");
@@ -115,7 +117,9 @@ describe("rss news module", () => {
       value: [file],
     });
     await handleRssImportFile({ target: input });
-    expect(FEATURE_RUNTIME_STATE.rssNews.feeds.length).toBeGreaterThanOrEqual(1);
+    expect(FEATURE_RUNTIME_STATE.rssNews.feeds.length).toBeGreaterThanOrEqual(
+      1,
+    );
     expect(FEATURE_RUNTIME_STATE.rssNews.activeFeed).toBe(
       "https://ria.ru/export/rss2/archive/index.xml",
     );

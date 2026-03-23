@@ -1,0 +1,44 @@
+{
+  "entries": [
+    {
+      "en": "Todo + Notes with rich editor and drag-and-drop.",
+      "ru": "Задачи и заметки с rich-редактором и drag-and-drop."
+    },
+    {
+      "en": "RSS feeds with swipe-to-read and read-later.",
+      "ru": "RSS-ленты со свайпом для прочтения и списком «Читать позже»."
+    },
+    {
+      "en": "Weather, World Time, Timer, Stopwatch, Calendar.",
+      "ru": "Погода, мировое время, таймер, секундомер, календарь."
+    },
+    {
+      "en": "Unit/Currency converters, Calculator, Text tools.",
+      "ru": "Конвертеры единиц/валют, калькулятор, текстовые инструменты."
+    },
+    {
+      "en": "Paint editor and Media player with empty state.",
+      "ru": "Редактор Paint и медиаплеер с empty state."
+    },
+    {
+      "en": "PWA offline shell, themes and EN/RU translations.",
+      "ru": "PWA offline shell, темы и переводы EN/RU."
+    },
+    {
+      "en": "QR generator, Emoji catalog and Budget tracker.",
+      "ru": "QR-генератор, каталог эмодзи и трекер бюджета."
+    },
+    {
+      "en": "Emoji catalog upgraded to full library-based dataset with search, categories and copy.",
+      "ru": "Каталог эмодзи обновлён до полной библиотеки с поиском, категориями и копированием."
+    },
+    {
+      "en": "Budget tracker: currency selector (USD/EUR/RUB), category dropdown and improved entry actions.",
+      "ru": "Бюджет: выбор валюты (USD/EUR/RUB), категории через выпадающий список и улучшенные действия в карточках."
+    },
+    {
+      "en": "Header and mobile UI refinements: consistent control sizing and improved overflow menu layout.",
+      "ru": "Доработки хедера и мобильного UI: единая высота контролов и улучшенная компоновка меню."
+    }
+  ]
+}

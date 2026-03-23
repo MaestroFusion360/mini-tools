@@ -1,4 +1,4 @@
-const CACHE_NAME = "mobile-tools-v2";
+const CACHE_NAME = "mobile-tools-v4";
 
 // App shell files required to render the UI offline.
 const APP_SHELL_PATHS = [
@@ -6,15 +6,20 @@ const APP_SHELL_PATHS = [
   "./index.html",
   "./src/styles.css",
   "./src/app.html",
-  "./i18n.json",
+  "./src/data/i18n.json",
+  "./src/data/app-meta.json",
+  "./src/data/changelog.json",
   "./manifest.webmanifest",
   "./src/main.js",
   "./src/core/state.js",
   "./src/core/dom.js",
   "./src/core/utils.js",
   "./src/core/i18n.js",
+  "./src/core/changelog.js",
+  "./src/core/app-meta.js",
   "./src/core/theme.js",
   "./src/core/navigation.js",
+  "./src/core/about.js",
   "./src/core/pwa.js",
   "./src/features/weather.js",
   "./src/features/world-time.js",

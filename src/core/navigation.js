@@ -13,7 +13,8 @@ function getOverflowElements() {
 function setOverflowExpanded(expanded) {
   const { menu, toggleBtn } = getOverflowElements();
   if (menu) menu.classList.toggle("is-hidden", !expanded);
-  if (toggleBtn) toggleBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
+  if (toggleBtn)
+    toggleBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
 }
 
 export function closeOverflowMenu() {

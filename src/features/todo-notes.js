@@ -486,7 +486,9 @@ function applyEditorCommand(command) {
 
 function insertEditorLink() {
   focusNotesEditor();
-  const rawUrl = String(prompt(t("todoNoteLinkPrompt"), "https://") || "").trim();
+  const rawUrl = String(
+    prompt(t("todoNoteLinkPrompt"), "https://") || "",
+  ).trim();
   if (!rawUrl) return;
   const normalizedUrl =
     rawUrl.startsWith("http://") || rawUrl.startsWith("https://")
@@ -581,7 +583,6 @@ function applyTodoTranslations() {
   setText("menu-todo", t("todo"));
   setText("title-todo", t("todoTitle"));
   setText("todo-add-btn", t("todoAdd"));
-  setText("todo-clear-done-label", t("todoClearDone"));
   setText("todo-tab-tasks", t("todoTabTasks"));
   setText("todo-tab-notes", t("todoTabNotes"));
   setText("todo-filter-all-label", t("todoFilterAll"));
@@ -604,6 +605,11 @@ function applyTodoTranslations() {
     btn.title = label;
     btn.setAttribute("aria-label", label);
   });
+  const clearDoneBtn = byId("todo-clear-done-btn");
+  if (clearDoneBtn) {
+    clearDoneBtn.title = t("todoClearDone");
+    clearDoneBtn.setAttribute("aria-label", t("todoClearDone"));
+  }
   renderTodoNoteEditorState();
   const input = byId("todo-input");
   if (input) input.placeholder = t("todoPlaceholder");

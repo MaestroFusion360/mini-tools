@@ -1,0 +1,45 @@
+{
+  "appName": {
+    "en": "Mini tools",
+    "ru": "Mini tools"
+  },
+  "shortName": {
+    "en": "Mini tools",
+    "ru": "Mini tools"
+  },
+  "description": {
+    "en": "Lightweight offline-first utility toolkit for everyday tasks.",
+    "ru": "Лёгкий офлайн-набор полезных инструментов на каждый день."
+  },
+  "version": "1.0.1",
+  "icon": "assets/icon.svg",
+  "author": {
+    "name": "MaestroFusion360",
+    "label": {
+      "en": "Author: MaestroFusion360",
+      "ru": "Автор: MaestroFusion360"
+    }
+  },
+  "footer": {
+    "year": 2026,
+    "owner": "MaestroFusion360"
+  },
+  "links": [
+    {
+      "href": "https://github.com/MaestroFusion360/mini-tools",
+      "icon": "i-github",
+      "label": {
+        "en": "GitHub",
+        "ru": "GitHub"
+      }
+    },
+    {
+      "href": "https://t.me/MaestroFusion360",
+      "icon": "i-telegram",
+      "label": {
+        "en": "Telegram",
+        "ru": "Telegram"
+      }
+    }
+  ]
+}

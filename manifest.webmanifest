@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Mobile Tools",
-  "short_name": "Tools",
-  "description": "Mobile toolkit: weather, world time, timer, stopwatch, calendar, converters, calculator, text editor",
+  "name": "Mini tools",
+  "short_name": "Mini tools",
+  "description": "Lightweight offline-first utility toolkit for everyday tasks.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

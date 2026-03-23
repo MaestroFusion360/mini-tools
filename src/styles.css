@@ -38,6 +38,8 @@
   --radius-sm: 12px;
   --transition: 0s;
   --content-max: 760px;
+  --header-btn-size: 40px;
+  --header-top-offset: 22px;
 }
 
 /* ===== Theme Tokens (Dark) ===== */
@@ -146,6 +148,10 @@ body {
   align-items: center;
 }
 
+#page-menu.active {
+  padding-top: calc(var(--header-top-offset) + var(--header-btn-size) + 10px);
+}
+
 .page.active > .header,
 .page.active > .card {
   width: min(100%, var(--content-max));
@@ -184,6 +190,7 @@ body {
 
 .page.active > .header {
   margin-bottom: 8px;
+  min-height: var(--header-btn-size);
 }
 
 h2 {
@@ -204,6 +211,20 @@ h2 {
   width: 1.15em;
   height: 1.15em;
   flex: 0 0 auto;
+}
+
+/* Keep the "Tools" text itself centered even with the icon on the left. */
+#title-tools {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  column-gap: 10px;
+}
+
+#title-tools::after {
+  content: "";
+  width: 1.15em;
+  height: 1.15em;
 }
 
 h3 {
@@ -243,6 +264,7 @@ h3 {
   gap: 12px;
   width: min(100%, var(--content-max));
   margin-inline: auto;
+  padding-bottom: 88px;
 }
 
 .menu-btn {
@@ -269,6 +291,20 @@ h3 {
   width: 18px;
   height: 18px;
   flex: 0 0 18px;
+}
+
+#page-menu.active #menu-exit-btn {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 70;
+  width: auto;
+  min-width: 84px;
+  min-height: var(--header-btn-size);
+  height: var(--header-btn-size);
+  padding: 0 12px;
+  gap: 6px;
+  box-shadow: var(--shadow-lg);
 }
 
 /* ===== Shared Inputs and Buttons ===== */
@@ -360,9 +396,13 @@ button.primary:active {
 
 .back-btn {
   min-width: 84px;
+  min-height: var(--header-btn-size);
+  height: var(--header-btn-size);
+  padding: 0 12px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
 }
 
@@ -1871,7 +1911,7 @@ body.paint-immersive-active .app-footer {
 .floating-actions {
   position: fixed;
   right: 18px;
-  top: max(12px, env(safe-area-inset-top));
+  top: max(var(--header-top-offset), env(safe-area-inset-top));
   bottom: auto;
   display: flex;
   gap: 10px;
@@ -2010,13 +2050,24 @@ body.paint-immersive-active .app-footer {
   width: auto;
   min-width: 116px;
   padding: 0 12px;
-  gap: 6px;
 }
 
 .todo-filter-btn,
 .todo-clear-btn {
   width: auto;
   gap: 6px;
+}
+
+.todo-delete-btn {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
 }
 
 .todo-task-item,
@@ -2115,9 +2166,15 @@ button.todo-remove-btn:hover {
     flex: 1 1 100%;
   }
 
-  #todo-tasks-panel > .row:first-child > #todo-add-btn,
+  #todo-tasks-panel > .row:first-child > #todo-add-btn {
+    flex: 1 1 calc(100% - 52px);
+    min-height: 44px;
+  }
+
   #todo-tasks-panel > .row:first-child > #todo-clear-done-btn {
-    flex: 1 1 calc(50% - 4px);
+    flex: 0 0 44px;
+    width: 44px;
+    min-width: 44px;
     min-height: 44px;
   }
 
@@ -2136,12 +2193,14 @@ button.todo-remove-btn:hover {
   }
 
   .note-toolbar-row .note-add-btn {
-    flex: 1 1 calc(50% - 4px);
+    flex: 1 1 calc(100% - 52px);
     min-height: 44px;
   }
 
   .note-toolbar-row #todo-note-clear-btn {
-    flex: 1 1 calc(50% - 4px);
+    flex: 0 0 44px;
+    width: 44px;
+    min-width: 44px;
     min-height: 44px;
   }
 
@@ -2160,6 +2219,20 @@ button.todo-remove-btn:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  #todo-notes-panel .notes-input-row .note-editor {
+    min-height: 120px;
+    max-height: min(36vh, 220px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 640px) and (max-height: 620px) {
+  #todo-notes-panel .notes-input-row .note-editor {
+    min-height: 100px;
+    max-height: min(32vh, 190px);
   }
 }
 
@@ -2301,14 +2374,182 @@ button.todo-remove-btn:hover {
   background: color-mix(in srgb, var(--accent) 16%, var(--panel-strong));
 }
 
+/* ===== QR Generator ===== */
+.qr-card {
+  gap: 10px;
+}
+
+.qr-preview-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border);
+  background: color-mix(in srgb, var(--panel-soft) 86%, transparent);
+}
+
+.qr-image {
+  width: min(100%, 320px);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
+}
+
+/* ===== Emoji Catalog ===== */
+.emoji-card {
+  gap: 10px;
+}
+
+.emoji-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(120px, 0.8fr) auto;
+  gap: 8px;
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+  max-height: 420px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.emoji-item {
+  min-height: 88px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+}
+
+.emoji-char {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.emoji-char-img {
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+
+.emoji-char-fallback {
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.emoji-name {
+  font-size: 0.72rem;
+  color: var(--text-soft);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* ===== Budget ===== */
+.budget-card {
+  gap: 10px;
+}
+
+.budget-limit-row {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.budget-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.budget-form-grid #budget-note {
+  grid-column: 1 / -1;
+}
+
+.budget-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.budget-summary-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--panel-soft) 88%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.budget-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 340px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.budget-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--panel-soft) 88%, transparent);
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.budget-item-main {
+  min-width: 0;
+}
+
+.budget-item-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.budget-item-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.budget-income {
+  color: #0f766e;
+}
+
+.budget-expense {
+  color: var(--danger);
+}
+
 .theme-toggle,
 .lang-toggle {
-  width: 42px;
-  min-width: 42px;
-  max-width: 42px;
-  height: 42px;
-  min-height: 42px;
-  max-height: 42px;
+  width: var(--header-btn-size);
+  min-width: var(--header-btn-size);
+  max-width: var(--header-btn-size);
+  height: var(--header-btn-size);
+  min-height: var(--header-btn-size);
+  max-height: var(--header-btn-size);
   padding: 0;
   aspect-ratio: 1 / 1;
   line-height: 1;
@@ -2324,11 +2565,11 @@ button.todo-remove-btn:hover {
 .overflow-toggle {
   position: fixed;
   left: 18px;
-  top: max(12px, env(safe-area-inset-top));
-  width: 34px;
-  min-width: 34px;
-  height: 34px;
-  min-height: 34px;
+  top: max(var(--header-top-offset), env(safe-area-inset-top));
+  width: var(--header-btn-size);
+  min-width: var(--header-btn-size);
+  height: var(--header-btn-size);
+  min-height: var(--header-btn-size);
   padding: 0;
   border-radius: 10px;
   border: 1px solid var(--border);
@@ -2444,6 +2685,39 @@ button.todo-remove-btn:hover {
   animation: sidebar-in 0.2s ease both;
 }
 
+.overflow-social-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.overflow-panel-title {
+  width: 100%;
+  min-height: 38px;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  font-family: "Space Grotesk", "Manrope", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.overflow-panel-title-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  display: block;
+  object-fit: contain;
+}
+
+.overflow-social-item {
+  min-height: 38px;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 6px;
+}
+
 .overflow-menu-item {
   width: 100%;
   min-height: 38px;
@@ -2474,6 +2748,7 @@ button.todo-remove-btn:hover {
 
 .overflow-about-btn {
   margin-top: auto;
+  justify-content: center;
 }
 
 .overflow-changelog {
@@ -2524,10 +2799,45 @@ button.todo-remove-btn:hover {
 
 .about-modal-card {
   width: min(420px, 100%);
+  text-align: center;
 }
 
 .about-header-row {
-  justify-content: space-between;
+  justify-content: center;
+  position: relative;
+  min-height: var(--header-btn-size);
+}
+
+.about-header-row h3 {
+  margin: 0;
+}
+
+.about-app-brand {
+  justify-content: center;
+}
+
+.about-app-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+
+#about-close-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.about-links-row {
+  justify-content: center;
+  gap: 10px;
+}
+
+.about-links-row .overflow-menu-item {
+  width: auto;
+  min-width: 128px;
+  justify-content: center;
 }
 
 /* ===== Overflow Fixes ===== */
@@ -2538,10 +2848,14 @@ button.todo-remove-btn:hover {
 
 /* ===== Responsive: Mobile ===== */
 @media (max-width: 520px) {
+  :root {
+    --header-top-offset: 18px;
+  }
+
   .page.active > .header {
     justify-content: center;
     gap: 8px;
-    min-height: 42px;
+    min-height: var(--header-btn-size);
     padding-left: 112px;
     padding-right: 112px;
     position: relative;
@@ -2555,8 +2869,9 @@ button.todo-remove-btn:hover {
     transform: translateY(-50%);
     flex: 0 0 auto;
     min-width: 60px;
-    min-height: 36px;
-    padding: 6px 8px;
+    min-height: var(--header-btn-size);
+    height: var(--header-btn-size);
+    padding: 0 10px;
     font-size: 0.8rem;
     gap: 4px;
   }
@@ -2615,7 +2930,6 @@ button.todo-remove-btn:hover {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  #todo-clear-done-label,
   .todo-filter-btn span {
     display: none;
   }
@@ -2691,12 +3005,29 @@ button.todo-remove-btn:hover {
   }
 
   .menu-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
+    padding-bottom: 84px;
   }
 
   #page-menu .menu-btn {
     width: 100%;
+  }
+
+  #page-menu.active #menu-exit-btn {
+    right: max(10px, env(safe-area-inset-right));
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    min-width: 60px;
+    min-height: var(--header-btn-size);
+    height: var(--header-btn-size);
+    padding: 0 10px;
+    font-size: 0.8rem;
+    gap: 4px;
+    width: auto;
+  }
+
+  #page-menu.active {
+    padding-top: calc(var(--header-top-offset) + var(--header-btn-size) + 8px);
   }
 
   .weather-main,
@@ -2705,7 +3036,11 @@ button.todo-remove-btn:hover {
   .weather-manual-grid,
   .timer-input-grid,
   .time-pair,
-  .converter-row {
+  .converter-row,
+  .budget-form-grid,
+  .budget-summary,
+  .budget-limit-row,
+  .emoji-toolbar {
     grid-template-columns: 1fr;
   }
 
@@ -2816,6 +3151,10 @@ button.todo-remove-btn:hover {
 }
 
 @media (max-width: 400px) and (max-height: 620px) {
+  :root {
+    --header-top-offset: 10px;
+  }
+
   body {
     padding: 10px 8px 8px;
   }
@@ -2827,6 +3166,7 @@ button.todo-remove-btn:hover {
   #page-menu.active {
     gap: 8px;
     align-items: stretch;
+    padding-top: calc(var(--header-top-offset) + var(--header-btn-size) + 6px);
   }
 
   #page-menu.active > .header {
@@ -2837,6 +3177,7 @@ button.todo-remove-btn:hover {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
     width: 100%;
+    padding-bottom: 70px;
   }
 
   #page-menu .menu-btn {
@@ -2851,6 +3192,17 @@ button.todo-remove-btn:hover {
     width: 14px;
     height: 14px;
     flex: 0 0 14px;
+  }
+
+  #page-menu.active #menu-exit-btn {
+    min-width: 60px;
+    min-height: var(--header-btn-size);
+    height: var(--header-btn-size);
+    padding: 0 10px;
+    font-size: 0.8rem;
+    gap: 4px;
+    right: max(8px, env(safe-area-inset-right));
+    bottom: calc(8px + env(safe-area-inset-bottom));
   }
 
   #page-converter.active {
@@ -2991,29 +3343,7 @@ button.todo-remove-btn:hover {
 
   .theme-toggle,
   .lang-toggle {
-    width: 34px;
-    min-width: 34px;
-    max-width: 34px;
-    height: 34px;
-    min-height: 34px;
-    max-height: 34px;
-    padding: 0;
-    aspect-ratio: 1 / 1;
-    line-height: 1;
     font-size: 0.82rem;
-  }
-
-  .overflow-toggle {
-    width: 32px;
-    min-width: 32px;
-    height: 32px;
-    min-height: 32px;
-    border-radius: 9px;
-  }
-
-  .theme-toggle-icon {
-    width: 14px;
-    height: 14px;
   }
 
   .app-footer {

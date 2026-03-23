@@ -2,14 +2,6 @@
 <div class="container" id="app">
   <!-- MENU -->
   <div class="page active" id="page-menu">
-    <div class="header">
-      <h2 id="title-tools" class="title-with-icon">
-        <img src="assets/icon.svg" alt="" class="title-icon" /><span
-          id="title-tools-text"
-          >Tools</span
-        >
-      </h2>
-    </div>
     <div class="menu-grid">
       <button
         class="menu-btn"
@@ -119,6 +111,26 @@
       >
         <svg class="icon-svg menu-icon"><use href="#i-play"></use></svg
         ><span id="menu-media">Media Player</span>
+      </button>
+      <button class="menu-btn" onclick="showPage('page-qr')" id="menu-qr-btn">
+        <svg class="icon-svg menu-icon"><use href="#i-grid"></use></svg
+        ><span id="menu-qr">QR Generator</span>
+      </button>
+      <button
+        class="menu-btn"
+        onclick="showPage('page-emoji')"
+        id="menu-emoji-btn"
+      >
+        <svg class="icon-svg menu-icon"><use href="#i-search"></use></svg
+        ><span id="menu-emoji">Emoji Catalog</span>
+      </button>
+      <button
+        class="menu-btn"
+        onclick="showPage('page-budget')"
+        id="menu-budget-btn"
+      >
+        <svg class="icon-svg menu-icon"><use href="#i-currency"></use></svg
+        ><span id="menu-budget">Budget</span>
       </button>
       <button class="menu-btn" onclick="exitApp()" id="menu-exit-btn">
         <svg class="icon-svg menu-icon"><use href="#i-exit"></use></svg
@@ -2106,6 +2118,199 @@
     </div>
   </div>
 
+  <!-- QR GENERATOR -->
+  <div class="page" id="page-qr">
+    <div class="header">
+      <button
+        class="back-btn"
+        onclick="showPage('page-menu')"
+        data-i18n="back-btn"
+      >
+        Back
+      </button>
+      <h2 id="title-qr">QR Generator</h2>
+    </div>
+
+    <div class="card qr-card">
+      <label class="small-text" for="qr-input" id="qr-input-label"
+        >Text or URL</label
+      >
+      <textarea
+        id="qr-input"
+        rows="4"
+        placeholder="https://example.com"
+      ></textarea>
+      <div class="row">
+        <select id="qr-size">
+          <option value="160">160 x 160</option>
+          <option value="220" selected>220 x 220</option>
+          <option value="320">320 x 320</option>
+        </select>
+        <button class="primary" id="qr-generate-btn" onclick="generateQrCode()">
+          Generate
+        </button>
+        <button
+          class="text-action-btn"
+          id="qr-clear-btn"
+          onclick="clearQrCode()"
+        >
+          Clear
+        </button>
+      </div>
+      <div class="small-text" id="qr-status"></div>
+      <div class="qr-preview-wrap is-hidden" id="qr-preview-wrap">
+        <img id="qr-image" class="qr-image" alt="QR code preview" />
+      </div>
+      <button
+        class="text-action-btn"
+        id="qr-download-btn"
+        onclick="downloadQrCode()"
+      >
+        Download PNG
+      </button>
+    </div>
+  </div>
+
+  <!-- EMOJI CATALOG -->
+  <div class="page" id="page-emoji">
+    <div class="header">
+      <button
+        class="back-btn"
+        onclick="showPage('page-menu')"
+        data-i18n="back-btn"
+      >
+        Back
+      </button>
+      <h2 id="title-emoji">Emoji Catalog</h2>
+    </div>
+    <div class="card emoji-card">
+      <div class="emoji-toolbar">
+        <input
+          id="emoji-search"
+          type="text"
+          placeholder="Search emoji..."
+          oninput="filterEmojiCatalog()"
+        />
+        <select id="emoji-category" onchange="filterEmojiCatalog()">
+          <option value="all">All</option>
+          <option value="smileys">Smileys</option>
+          <option value="people">People</option>
+          <option value="animals">Animals</option>
+          <option value="food">Food</option>
+          <option value="travel">Travel</option>
+          <option value="activity">Activity</option>
+          <option value="objects">Objects</option>
+          <option value="symbols">Symbols</option>
+          <option value="flags">Flags</option>
+        </select>
+        <button
+          class="text-action-btn"
+          id="emoji-clear-btn"
+          onclick="clearEmojiSearch()"
+        >
+          Reset
+        </button>
+      </div>
+      <div class="small-text" id="emoji-status"></div>
+      <div class="emoji-grid" id="emoji-grid"></div>
+    </div>
+  </div>
+
+  <!-- BUDGET -->
+  <div class="page" id="page-budget">
+    <div class="header">
+      <button
+        class="back-btn"
+        onclick="showPage('page-menu')"
+        data-i18n="back-btn"
+      >
+        Back
+      </button>
+      <h2 id="title-budget">Budget</h2>
+    </div>
+    <div class="card budget-card">
+      <div class="budget-limit-row">
+        <select id="budget-currency" onchange="setBudgetCurrency()">
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="RUB">RUB</option>
+        </select>
+        <input
+          id="budget-limit"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="Monthly limit"
+        />
+        <button
+          class="text-action-btn"
+          id="budget-save-limit-btn"
+          onclick="saveBudgetLimit()"
+        >
+          Save limit
+        </button>
+      </div>
+      <div class="budget-form-grid">
+        <select id="budget-type" onchange="onBudgetTypeChange()">
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+        </select>
+        <select id="budget-category"></select>
+        <input id="budget-amount" type="number" min="0" step="0.01" />
+        <input id="budget-date" type="date" />
+        <input id="budget-note" type="text" placeholder="Note (optional)" />
+      </div>
+      <div class="row">
+        <button class="primary" id="budget-add-btn" onclick="addBudgetEntry()">
+          Add entry
+        </button>
+        <button
+          class="text-action-btn"
+          id="budget-reset-form-btn"
+          onclick="clearBudgetForm()"
+        >
+          Reset form
+        </button>
+      </div>
+      <div class="budget-summary">
+        <div class="budget-summary-item">
+          <span class="small-text" id="budget-balance-label">Balance</span>
+          <strong id="budget-balance">0.00</strong>
+        </div>
+        <div class="budget-summary-item">
+          <span class="small-text" id="budget-income-label">Income</span>
+          <strong id="budget-income-total">0.00</strong>
+        </div>
+        <div class="budget-summary-item">
+          <span class="small-text" id="budget-expense-label">Expense</span>
+          <strong id="budget-expense-total">0.00</strong>
+        </div>
+        <div class="budget-summary-item">
+          <span class="small-text" id="budget-limit-used-label"
+            >Limit used</span
+          >
+          <strong id="budget-limit-used">0%</strong>
+        </div>
+      </div>
+      <div class="row">
+        <select id="budget-filter" onchange="setBudgetFilter()">
+          <option value="all">All</option>
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+        </select>
+        <button
+          class="text-action-btn"
+          id="budget-clear-all-btn"
+          onclick="clearBudgetEntries()"
+        >
+          Clear all
+        </button>
+      </div>
+      <div class="small-text" id="budget-status"></div>
+      <div class="budget-list" id="budget-list"></div>
+    </div>
+  </div>
+
   <!-- TODO / NOTES -->
   <div class="page" id="page-todo">
     <div class="header">
@@ -2148,11 +2353,10 @@
           </button>
           <button
             id="todo-clear-done-btn"
-            class="text-action-btn todo-clear-btn"
+            class="text-action-btn todo-clear-btn todo-delete-btn"
             onclick="clearCompletedTodo()"
           >
             <svg class="icon-svg btn-icon"><use href="#i-trash"></use></svg>
-            <span id="todo-clear-done-label">Clear done</span>
           </button>
         </div>
         <div class="row">
@@ -2256,11 +2460,10 @@
             id="todo-notes-add-btn"
             onclick="todoNoteEditorAction('add')"
           >
-            <svg class="icon-svg btn-icon"><use href="#i-plus"></use></svg>
             <span id="todo-notes-add-label">Add</span>
           </button>
           <button
-            class="text-action-btn note-tool-btn"
+            class="text-action-btn note-tool-btn todo-delete-btn"
             id="todo-note-clear-btn"
             onclick="todoNoteEditorAction('clear')"
           >
@@ -2376,7 +2579,7 @@
 </div>
 
 <footer class="app-footer" aria-label="Application footer">
-  <small>© 2026 MaestroFusion360 · v1.0.0</small>
+  <small id="app-footer-text">© 2026 MaestroFusion360 · v1.0.1</small>
 </footer>
 
 <button
@@ -2416,38 +2619,23 @@
 
 <div class="overflow-menu is-hidden" id="overflow-menu" role="presentation">
   <div class="overflow-menu-panel" role="menu">
-    <a
-      class="text-action-btn overflow-menu-item"
-      id="menu-github-btn"
-      href="https://github.com/MaestroFusion360/mini-tools"
-      target="_blank"
-      rel="noopener noreferrer"
-      role="menuitem"
+    <div
+      class="overflow-panel-title title-with-icon"
+      id="overflow-menu-title-wrap"
     >
-      <svg class="icon-svg btn-icon"><use href="#i-github"></use></svg>
-      <span id="menu-github">GitHub</span>
-    </a>
-    <a
-      class="text-action-btn overflow-menu-item"
-      id="menu-telegram-btn"
-      href="https://t.me/MaestroFusion360"
-      target="_blank"
-      rel="noopener noreferrer"
-      role="menuitem"
-    >
-      <svg class="icon-svg btn-icon"><use href="#i-telegram"></use></svg>
-      <span id="menu-telegram">Telegram</span>
-    </a>
+      <img
+        id="overflow-menu-title-icon"
+        src="assets/icon.svg"
+        alt=""
+        class="overflow-panel-title-icon"
+      />
+      <span id="overflow-menu-title">Mini tools</span>
+    </div>
     <section class="overflow-changelog">
-      <h3 class="overflow-changelog-title">CHANGELOG v1.0.0</h3>
-      <ul class="overflow-changelog-list">
-        <li>Todo + Notes with rich editor and drag-and-drop.</li>
-        <li>RSS feeds with swipe-to-read and read-later.</li>
-        <li>Weather, World Time, Timer, Stopwatch, Calendar.</li>
-        <li>Unit/Currency converters, Calculator, Text tools.</li>
-        <li>Paint editor and Media player with empty state.</li>
-        <li>PWA offline shell, themes and EN/RU translations.</li>
-      </ul>
+      <h3 class="overflow-changelog-title" id="overflow-changelog-title">
+        CHANGELOG
+      </h3>
+      <ul class="overflow-changelog-list" id="overflow-changelog-list"></ul>
     </section>
     <button
       type="button"
@@ -2468,7 +2656,12 @@
   ></button>
 </div>
 
-<div class="about-modal is-hidden" id="about-modal" role="dialog" aria-modal="true">
+<div
+  class="about-modal is-hidden"
+  id="about-modal"
+  role="dialog"
+  aria-modal="true"
+>
   <div class="about-modal-card card">
     <div class="row about-header-row">
       <h3 id="about-title">About</h3>
@@ -2483,30 +2676,18 @@
         <svg class="icon-svg btn-icon"><use href="#i-x"></use></svg>
       </button>
     </div>
-    <div class="small-text" id="about-app-name">mini-tools</div>
-    <div class="small-text" id="about-description">
-      Lightweight offline-first utility toolkit for everyday tasks.
+    <div class="small-text about-app-brand title-with-icon">
+      <img
+        id="about-app-icon"
+        class="about-app-icon"
+        src="assets/icon.svg"
+        alt=""
+      />
+      <span id="about-app-name"></span>
     </div>
-    <div class="row">
-      <a
-        class="text-action-btn overflow-menu-item"
-        href="https://github.com/MaestroFusion360/mini-tools"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <svg class="icon-svg btn-icon"><use href="#i-github"></use></svg>
-        <span id="about-github">GitHub</span>
-      </a>
-      <a
-        class="text-action-btn overflow-menu-item"
-        href="https://t.me/MaestroFusion360"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <svg class="icon-svg btn-icon"><use href="#i-telegram"></use></svg>
-        <span id="about-telegram">Telegram</span>
-      </a>
-    </div>
+    <div class="small-text" id="about-description"></div>
+    <div class="small-text" id="about-author"></div>
+    <div class="row about-links-row" id="about-links-row"></div>
   </div>
 </div>
 

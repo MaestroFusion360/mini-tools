@@ -101,6 +101,9 @@ import {
   paintUndo,
 } from "./features/paint.js";
 import { applyTranslations, initI18n, toggleLanguage } from "./core/i18n.js";
+import { initChangelog } from "./core/changelog.js";
+import { initAppMeta } from "./core/app-meta.js";
+import { initAbout } from "./core/about.js";
 import {
   closeAboutDialog,
   closeOverflowMenu,
@@ -154,6 +157,27 @@ import {
   toggleTimeFormat,
   updateWorldTime,
 } from "./features/world-time.js";
+import {
+  clearQrCode,
+  downloadQrCode,
+  generateQrCode,
+  initQrGenerator,
+} from "./features/qr-generator.js";
+import {
+  clearEmojiSearch,
+  filterEmojiCatalog,
+  initEmojiCatalog,
+} from "./features/emoji-catalog.js";
+import {
+  addBudgetEntry,
+  clearBudgetEntries,
+  clearBudgetForm,
+  initBudget,
+  onBudgetTypeChange,
+  saveBudgetLimit,
+  setBudgetCurrency,
+  setBudgetFilter,
+} from "./features/budget.js";
 
 function exposeGlobals() {
   Object.assign(window, {
@@ -270,6 +294,18 @@ function exposeGlobals() {
     exportRssFeeds,
     importRssFeeds,
     handleRssImportFile,
+    generateQrCode,
+    clearQrCode,
+    downloadQrCode,
+    filterEmojiCatalog,
+    clearEmojiSearch,
+    saveBudgetLimit,
+    setBudgetCurrency,
+    onBudgetTypeChange,
+    addBudgetEntry,
+    clearBudgetForm,
+    setBudgetFilter,
+    clearBudgetEntries,
   });
 }
 
@@ -298,6 +334,9 @@ async function initApp() {
   await loadAppTemplate();
   initTheme();
   await initI18n();
+  await initAppMeta();
+  await initChangelog();
+  initAbout();
   exposeGlobals();
 
   initNavigation();
@@ -314,6 +353,9 @@ async function initApp() {
   initMediaPlayer();
   initTodoNotes();
   initRssNews();
+  initQrGenerator();
+  await initEmojiCatalog();
+  initBudget();
   initPwa();
 
   applyTranslations();

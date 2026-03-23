@@ -1,4 +1,9 @@
-import { byId, setLabelText, setSelectOptionText, setText } from "../core/dom.js";
+import {
+  byId,
+  setLabelText,
+  setSelectOptionText,
+  setText,
+} from "../core/dom.js";
 import { getLanguage, registerTranslationApplier, t } from "../core/i18n.js";
 import { formatNumber } from "../core/utils.js";
 

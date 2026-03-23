@@ -1,14 +1,42 @@
 # Changelog
 
-## v1.0.0 - 2026-03-22
+## v1.1.2 - 2026-03-23
 
 ### Added
+
+- QR Generator:
+  - Text/URL input, QR image generation, clear action, and PNG download.
+- Emoji Catalog:
+  - Full catalog generated from library data.
+  - Search, category filtering, and one-tap emoji copy.
+- Budget:
+  - Income/expense tracking with running balance.
+  - Limit, totals, filtering, and entry management.
+  - Currency selector (`USD`, `EUR`, `RUB`) and category dropdowns.
+
+### Changed
+
+- Emoji rendering switched to cleaner Twemoji-based visuals for consistent cross-device look.
+- Header controls (burger/back/theme/language) aligned to consistent heights on mobile.
+- Overflow menu content simplified:
+  - removed GitHub/Telegram buttons (links remain in About),
+  - changelog content moved to JSON-driven rendering.
+- Notes editor viewport on small screens tuned for better usability.
+- Tasks/Notes/Budget action buttons unified to a cleaner style (including compact ghost delete actions).
+
+### Internal
+
+- Added `scripts/generate-emoji-catalog.mjs` for emoji dataset generation.
+- Added `scripts/set-version.ps1` to update project version across key files.
+- Version and release metadata updated to `1.1.x` across app/footer/changelog/package files.
+
+## v1.0.0 - 2026-03-22
+
+### Features
 
 - PWA shell with offline support (Service Worker + Manifest).
 - Light/Dark theme toggle and EN/RU localization with persistence.
 - Mobile/desktop adaptive multi-tool UI with card-based pages.
-
-### Features
 
 - Todo + Notes:
   - Tasks with add/toggle/remove, filters (All/Active/Done), clear completed.

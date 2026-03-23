@@ -3,82 +3,135 @@
 
 # <img src="assets/icon.svg" alt="Mobile Tools" height="24" /> Mobile Tools
 
-Mobile Tools is a vanilla JavaScript PWA with everyday utilities in one app:
-weather, world time, timer, stopwatch, calendar/date diff, unit converter,
-calculator, text editor/analysis, currency conversion, todo/notes, and RSS news.
+**Mobile Tools** was created as a lightweight offline-first app so you can keep useful daily tools in one place, fast and distraction-free, even with unstable internet.
+
+**Current app version: **1.0.1\*\*.
+
+---
+
+<p align="center">
+  <img src="assets/image1.png" alt="Main Window">
+  <img src="assets/image2.png" alt="Main Window (Dark Theme)">
+</p>
+
+---
 
 - [ Mobile Tools](#-mobile-tools)
-  - [✨ Features](#-features)
-  - [🧱 Architecture](#-architecture)
-    - [🚀 Startup Flow](#-startup-flow)
-    - [🗂️ Module Responsibilities](#️-module-responsibilities)
-  - [🧭 Project Structure](#-project-structure)
-  - [⚡ Quick Start](#-quick-start)
-  - [🧪 Testing](#-testing)
-  - [🧭 Playwright Layout Testing](#-playwright-layout-testing)
-  - [📍 Geolocation Notes (Chrome/Firefox)](#-geolocation-notes-chromefirefox)
-  - [🌐 External APIs](#-external-apis)
-  - [📄 License](#-license)
+  - [Features](#features)
+  - [Architecture](#architecture)
+    - [Startup Flow](#startup-flow)
+  - [Architecture Overview](#architecture-overview)
+  - [Project Structure](#project-structure)
+  - [Quick Start](#quick-start)
+  - [Testing](#testing)
+  - [External APIs](#external-apis)
+  - [License](#license)
 
-## ✨ Features
+## Features
 
-- Todo + Notes 📋:
-  - task list with visibility groups (All/Active/Done)
-  - drag&drop sorting for tasks
-  - notes cards with title + rich text editor
-  - drag&drop sorting for notes cards
-- RSS news 📰:
-  - feed list management (add/remove/load)
-  - import/export feeds JSON
-  - news cards view (not history list)
-  - swipe-right to mark item as read (muted card state)
-- Weather 🌤️:
-  - geolocation + reverse geocoding
-  - manual coordinates mode
-  - favorites + home point + city presets
-  - current metrics (temperature, humidity, wind)
-  - sunrise/sunset
-  - forecast blocks (morning/day/evening/tomorrow)
-- World time with 24h/12h toggle 🌍
-- Timer (start/pause/resume/reset) ⏱️
-- Stopwatch (start/pause/resume/reset + laps) 🏁
-- Calendar 📅:
-  - month navigation
-  - clickable date picking for Date 1 / Date 2
-  - range highlighting
-  - detailed date difference calculator
-- Unit converter with presets and precision slider 🔁
-- Calculator 🧮:
-  - basic/scientific mode
-  - keyboard support (`0-9`, operators, Enter, Backspace, Delete, Escape, `^`)
-  - history
-- Text editor + analysis 📝:
-  - actions: Copy, UPPER/lower/Title/Sentence, Trim, Normalize spaces, Remove empty lines
-  - metrics: lines, chars, chars without spaces, UTF-8 size, words, spaces, max line, paragraphs, avg word length, reading time
-- Currency converter with online refresh + fallback rates 💱
-- Paint editor:
-  - open/save PNG, undo/redo, clear
-  - fullscreen mode (stable enter/exit)
-  - crop/resize/rotate/mirror
-  - filters: brightness, contrast, saturation
-  - tools: brush, eraser (BackColor-based), text, pipette, fill
-  - shapes: rectangle, ellipse, line, spline (2-step curve)
-  - zoom in/out/reset + grid overlay
-  - selection tool + Delete clears selected area
-  - copy/paste with selection-aware behavior
-  - Color + BackColor + Size are always in one row
-  - text extras: text input + fonts panel
-- Media player:
-  - open local audio/video files
-  - playlist select + previous/next controls
-  - clear playlist
-  - built-in HTML5 media controls (play/pause/seek/volume)
-- Theme + language persistence 🎨🌐
-- Offline shell via Service Worker + Manifest 📦
+- **Progressive Web App (PWA)** - offline-first shell, Service Worker caching, and Web App Manifest support for installable mobile and desktop use.
 
-## 🧱 Architecture
+- **Responsive multi-tool interface** - adapted for both mobile and desktop, with card-based pages and compact controls.
 
-### 🚀 Startup Flow
+- **Todo + Notes**
+  - Task management with add, complete, delete, and clear completed actions.
+  - Task filters for **All / Active / Done**.
+  - Drag-and-drop sorting for task items and note cards.
+  - Rich-text notes editor with formatting actions such as **bold, italic, underline, strikethrough, ordered list, and links**.
+  - Quick create and save flow with note card previews.
+  - Unified action buttons with cleaner compact controls.
+
+- **RSS News**
+  - RSS feed management with add, remove, refresh, and JSON import/export.
+  - Articles grouped by time periods such as **today, yesterday, this week, and older**.
+  - Read-later mode for saving items to review later.
+  - Swipe-to-read interactions with gesture feedback and threshold-based commit for mobile-friendly usage.
+
+- **Weather**
+  - Support for both **geolocation mode** and **manual coordinates input**.
+  - Reverse geocoding for detected locations.
+  - Current weather metrics, forecast blocks, and sunrise/sunset information.
+  - Favorites, saved home point, and city presets for quick access.
+
+- **World Time**
+  - Multiple timezone selection.
+  - Switchable **24-hour / 12-hour** time display.
+
+- **Timer**
+  - Start, pause, resume, and reset controls.
+  - Live status updates during countdown.
+
+- **Stopwatch**
+  - Start, pause, resume, and reset actions.
+  - Lap tracking support.
+
+- **Calendar + Date Difference**
+  - Month navigation and date picking.
+  - Range highlighting.
+  - Detailed date difference calculation between selected dates.
+
+- **Unit Converter**
+  - Multiple conversion categories.
+  - Presets, unit swapping, and adjustable precision.
+  - Includes a primary **mm ↔ inch** preset and an explicit convert action.
+
+- **Calculator**
+  - **Basic** and **scientific** modes.
+  - Memory functions and calculation history.
+  - Keyboard input support.
+
+- **Text Tools**
+  - Text transformations including case conversion, trimming, space normalization, and empty-line removal.
+  - Search and replace workflow.
+  - Built-in text metrics and analytics.
+
+- **Currency Converter**
+  - Online exchange-rate refresh.
+  - Safe built-in fallback rates when network data is unavailable.
+
+- **Paint Editor**
+  - Open and save **PNG** files.
+  - Undo, redo, and canvas clear actions.
+  - Crop, resize, rotate, and mirror tools.
+  - Filters, zoom, and grid overlay.
+  - Drawing and editing tools including **brush, eraser, text, pipette, fill, shapes, selection, and copy/paste**.
+  - Compact mobile toolbar layout.
+
+- **Media Player**
+  - Local audio and video playlist support.
+  - Previous, next, and clear playlist controls.
+  - Empty-state placeholder when no media is loaded.
+
+- **QR Generator**
+  - Generate QR codes from plain text or URLs.
+  - Clear input and download the generated QR as **PNG**.
+
+- **Emoji Catalog**
+  - Full emoji catalog generated from library data.
+  - Search and category filtering.
+  - One-tap emoji copy.
+  - Cleaner **Twemoji-based rendering** for a more consistent cross-device appearance.
+
+- **Budget**
+  - Simple income and expense tracking.
+  - Running balance calculation.
+  - Totals, limits, filtering, and entry management.
+  - Currency selector with **USD / EUR / RUB**.
+  - Category dropdowns for faster entry classification.
+
+- **Customization**
+  - **Light / Dark theme** toggle with persistence.
+  - **English / Russian localization** with saved language preference.
+
+- **General UI improvements**
+  - Consistent mobile header controls for burger, back, theme, and language actions.
+  - Cleaner overflow menu structure.
+  - JSON-driven changelog rendering.
+  - Notes editor viewport tuned for better usability on small screens.
+
+## Architecture
+
+### Startup Flow
 
 `index.html` loads `src/main.js` as an ES module.
 
@@ -86,112 +139,100 @@ calculator, text editor/analysis, currency conversion, todo/notes, and RSS news.
 
 1. initializes theme
 2. initializes i18n
-3. exposes required handlers to `window` (for existing inline HTML handlers)
+3. exposes required handlers to `window` (for inline HTML handlers)
 4. initializes navigation and all feature modules
 5. initializes PWA registration
 6. applies translations
 
-### 🗂️ Module Responsibilities
+## Architecture Overview
 
-- `src/main.js`: app bootstrap and init orchestration
-- `src/core/state.js`: localStorage keys + centralized feature runtime state
-- `src/core/dom.js`: shared DOM utilities
-- `src/core/utils.js`: shared formatting and generic helpers
-- `src/core/i18n.js`: translation loading and runtime language switching
-- `i18n.json`: translation dictionary (`en`, `ru`)
-- `src/core/theme.js`: light/dark theme handling
-- `src/core/navigation.js`: page switching and last-page restore
-- `src/features/weather.js`: weather UI/data/favorites/manual mode
-- `src/features/world-time.js`: world clock and format toggle
-- `src/features/timer.js`: timer logic and UI updates
-- `src/features/stopwatch.js`: stopwatch and laps
-- `src/features/calendar.js`: calendar rendering + date diff
-- `src/features/converter.js`: unit conversion
-- `src/features/calculator.js`: calculator logic, history, keyboard input
-- `src/features/text-tools.js`: compatibility re-export for text editor module
-- `src/features/text-editor/index.js`: text transforms + metrics + copy feedback
-- `src/features/text-editor/state.js`: text editor runtime state slice
-- `src/features/currency.js`: rates loading and conversion
-- `src/features/paint.js`: compatibility re-export for paint module
-- `src/features/paint/index.js`: paint module public entry
-- `src/features/paint/api.js`: exported paint actions
-- `src/features/paint/core.js`: paint internal canvas/UI/event logic
-- `src/features/paint/fonts.js`: paint font discovery/options helpers
-- `src/features/paint/pixels.js`: paint pixel/filter helpers
-- `src/features/paint/state.js`: paint runtime state + constants
-- `src/features/media-player.js`: media playlist and player controls
-- `src/features/todo-notes.js`: todo tasks + notes cards/editor
-- `src/features/rss-news.js`: RSS feed management and news cards
-- `src/features/shared/time-format.js`: shared time formatting helpers for timer/stopwatch
-- `src/core/pwa.js`: service worker registration wrapper
+- `src/core/`: shared application infrastructure such as state, DOM helpers, i18n, theme, navigation, metadata, and PWA setup.
+- `src/data/`: JSON-driven app content including translations, app metadata, and changelog entries.
+- `src/features/`: self-contained feature modules such as weather, calculator, RSS, paint, media player, QR, emoji catalog, and budget.
+- `src/features/text-editor/`: text tools implementation split into module entry and local runtime state.
+- `src/features/paint/`: paint subsystem split into public API, internal canvas logic, helpers, and state.
+- `src/features/shared/`: helpers reused across multiple feature modules.
+- `src/tests/`: unit and layout/UI test coverage.
 
-## 🧭 Project Structure
+## Project Structure
 
 ```text
 mini-tools/
-├── index.html
-├── i18n.json
-├── src/
-│   ├── app.html
-│   ├── icons.html
-│   ├── main.js
-│   ├── styles.css
-│   ├── core/
-│   │   ├── state.js
-│   │   ├── dom.js
-│   │   ├── utils.js
-│   │   ├── i18n.js
-│   │   ├── theme.js
-│   │   ├── navigation.js
-│   │   └── pwa.js
-│   └── features/
-│       ├── weather.js
-│       ├── world-time.js
-│       ├── timer.js
-│       ├── stopwatch.js
-│       ├── calendar.js
-│       ├── converter.js
-│       ├── calculator.js
-│       ├── text-tools.js
-│       ├── text-editor/
-│       │   ├── index.js
-│       │   └── state.js
-│       ├── currency.js
-│       ├── paint.js
-│       ├── paint/
-│       │   ├── index.js
-│       │   ├── api.js
-│       │   ├── core.js
-│       │   ├── fonts.js
-│       │   ├── pixels.js
-│       │   └── state.js
-│       ├── media-player.js
-│       ├── todo-notes.js
-│       └── rss-news.js
-│   └── tests/
-│       ├── paint.test.js
-│       ├── media-player.test.js
-│       ├── todo-notes.test.js
-│       ├── rss-news.test.js
-│       └── layout/
-│           ├── layout.spec.js
-│           └── paint-media.spec.js
-├── sw.js
-├── manifest.webmanifest
-└── assets/
+|-- index.html
+|-- src/
+|   |-- app.html
+|   |-- icons.html
+|   |-- main.js
+|   |-- styles.css
+|   |-- core/
+|   |   |-- state.js
+|   |   |-- dom.js
+|   |   |-- utils.js
+|   |   |-- i18n.js
+|   |   |-- app-meta.js
+|   |   |-- theme.js
+|   |   |-- navigation.js
+|   |   |-- changelog.js
+|   |   `-- pwa.js
+|   |-- data/
+|   |   |-- app-meta.json
+|   |   |-- i18n.json
+|   |   `-- changelog.json
+|   |-- features/
+|   |   |-- weather.js
+|   |   |-- world-time.js
+|   |   |-- timer.js
+|   |   |-- stopwatch.js
+|   |   |-- calendar.js
+|   |   |-- converter.js
+|   |   |-- calculator.js
+|   |   |-- text-tools.js
+|   |   |-- text-editor/
+|   |   |   |-- index.js
+|   |   |   `-- state.js
+|   |   |-- currency.js
+|   |   |-- paint.js
+|   |   |-- paint/
+|   |   |   |-- index.js
+|   |   |   |-- api.js
+|   |   |   |-- core.js
+|   |   |   |-- fonts.js
+|   |   |   |-- pixels.js
+|   |   |   `-- state.js
+|   |   |-- media-player.js
+|   |   |-- todo-notes.js
+|   |   |-- rss-news.js
+|   |   |-- qr-generator.js
+|   |   |-- emoji-catalog.js
+|   |   |-- budget.js
+|   |   `-- shared/
+|   |       `-- time-format.js
+|   `-- tests/
+|       |-- paint.test.js
+|       |-- media-player.test.js
+|       |-- todo-notes.test.js
+|       |-- rss-news.test.js
+|       `-- layout/
+|           |-- layout.spec.js
+|           `-- paint-media.spec.js
+|-- sw.js
+|-- manifest.webmanifest
+|-- assets/
+`-- scripts/
+    `-- generate-emoji-catalog.mjs
 ```
 
-## ⚡ Quick Start
+## Quick Start
 
-Use an HTTP server (Service Worker requires non-file protocol).
+Use an HTTP server (Service Worker requires non-file protocol), for example:
 
 ```bash
-http://localhost:3000
+npx http-server -p 3000
 ```
 
 Open `http://localhost:3000`.
 
-## 🧪 Testing
+## Testing
 
 ```bash
 npm install
@@ -204,55 +245,24 @@ Watch mode:
 npm run test:watch
 ```
 
-Format:
-
-```bash
-npx prettier --write .
-```
-
-New unit tests:
-
-- `src/tests/paint.test.js`
-- `src/tests/media-player.test.js`
-- `src/tests/todo-notes.test.js`
-- `src/tests/rss-news.test.js`
-
-## 🧭 Playwright Layout Testing
-
-Setup once:
+Layout tests:
 
 ```bash
 npx playwright install chromium
-```
-
-Run layout tests:
-
-```bash
 npm run test:layout
 ```
 
-## 📍 Geolocation Notes (Chrome/Firefox)
-
-If geolocation works in Firefox but fails in Chrome, check:
-
-1. Site permission in Chrome (`Allow` for Location).
-2. Secure context (`https://`, `http://localhost`, or `http://127.0.0.1`).
-3. OS-level location access (Windows Privacy -> Location).
-4. DevTools sensor overrides (disable forced location).
-5. Cached permission state (reset site settings and reload).
-
-The app already handles denied/failed location and supports manual coordinates as fallback.
-
-## 🌐 External APIs
+## External APIs
 
 - Open-Meteo (weather + forecast)
 - Nominatim / OpenStreetMap (reverse geocoding)
 - WorldTimeAPI (location time)
 - ExchangeRate-API (currency rates)
 - rss2json (RSS feed parsing proxy)
-  If any network request fails, the app falls back safely where possible.
 
-## 📄 License
+If a network request fails, the app falls back safely where possible.
+
+## License
 
 See [LICENSE](LICENSE).
 

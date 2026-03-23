@@ -6,7 +6,7 @@ let currentLang = getStored(STORAGE_KEYS.lang, "en");
 const translationAppliers = new Set();
 
 export async function initI18n() {
-  const response = await fetch("./i18n.json", { cache: "no-store" });
+  const response = await fetch("./src/data/i18n.json", { cache: "no-store" });
   dictionary = await response.json();
   if (!dictionary[currentLang]) currentLang = "en";
 }
@@ -54,7 +54,6 @@ export function applyTranslations() {
     el.title = value;
     el.setAttribute("aria-label", value);
   };
-  setText("title-tools-text", t("tools"));
   setText("menu-weather", t("weather"));
   setText("menu-time", t("worldTime"));
   setText("menu-timer", t("timer"));
@@ -66,6 +65,9 @@ export function applyTranslations() {
   setText("menu-currency", t("currency"));
   setText("menu-paint", t("paint"));
   setText("menu-media", t("mediaPlayer"));
+  setText("menu-qr", t("qrGenerator"));
+  setText("menu-emoji", t("emojiCatalog"));
+  setText("menu-budget", t("budget"));
   setText("menu-todo", t("todo"));
   setText("menu-news", t("news"));
   setText("menu-exit", t("exit"));
@@ -73,10 +75,6 @@ export function applyTranslations() {
   setText("menu-github", t("github"));
   setText("menu-telegram", t("telegram"));
   setText("about-title", t("about"));
-  setText("about-app-name", t("aboutAppName"));
-  setText("about-description", t("aboutDescription"));
-  setText("about-github", t("github"));
-  setText("about-telegram", t("telegram"));
   setText("title-paint", t("paintTitle"));
   setText("title-media", t("mediaPlayerTitle"));
   setControlTooltip("paint-open-btn", t("paintOpenImage"));

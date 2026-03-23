@@ -1,18 +1,24 @@
 {
   "name": "mini-tools",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "scripts": {
+    "build:emoji-catalog": "node scripts/generate-emoji-catalog.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:layout": "playwright test"
+    "test:layout": "playwright test",
+    "format": "npx prettier --write ."
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0",
     "http-server": "^14.1.1",
     "jsdom": "^26.1.0",
+    "prettier": "^3.8.1",
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "node-emoji": "^2.2.0"
   }
 }

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const data = JSON.parse(readFileSync("i18n.json", "utf8"));
+const data = JSON.parse(readFileSync("src/data/i18n.json", "utf8"));
 
 describe("i18n dictionary", () => {
   it("has en and ru locales", () => {

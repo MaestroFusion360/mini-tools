@@ -1,7 +1,7 @@
-import { byId, setIcon, setSelectOptionText, setText } from "../core/dom.js";
+﻿import { byId, setIcon, setSelectOptionText, setText } from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
 import { getLocale } from "../core/utils.js";
-import { DEFAULT_RSS_FEEDS } from "./rss-feeds.js";
+import { DEFAULT_RSS_FEEDS } from "../data/rss-feeds.js";
 import {
   FEATURE_RUNTIME_STATE,
   STORAGE_KEYS,
@@ -95,7 +95,9 @@ function loadRssData() {
   const data = getStoredJson(STORAGE_KEYS.rssNewsData, null);
   if (!data || typeof data !== "object") return;
   if (Array.isArray(data.feeds)) {
-    rssState.feeds = data.feeds.map((x) => normalizeFeedEntry(x)).filter((x) => x);
+    rssState.feeds = data.feeds
+      .map((x) => normalizeFeedEntry(x))
+      .filter((x) => x);
   }
   if (typeof data.activeFeed === "string") {
     rssState.activeFeed = normalizeFeedUrl(data.activeFeed);
@@ -110,7 +112,10 @@ function loadRssData() {
       .map((x) => String(x || ""))
       .filter((x) => x);
   }
-  if (typeof data.viewMode === "string" && RSS_VIEW_MODES.includes(data.viewMode)) {
+  if (
+    typeof data.viewMode === "string" &&
+    RSS_VIEW_MODES.includes(data.viewMode)
+  ) {
     rssState.viewMode = data.viewMode;
   }
 }
@@ -255,7 +260,9 @@ function toggleRssItemReadLaterByKey(key) {
 
 function purgeRssItemKeys(keys = []) {
   if (!Array.isArray(keys) || !keys.length) return;
-  const keySet = new Set(keys.map((x) => String(x || "").trim()).filter((x) => x));
+  const keySet = new Set(
+    keys.map((x) => String(x || "").trim()).filter((x) => x),
+  );
   if (!keySet.size) return;
   rssState.readKeys = rssState.readKeys.filter((x) => !keySet.has(x));
   rssState.readLaterKeys = rssState.readLaterKeys.filter((x) => !keySet.has(x));
@@ -288,7 +295,8 @@ function buildItemCard(item, key) {
 
   const readLaterBtn = document.createElement("button");
   readLaterBtn.type = "button";
-  readLaterBtn.className = "text-action-btn toolbar-icon-btn rss-read-later-btn";
+  readLaterBtn.className =
+    "text-action-btn toolbar-icon-btn rss-read-later-btn";
   const isSaved = isRssItemReadLater(item);
   if (isSaved) readLaterBtn.classList.add("is-active");
   readLaterBtn.title = isSaved ? t("rssReadLaterRemove") : t("rssReadLaterAdd");
