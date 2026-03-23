@@ -1,6 +1,10 @@
 {
   "entries": [
     {
+      "en": "Mobile layout: compacted main-menu and calculator buttons, hidden Back label on 0-600px, and moved Emoji 'All' filter to the end.",
+      "ru": "Mobile layout: compacted main-menu and calculator buttons, hidden Back label on 0-600px, and moved Emoji 'All' filter to the end."
+    },
+    {
       "en": "Media Player: fixed file picker handling on mobile.",
       "ru": "Media Player: исправлена работа выбора файлов на мобильных."
     },

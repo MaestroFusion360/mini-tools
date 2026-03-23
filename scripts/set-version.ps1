@@ -9,7 +9,7 @@ $ErrorActionPreference = "Stop"
 $TargetVersion = if ($PSBoundParameters.ContainsKey("Version")) {
   $Version
 } else {
-  "1.0.6"
+  "1.0.7"
 }
 
 if ($TargetVersion -notmatch '^\d+\.\d+\.\d+$') {
@@ -120,15 +120,13 @@ if (Test-Path -LiteralPath $appHtml) {
 # 4) README version line
 if (Test-Path -LiteralPath $readme) {
   $raw = Get-Content -LiteralPath $readme -Raw -Encoding UTF8
-  $readmePrefix = [regex]::Escape("**Current app version: **")
-  $readmeSuffix = [regex]::Escape("**.")
-  $readmeVersionPattern = "($readmePrefix)\d+\.\d+\.\d+($readmeSuffix)"
+  $readmeVersionPattern = '(Current app version:\s*\*\*)(\d+\.\d+\.\d+)(\*\*)'
   $updated = [regex]::Replace(
     $raw,
     $readmeVersionPattern,
     {
       param($m)
-      return $m.Groups[1].Value + $TargetVersion + $m.Groups[2].Value
+      return $m.Groups[1].Value + $TargetVersion + $m.Groups[3].Value
     },
     [Text.RegularExpressions.RegexOptions]::None,
     [TimeSpan]::FromSeconds(1)

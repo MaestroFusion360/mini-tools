@@ -8,7 +8,7 @@ const emojiState = {
   copyBound: false,
   filterTimer: null,
   query: "",
-  category: "all",
+  category: "smileys",
   items: [],
   renderFrameId: null,
   renderToken: 0,
@@ -286,8 +286,8 @@ export function filterEmojiCatalog() {
   const categorySelect = byId("emoji-category");
   emojiState.query = input ? String(input.value || "") : "";
   emojiState.category = categorySelect
-    ? String(categorySelect.value || "all")
-    : "all";
+    ? String(categorySelect.value || "smileys")
+    : "smileys";
   scheduleEmojiGridRender();
 }
 
@@ -295,9 +295,9 @@ export function clearEmojiSearch() {
   const input = byId("emoji-search");
   const categorySelect = byId("emoji-category");
   if (input) input.value = "";
-  if (categorySelect) categorySelect.value = "all";
+  if (categorySelect) categorySelect.value = "smileys";
   emojiState.query = "";
-  emojiState.category = "all";
+  emojiState.category = "smileys";
   scheduleEmojiGridRender();
 }
 

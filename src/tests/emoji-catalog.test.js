@@ -11,8 +11,9 @@ function mountEmojiDom() {
     <h2 id="title-emoji"></h2>
     <input id="emoji-search" />
     <select id="emoji-category">
-      <option value="all">All</option>
+      <option value="smileys">Smileys</option>
       <option value="food">Food</option>
+      <option value="all">All</option>
     </select>
     <button id="emoji-clear-btn"></button>
     <div id="emoji-status"></div>
@@ -88,11 +89,12 @@ describe("emoji catalog module", () => {
 
   it("renders emoji list on init", () => {
     const items = document.querySelectorAll("#emoji-grid .emoji-item");
-    expect(items.length).toBeGreaterThan(10);
+    expect(items.length).toBe(2);
   });
 
   it("filters by query text", async () => {
     document.getElementById("emoji-search").value = "pizza";
+    document.getElementById("emoji-category").value = "all";
     filterEmojiCatalog();
     await waitForEmojiRender();
     const text = document.getElementById("emoji-grid")?.textContent || "";
@@ -106,7 +108,7 @@ describe("emoji catalog module", () => {
     clearEmojiSearch();
     await waitForEmojiRender();
     expect(document.getElementById("emoji-search").value).toBe("");
-    expect(document.getElementById("emoji-category").value).toBe("all");
+    expect(document.getElementById("emoji-category").value).toBe("smileys");
   });
 
   it("normalizes unknown categories to objects", async () => {

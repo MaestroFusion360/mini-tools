@@ -5,7 +5,7 @@
 
 **Mobile Tools** was created as a lightweight offline-first app so you can keep useful daily tools in one place, fast and distraction-free, even with unstable internet.
 
-Current app version: **1.0.5**
+Current app version: **1.0.7**
 
 ---
 
@@ -228,7 +228,7 @@ mini-tools/
 Use an HTTP server (Service Worker requires non-file protocol), for example:
 
 ```bash
-npx http-server -p 3000
+npx serve .
 ```
 
 Open `http://localhost:3000`.

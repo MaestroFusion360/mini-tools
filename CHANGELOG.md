@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.7 - 2026-03-23
+
+### Fixed
+
+- Mobile layout: compacted main-menu and calculator buttons, hidden Back label on 0-600px, and moved Emoji `All` filter to the end.
+
 ## v1.0.6 - 2026-03-23
 
 ### Fixed
