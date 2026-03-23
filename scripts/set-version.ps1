@@ -9,7 +9,7 @@ $ErrorActionPreference = "Stop"
 $TargetVersion = if ($PSBoundParameters.ContainsKey("Version")) {
   $Version
 } else {
-  "1.0.5"
+  "1.0.6"
 }
 
 if ($TargetVersion -notmatch '^\d+\.\d+\.\d+$') {

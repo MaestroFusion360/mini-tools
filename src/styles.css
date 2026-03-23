@@ -3105,6 +3105,10 @@ button.todo-remove-btn:hover {
     gap: 4px;
   }
 
+  .page.active > .header .back-btn:active {
+    transform: translateY(-50%);
+  }
+
   .page.active > .header h2 {
     text-align: center;
     min-width: 0;

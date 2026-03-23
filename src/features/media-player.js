@@ -76,6 +76,8 @@ function isSupportedMediaFile(file) {
   if (!(file instanceof File)) return false;
   const mime = String(file.type || "").toLowerCase();
   if (mime.startsWith("audio/") || mime.startsWith("video/")) return true;
+  // Mobile file pickers can return empty/generic MIME for valid media files.
+  if (!mime || mime === "application/octet-stream") return true;
   const name = String(file.name || "").toLowerCase();
   return /\.(mp3|wav|ogg|m4a|aac|flac|mp4|webm|mov|mkv)$/i.test(name);
 }

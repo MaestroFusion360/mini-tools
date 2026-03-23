@@ -1,6 +1,10 @@
 {
   "entries": [
     {
+      "en": "Media Player: fixed file picker handling on mobile.",
+      "ru": "Media Player: исправлена работа выбора файлов на мобильных."
+    },
+    {
       "en": "Performance: reduced mobile UI lag (deferred heavy modules + lighter emoji rendering).",
       "ru": "Производительность: уменьшены лаги интерфейса на мобильных (отложен запуск тяжелых модулей и облегчен рендер emoji)."
     },

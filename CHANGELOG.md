@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.6 - 2026-03-23
+
+### Fixed
+
+- Media Player: fixed file picker handling on mobile.
+
 ## v1.0.4 - 2026-03-23
 
 ### Fixed
