@@ -677,6 +677,7 @@ function applyWeatherTranslations() {
   setText("weather-manual-label", t("weatherManualLabel"));
   setText("weather-lat-label", t("latitude"));
   setText("weather-lon-label", t("longitude"));
+  setText("weather-pressure-unit", t("weatherPressureUnit"));
   setText("weather-apply-btn", t("applyCoordinates"));
   setText("weather-fav-title", t("favoritesTitle"));
   setText("weather-presets-title", t("presetsTitle"));

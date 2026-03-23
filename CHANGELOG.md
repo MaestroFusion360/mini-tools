@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.0.4 - 2026-03-23
+
+### Fixed
+
+- Weather: pressure unit localization fixed (`mmHg` / `мм рт. ст.`) when switching app language.
+
+### Docs
+
+- README: added attribution for the icon set source ([Lucide Icons](https://lucide.dev/icons/)).
+
 ## v1.0.3 - 2026-03-23
 
 ### Highlights

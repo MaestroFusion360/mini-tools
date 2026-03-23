@@ -5,7 +5,7 @@
 
 **Mobile Tools** was created as a lightweight offline-first app so you can keep useful daily tools in one place, fast and distraction-free, even with unstable internet.
 
-**Current app version: **1.0.3**.
+**Current app version: **1.0.4**.
 
 ---
 
@@ -25,6 +25,7 @@
   - [Quick Start](#quick-start)
   - [Testing](#testing)
   - [External APIs](#external-apis)
+  - [Assets \& Credits](#assets--credits)
   - [License](#license)
 
 ## Features
@@ -268,6 +269,10 @@ npm run test:layout
 - rss2json (RSS feed parsing proxy)
 
 If a network request fails, the app falls back safely where possible.
+
+## Assets & Credits
+
+- Icon set: [Lucide Icons](https://lucide.dev/icons/) (used across the project UI).
 
 ## License
 

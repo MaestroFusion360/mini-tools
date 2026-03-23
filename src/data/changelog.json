@@ -1,6 +1,14 @@
 {
   "entries": [
     {
+      "en": "Weather: fixed pressure unit localization when switching app language (mmHg / мм рт. ст.).",
+      "ru": "Погода: исправлена локализация единицы давления при смене языка приложения (mmHg / мм рт. ст.)."
+    },
+    {
+      "en": "Docs: added Lucide Icons attribution in README.",
+      "ru": "Документация: в README добавлено упоминание Lucide Icons."
+    },
+    {
       "en": "Paint filters now show live percentage values next to each slider.",
       "ru": "В фильтрах Paint теперь показываются текущие значения в процентах рядом с каждым слайдером."
     },
