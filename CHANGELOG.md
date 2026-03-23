@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased - 2026-03-23
+
+### Highlights
+
+- Todo/Notes:
+  - Added a shared search field with inline search/clear icons.
+  - Search now filters both tasks and notes and persists between sessions.
+  - Notes action layout was stabilized so Add/Delete are kept on a dedicated row.
+  - Unified Add/Delete heights and fixed responsive wrapping behavior.
+- Currency Converter:
+  - Added preset pairs in Converter-style chips: `RUB→USD`, `RUB→EUR`, `RUB→TRY`, `RUB→THB`.
+  - Currency captions and option labels were improved for readability (`CODE - Name`).
+  - Currency display names moved to `src/data/currency-names.js` for cleaner data separation.
+  - Added extra localized currency names: `BYN`, `UZS`, `KGS`, `AMD`, `AZN` (plus `THB`, `KRW`, `ARS`).
+- Header/UI fixes:
+  - Fixed overlap of Back button with burger menu in intermediate viewport widths.
+  - Removed unwanted delete/clear button motion to avoid jumpy interactions.
+
 ## v1.1.2 - 2026-03-23
 
 ### Added

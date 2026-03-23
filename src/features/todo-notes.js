@@ -62,6 +62,7 @@ function ensureTodoState() {
   if (!TODO_VISIBILITY_MODES.includes(todoState.visibilityMode)) {
     todoState.visibilityMode = "all";
   }
+  if (typeof todoState.searchQuery !== "string") todoState.searchQuery = "";
   if (typeof todoState.initialized !== "boolean") todoState.initialized = false;
   if (typeof todoState.selectedNoteId !== "string")
     todoState.selectedNoteId = "";
@@ -73,6 +74,7 @@ function saveTodoData() {
     notes: todoState.notes,
     activeTab: todoState.activeTab,
     visibilityMode: todoState.visibilityMode,
+    searchQuery: todoState.searchQuery,
   });
 }
 
@@ -125,6 +127,32 @@ function loadTodoData() {
   if (TODO_VISIBILITY_MODES.includes(data.visibilityMode)) {
     todoState.visibilityMode = data.visibilityMode;
   }
+  if (typeof data.searchQuery === "string") {
+    todoState.searchQuery = data.searchQuery.trim();
+  }
+}
+
+function normalizeTodoSearchQuery(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function getTodoSearchQuery() {
+  return normalizeTodoSearchQuery(todoState.searchQuery);
+}
+
+function renderTodoSearchInput() {
+  const input = byId("todo-search");
+  const clearBtn = byId("todo-search-clear-btn");
+  if (!input) return;
+  input.value = todoState.searchQuery || "";
+  input.placeholder =
+    todoState.activeTab === "notes"
+      ? t("todoSearchNotesPlaceholder")
+      : t("todoSearchTasksPlaceholder");
+  if (clearBtn) {
+    const hasQuery = Boolean(todoState.searchQuery);
+    clearBtn.classList.toggle("is-hidden", !hasQuery);
+  }
 }
 
 function renderTodoTabs() {
@@ -144,7 +172,11 @@ function renderTodoTabs() {
 function renderTodoList() {
   const holder = byId("todo-list");
   if (!holder) return;
+  const searchQuery = getTodoSearchQuery();
   const visibleItems = todoState.items.filter((item) => {
+    if (searchQuery && !item.text.toLowerCase().includes(searchQuery)) {
+      return false;
+    }
     if (todoState.visibilityMode === "active") return !item.done;
     if (todoState.visibilityMode === "done") return item.done;
     return true;
@@ -235,11 +267,17 @@ function renderTodoSummary() {
 function renderTodoNotes() {
   const holder = byId("todo-notes-list");
   if (!holder) return;
-  if (!todoState.notes.length) {
+  const searchQuery = getTodoSearchQuery();
+  const visibleNotes = todoState.notes.filter((note) => {
+    if (!searchQuery) return true;
+    const haystack = `${note.title || ""} ${note.text || ""}`.toLowerCase();
+    return haystack.includes(searchQuery);
+  });
+  if (!visibleNotes.length) {
     holder.textContent = t("todoNotesEmpty");
     return;
   }
-  const cards = todoState.notes.map((note) => {
+  const cards = visibleNotes.map((note) => {
     const card = document.createElement("article");
     card.className = "todo-note-card";
     card.draggable = true;
@@ -349,6 +387,7 @@ function reorderNotes(fromId, toId) {
 }
 
 function renderTodoUi() {
+  renderTodoSearchInput();
   renderTodoTabs();
   renderTodoVisibilityGroups();
   renderTodoList();
@@ -371,6 +410,25 @@ export function setTodoVisibility(mode) {
   todoState.visibilityMode = mode;
   saveTodoData();
   renderTodoUi();
+}
+
+export function setTodoSearch(query) {
+  ensureTodoState();
+  const nextQuery = String(query || "").trim();
+  if (nextQuery === todoState.searchQuery) return;
+  todoState.searchQuery = nextQuery;
+  saveTodoData();
+  renderTodoUi();
+}
+
+export function clearTodoSearch() {
+  ensureTodoState();
+  if (!todoState.searchQuery) return;
+  todoState.searchQuery = "";
+  saveTodoData();
+  renderTodoUi();
+  const input = byId("todo-search");
+  if (input) input.focus();
 }
 
 export function addTodoItem() {
@@ -615,6 +673,19 @@ function applyTodoTranslations() {
   if (input) input.placeholder = t("todoPlaceholder");
   const titleInput = byId("todo-notes-title");
   if (titleInput) titleInput.placeholder = t("todoNotesTitlePlaceholder");
+  const searchInput = byId("todo-search");
+  if (searchInput) {
+    searchInput.placeholder =
+      todoState.activeTab === "notes"
+        ? t("todoSearchNotesPlaceholder")
+        : t("todoSearchTasksPlaceholder");
+  }
+  const searchClearBtn = byId("todo-search-clear-btn");
+  if (searchClearBtn) {
+    const label = t("todoSearchClear");
+    searchClearBtn.title = label;
+    searchClearBtn.setAttribute("aria-label", label);
+  }
   const notesInput = byId("todo-notes-input");
   if (notesInput) notesInput.dataset.placeholder = t("todoNotesPlaceholder");
   renderTodoUi();

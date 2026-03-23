@@ -98,6 +98,7 @@ export const FEATURE_RUNTIME_STATE = {
     notes: [],
     activeTab: "tasks",
     visibilityMode: "all",
+    searchQuery: "",
     initialized: false,
   },
   timer: {

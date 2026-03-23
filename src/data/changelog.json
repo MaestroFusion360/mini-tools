@@ -39,6 +39,26 @@
     {
       "en": "Header and mobile UI refinements: consistent control sizing and improved overflow menu layout.",
       "ru": "Доработки хедера и мобильного UI: единая высота контролов и улучшенная компоновка меню."
+    },
+    {
+      "en": "Todo/Notes: added persistent search with inline search/clear controls and improved filtering.",
+      "ru": "Задачи/Заметки: добавлен сохраняемый поиск со встроенными иконками поиска/очистки и улучшенной фильтрацией."
+    },
+    {
+      "en": "Todo/Notes actions were stabilized: Add/Delete are on dedicated rows with unified heights across viewports.",
+      "ru": "Действия в Задачах/Заметках стабилизированы: Add/Delete вынесены в отдельные ряды с единой высотой на всех экранах."
+    },
+    {
+      "en": "Currency converter: added RUB presets (USD/EUR/TRY/THB) and readable currency labels (CODE - Name).",
+      "ru": "Конвертер валют: добавлены RUB-пресеты (USD/EUR/TRY/THB) и читаемые подписи валют (КОД - Название)."
+    },
+    {
+      "en": "Currency names moved to shared data and expanded with BYN, UZS, KGS, AMD, AZN, THB, KRW, ARS.",
+      "ru": "Названия валют вынесены в общие данные и расширены: BYN, UZS, KGS, AMD, AZN, THB, KRW, ARS."
+    },
+    {
+      "en": "Fixed Back button overlap with burger menu.",
+      "ru": "Исправлено наложение кнопки Back на бургер."
     }
   ]
 }

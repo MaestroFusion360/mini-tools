@@ -1349,6 +1349,12 @@
           <option value="JPY">JPY</option>
         </select>
       </div>
+      <div class="currency-caption-row">
+        <div class="small-text" id="cur-from-caption"></div>
+        <div></div>
+        <div class="small-text" id="cur-to-caption"></div>
+      </div>
+      <div class="row converter-presets" id="cur-presets"></div>
 
       <div class="result" id="cur-result">= 1 USD</div>
     </div>
@@ -2327,18 +2333,41 @@
       <div class="row">
         <button
           id="todo-tab-tasks"
-          class="text-action-btn active"
+          class="text-action-btn todo-tab-btn active"
           onclick="setTodoTab('tasks')"
         >
           Tasks
         </button>
         <button
           id="todo-tab-notes"
-          class="text-action-btn"
+          class="text-action-btn todo-tab-btn"
           onclick="setTodoTab('notes')"
         >
           Notes
         </button>
+      </div>
+      <div class="row todo-search-row">
+        <div class="todo-search-field">
+          <span class="todo-search-icon" aria-hidden="true">
+            <svg class="icon-svg btn-icon"><use href="#i-search"></use></svg>
+          </span>
+          <input
+            id="todo-search"
+            type="text"
+            placeholder="Search tasks..."
+            oninput="setTodoSearch(this.value)"
+          />
+          <button
+            id="todo-search-clear-btn"
+            class="text-action-btn todo-search-clear-btn is-hidden"
+            type="button"
+            onclick="clearTodoSearch()"
+            title="Clear search"
+            aria-label="Clear search"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-x"></use></svg>
+          </button>
+        </div>
       </div>
       <div id="todo-tasks-panel">
         <div class="row">
@@ -2348,6 +2377,8 @@
             placeholder="Add task..."
             onkeydown="onTodoInputKeydown(event)"
           />
+        </div>
+        <div class="row todo-entry-row">
           <button class="primary" id="todo-add-btn" onclick="addTodoItem()">
             Add
           </button>
@@ -2455,6 +2486,8 @@
           >
             <svg class="icon-svg btn-icon"><use href="#i-save"></use></svg>
           </button>
+        </div>
+        <div class="row note-actions-row">
           <button
             class="primary note-tool-btn note-add-btn"
             id="todo-notes-add-btn"
@@ -2579,7 +2612,7 @@
 </div>
 
 <footer class="app-footer" aria-label="Application footer">
-  <small id="app-footer-text">© 2026 MaestroFusion360 · v1.0.1</small>
+  <small id="app-footer-text">© 2026 MaestroFusion360 · v1.0.2</small>
 </footer>
 
 <button

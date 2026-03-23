@@ -1,15 +1,21 @@
 import { byId, setText } from "../core/dom.js";
-import { registerTranslationApplier, t } from "../core/i18n.js";
+import { getLanguage, registerTranslationApplier, t } from "../core/i18n.js";
 import { FEATURE_RUNTIME_STATE } from "../core/state.js";
 import { getLocale } from "../core/utils.js";
+import { CURRENCY_NAMES } from "../data/currency-names.js";
 
 const currencyState = FEATURE_RUNTIME_STATE.currency;
 const BUILT_IN_RATES = { ...(currencyState.rates || { USD: 1 }) };
 const DEFAULT_FROM_CURRENCY = "USD";
 const DEFAULT_TO_CURRENCY = "EUR";
 const RATES_API_URL = "https://api.exchangerate-api.com/v4/latest/USD";
+const CURRENCY_PRESETS = [
+  ["RUB", "USD"],
+  ["RUB", "EUR"],
+  ["RUB", "TRY"],
+  ["RUB", "THB"],
+];
 let currencyInitialized = false;
-
 function ensureCurrencyState() {
   if (!currencyState || typeof currencyState !== "object") return;
   if (!currencyState.rates || typeof currencyState.rates !== "object") {
@@ -28,6 +34,16 @@ function ensureCurrencyState() {
 
 function safeRateCode(code) {
   return typeof code === "string" && code.trim() ? code : DEFAULT_FROM_CURRENCY;
+}
+
+function getCurrencyName(code) {
+  const normalizedCode = String(code || "").trim().toUpperCase();
+  const lang = getLanguage() === "ru" ? "ru" : "en";
+  return CURRENCY_NAMES[normalizedCode]?.[lang] || normalizedCode;
+}
+
+function buildCurrencyOptionText(code) {
+  return `${code} - ${getCurrencyName(code)}`;
 }
 
 function pickDefaultTo(codes, fromCode) {
@@ -49,11 +65,19 @@ function populateCurrencySelects() {
   const prevFrom = safeRateCode(fromSel.value);
   const prevTo = safeRateCode(toSel.value);
 
-  const optionsHtml = codes
-    .map((code) => `<option value="${code}">${code}</option>`)
-    .join("");
-  fromSel.innerHTML = optionsHtml;
-  toSel.innerHTML = optionsHtml;
+  fromSel.replaceChildren();
+  toSel.replaceChildren();
+  codes.forEach((code) => {
+    const fromOption = document.createElement("option");
+    fromOption.value = code;
+    fromOption.textContent = buildCurrencyOptionText(code);
+    fromSel.append(fromOption);
+
+    const toOption = document.createElement("option");
+    toOption.value = code;
+    toOption.textContent = buildCurrencyOptionText(code);
+    toSel.append(toOption);
+  });
 
   fromSel.value = codes.includes(prevFrom) ? prevFrom : DEFAULT_FROM_CURRENCY;
   if (!codes.includes(fromSel.value)) fromSel.value = codes[0];
@@ -64,6 +88,48 @@ function populateCurrencySelects() {
   if (!codes.includes(toSel.value)) {
     toSel.value = pickDefaultTo(codes, fromSel.value);
   }
+  renderCurrencyCaptions();
+}
+
+function renderCurrencyCaptions() {
+  const fromSel = byId("cur-from");
+  const toSel = byId("cur-to");
+  const fromCaption = byId("cur-from-caption");
+  const toCaption = byId("cur-to-caption");
+  if (!fromSel || !toSel) return;
+
+  if (fromCaption) {
+    const fromCode = safeRateCode(fromSel.value);
+    fromCaption.textContent = `${fromCode} - ${getCurrencyName(fromCode)}`;
+  }
+  if (toCaption) {
+    const toCode = safeRateCode(toSel.value);
+    toCaption.textContent = `${toCode} - ${getCurrencyName(toCode)}`;
+  }
+}
+
+function renderCurrencyPresets() {
+  const fromSel = byId("cur-from");
+  const toSel = byId("cur-to");
+  const holder = byId("cur-presets");
+  if (!fromSel || !toSel || !holder) return;
+
+  holder.innerHTML = "";
+  const codes = new Set(Object.keys(currencyState.rates || {}));
+
+  CURRENCY_PRESETS.forEach(([from, to]) => {
+    if (!codes.has(from) || !codes.has(to)) return;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "preset-chip";
+    button.textContent = `${from} → ${to}`;
+    button.addEventListener("click", () => {
+      fromSel.value = from;
+      toSel.value = to;
+      convertCurrency();
+    });
+    holder.append(button);
+  });
 }
 
 function renderRatesSource() {
@@ -104,6 +170,7 @@ export async function loadRates(manual = false) {
     if (status) status.textContent = t("ratesFallback");
   }
   populateCurrencySelects();
+  renderCurrencyPresets();
   renderRatesSource();
   convertCurrency();
 }
@@ -113,6 +180,7 @@ export function swapCurrencyUnits() {
   const toSel = byId("cur-to");
   if (!fromSel || !toSel) return;
   [fromSel.value, toSel.value] = [toSel.value, fromSel.value];
+  renderCurrencyCaptions();
   convertCurrency();
 }
 
@@ -143,12 +211,16 @@ export function convertCurrency() {
 
   const usd = amt / fromRate;
   const res = usd * toRate;
+  renderCurrencyCaptions();
   resultEl.textContent = `= ${res.toFixed(2)} ${to}`;
 }
 
 function applyCurrencyTranslations() {
   setText("title-currency", t("currencyTitle"));
   setText("cur-refresh-btn", t("refreshServer"));
+  populateCurrencySelects();
+  renderCurrencyCaptions();
+  renderCurrencyPresets();
   renderRatesSource();
 }
 
@@ -159,5 +231,6 @@ export function initCurrency() {
     currencyInitialized = true;
   }
   populateCurrencySelects();
+  renderCurrencyPresets();
   loadRates();
 }
