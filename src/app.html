@@ -132,10 +132,6 @@
         <svg class="icon-svg menu-icon"><use href="#i-currency"></use></svg
         ><span id="menu-budget">Budget</span>
       </button>
-      <button class="menu-btn" onclick="exitApp()" id="menu-exit-btn">
-        <svg class="icon-svg menu-icon"><use href="#i-exit"></use></svg
-        ><span id="menu-exit">Exit</span>
-      </button>
     </div>
   </div>
 
@@ -2235,12 +2231,27 @@
     </div>
     <div class="card emoji-card">
       <div class="emoji-toolbar">
-        <input
-          id="emoji-search"
-          type="text"
-          placeholder="Search emoji..."
-          oninput="filterEmojiCatalog()"
-        />
+        <div class="todo-search-field">
+          <span class="todo-search-icon" aria-hidden="true">
+            <svg class="icon-svg btn-icon"><use href="#i-search"></use></svg>
+          </span>
+          <input
+            id="emoji-search"
+            type="text"
+            placeholder="Search emoji..."
+            oninput="filterEmojiCatalog()"
+          />
+          <button
+            id="emoji-search-clear-btn"
+            class="text-action-btn todo-search-clear-btn is-hidden"
+            type="button"
+            onclick="clearEmojiSearch()"
+            title="Clear search"
+            aria-label="Clear search"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-x"></use></svg>
+          </button>
+        </div>
         <select id="emoji-category" onchange="filterEmojiCatalog()">
           <option value="smileys">Smileys</option>
           <option value="people">People</option>
@@ -2253,13 +2264,6 @@
           <option value="flags">Flags</option>
           <option value="all">All</option>
         </select>
-        <button
-          class="text-action-btn"
-          id="emoji-clear-btn"
-          onclick="clearEmojiSearch()"
-        >
-          Reset
-        </button>
       </div>
       <div class="small-text" id="emoji-status"></div>
       <div class="emoji-grid" id="emoji-grid"></div>
@@ -2645,7 +2649,7 @@
 </div>
 
 <footer class="app-footer" aria-label="Application footer">
-  <small id="app-footer-text">© 2026 MaestroFusion360 · v1.0.7</small>
+  <small id="app-footer-text">© 2026 MaestroFusion360 · v1.0.8</small>
 </footer>
 
 <button
@@ -2661,6 +2665,17 @@
     <span class="hamburger-line"></span>
     <span class="hamburger-line"></span>
   </span>
+</button>
+
+<button
+  class="exit-toggle"
+  onclick="exitApp()"
+  id="menu-exit-btn"
+  title="Exit"
+  aria-label="Exit"
+>
+  <svg class="icon-svg btn-icon"><use href="#i-exit"></use></svg>
+  <span id="menu-exit">Exit</span>
 </button>
 
 <div class="floating-actions">

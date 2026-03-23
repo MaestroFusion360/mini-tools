@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.0.8 - 2026-03-23
+
+### Fixed
+
+- Mobile layout: stabilized the Exit button as a persistent fixed control (no transition jump).
+- Emoji Catalog: upgraded search UI with inline search/clear controls.
+
 ## v1.0.7 - 2026-03-23
 
 ### Fixed

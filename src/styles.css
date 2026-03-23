@@ -293,20 +293,6 @@ h3 {
   flex: 0 0 18px;
 }
 
-#page-menu.active #menu-exit-btn {
-  position: fixed;
-  right: max(12px, env(safe-area-inset-right));
-  bottom: calc(12px + env(safe-area-inset-bottom));
-  z-index: 70;
-  width: auto;
-  min-width: 84px;
-  min-height: var(--header-btn-size);
-  height: var(--header-btn-size);
-  padding: 0 12px;
-  gap: 6px;
-  box-shadow: var(--shadow-lg);
-}
-
 /* ===== Shared Inputs and Buttons ===== */
 input,
 select,
@@ -2186,6 +2172,12 @@ body.paint-immersive-active .app-footer {
   padding-right: 38px;
 }
 
+.todo-search-field #emoji-search {
+  width: 100%;
+  padding-left: 38px;
+  padding-right: 38px;
+}
+
 .todo-search-row #todo-search {
   flex: 1 1 auto;
 }
@@ -2607,7 +2599,7 @@ button.todo-remove-btn:hover {
 
 .emoji-toolbar {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(120px, 0.8fr) auto;
+  grid-template-columns: minmax(0, 1.4fr) minmax(120px, 0.8fr);
   gap: 8px;
 }
 
@@ -2763,6 +2755,25 @@ button.todo-remove-btn:hover {
   justify-content: center;
 }
 
+.exit-toggle {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 1000;
+  width: auto;
+  min-width: 84px;
+  height: var(--header-btn-size);
+  min-height: var(--header-btn-size);
+  padding: 0 12px;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .overflow-toggle {
   position: fixed;
   left: 18px;
@@ -2838,6 +2849,12 @@ button.todo-remove-btn:hover {
   border-color: transparent;
 }
 
+.exit-toggle {
+  color: #f8fafc;
+  background: var(--accent);
+  border-color: transparent;
+}
+
 .theme-toggle-icon {
   width: 16px;
   height: 16px;
@@ -2845,7 +2862,8 @@ button.todo-remove-btn:hover {
 }
 
 .theme-toggle:hover,
-.lang-toggle:hover {
+.lang-toggle:hover,
+.exit-toggle:hover {
   background: var(--accent-hover);
   transform: none;
 }
@@ -2856,7 +2874,8 @@ button.todo-remove-btn:hover {
 }
 
 .theme-toggle:active,
-.lang-toggle:active {
+.lang-toggle:active,
+.exit-toggle:active {
   transform: scale(0.98);
 }
 
@@ -3247,18 +3266,6 @@ button.todo-remove-btn:hover {
     width: 100%;
   }
 
-  #page-menu.active #menu-exit-btn {
-    right: max(10px, env(safe-area-inset-right));
-    bottom: calc(10px + env(safe-area-inset-bottom));
-    min-width: 60px;
-    min-height: var(--header-btn-size);
-    height: var(--header-btn-size);
-    padding: 0 10px;
-    font-size: 0.8rem;
-    gap: 4px;
-    width: auto;
-  }
-
   #page-menu.active {
     padding-top: calc(var(--header-top-offset) + var(--header-btn-size) + 8px);
   }
@@ -3401,6 +3408,20 @@ button.todo-remove-btn:hover {
 }
 
 @media (max-width: 600px) {
+  .exit-toggle {
+    width: var(--header-btn-size);
+    min-width: var(--header-btn-size);
+    max-width: var(--header-btn-size);
+    right: max(8px, env(safe-area-inset-right));
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    padding: 0;
+    gap: 0;
+  }
+
+  .exit-toggle #menu-exit {
+    display: none;
+  }
+
   .page.active > .header .back-btn {
     width: var(--header-btn-size);
     min-width: var(--header-btn-size);
@@ -3455,17 +3476,6 @@ button.todo-remove-btn:hover {
     width: 14px;
     height: 14px;
     flex: 0 0 14px;
-  }
-
-  #page-menu.active #menu-exit-btn {
-    min-width: 60px;
-    min-height: var(--header-btn-size);
-    height: var(--header-btn-size);
-    padding: 0 10px;
-    font-size: 0.8rem;
-    gap: 4px;
-    right: max(8px, env(safe-area-inset-right));
-    bottom: calc(8px + env(safe-area-inset-bottom));
   }
 
   #page-converter.active {

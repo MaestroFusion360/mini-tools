@@ -71,6 +71,7 @@ export function applyTranslations() {
   setText("menu-todo", t("todo"));
   setText("menu-news", t("news"));
   setText("menu-exit", t("exit"));
+  setControlTooltip("menu-exit-btn", t("exit"));
   setText("menu-about", t("about"));
   setText("overflow-settings-title", t("settings"));
   setText("settings-export-label", t("settingsExport"));

@@ -1,6 +1,10 @@
 {
   "entries": [
     {
+      "en": "Mobile layout: stabilized fixed Exit button and improved Emoji search with inline search/clear controls.",
+      "ru": "Mobile layout: stabilized fixed Exit button and improved Emoji search with inline search/clear controls."
+    },
+    {
       "en": "Mobile layout: compacted main-menu and calculator buttons, hidden Back label on 0-600px, and moved Emoji 'All' filter to the end.",
       "ru": "Mobile layout: compacted main-menu and calculator buttons, hidden Back label on 0-600px, and moved Emoji 'All' filter to the end."
     },

@@ -132,6 +132,13 @@ function renderEmojiStatus(count) {
   renderEmojiStatusMessage(message, true);
 }
 
+function syncEmojiSearchClearButton() {
+  const clearBtn = byId("emoji-search-clear-btn");
+  if (!clearBtn) return;
+  const hasQuery = Boolean(String(emojiState.query || "").trim());
+  clearBtn.classList.toggle("is-hidden", !hasQuery);
+}
+
 function renderEmojiGrid() {
   const grid = byId("emoji-grid");
   if (!grid) return;
@@ -288,6 +295,7 @@ export function filterEmojiCatalog() {
   emojiState.category = categorySelect
     ? String(categorySelect.value || "smileys")
     : "smileys";
+  syncEmojiSearchClearButton();
   scheduleEmojiGridRender();
 }
 
@@ -298,14 +306,15 @@ export function clearEmojiSearch() {
   if (categorySelect) categorySelect.value = "smileys";
   emojiState.query = "";
   emojiState.category = "smileys";
+  syncEmojiSearchClearButton();
   scheduleEmojiGridRender();
+  if (input) input.focus();
 }
 
 function applyEmojiTranslations() {
   const staticText = [
     ["menu-emoji", "emojiCatalog"],
     ["title-emoji", "emojiCatalogTitle"],
-    ["emoji-clear-btn", "emojiReset"],
   ];
   staticText.forEach(([id, key]) => {
     const el = byId(id);
@@ -314,6 +323,12 @@ function applyEmojiTranslations() {
 
   const search = byId("emoji-search");
   if (search) search.placeholder = t("emojiSearchPlaceholder");
+  const searchClearBtn = byId("emoji-search-clear-btn");
+  if (searchClearBtn) {
+    const label = t("todoSearchClear");
+    searchClearBtn.title = label;
+    searchClearBtn.setAttribute("aria-label", label);
+  }
 
   const category = byId("emoji-category");
   if (category) {
@@ -337,6 +352,7 @@ function applyEmojiTranslations() {
   if (emojiState.loaded || emojiState.items.length) {
     renderEmojiStatus(getFilteredEmoji().length);
   }
+  syncEmojiSearchClearButton();
 }
 
 export async function initEmojiCatalog() {

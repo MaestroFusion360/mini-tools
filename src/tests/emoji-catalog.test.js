@@ -10,12 +10,12 @@ function mountEmojiDom() {
     <span id="menu-emoji"></span>
     <h2 id="title-emoji"></h2>
     <input id="emoji-search" />
+    <button id="emoji-search-clear-btn" class="is-hidden"></button>
     <select id="emoji-category">
       <option value="smileys">Smileys</option>
       <option value="food">Food</option>
       <option value="all">All</option>
     </select>
-    <button id="emoji-clear-btn"></button>
     <div id="emoji-status"></div>
     <div id="emoji-grid"></div>
   `;
