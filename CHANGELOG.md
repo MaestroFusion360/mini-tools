@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.9 - 2026-03-23
+
+### Fixed
+
+- Exit button: fixed icon/text contrast in light theme (neutral button style restored).
+
 ## v1.0.8 - 2026-03-23
 
 ### Fixed

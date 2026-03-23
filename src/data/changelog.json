@@ -1,6 +1,10 @@
 {
   "entries": [
     {
+      "en": "Exit button: fixed icon/text contrast in light theme (neutral button style restored).",
+      "ru": "Exit button: fixed icon/text contrast in light theme (neutral button style restored)."
+    },
+    {
       "en": "Mobile layout: stabilized fixed Exit button and improved Emoji search with inline search/clear controls.",
       "ru": "Mobile layout: stabilized fixed Exit button and improved Emoji search with inline search/clear controls."
     },

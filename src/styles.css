@@ -2767,7 +2767,9 @@ button.todo-remove-btn:hover {
   padding: 0 12px;
   gap: 6px;
   border-radius: 999px;
-  border: 1px solid transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: var(--btn-bg);
   box-shadow: var(--shadow-md);
   display: inline-flex;
   align-items: center;
@@ -2849,12 +2851,6 @@ button.todo-remove-btn:hover {
   border-color: transparent;
 }
 
-.exit-toggle {
-  color: #f8fafc;
-  background: var(--accent);
-  border-color: transparent;
-}
-
 .theme-toggle-icon {
   width: 16px;
   height: 16px;
@@ -2862,9 +2858,13 @@ button.todo-remove-btn:hover {
 }
 
 .theme-toggle:hover,
-.lang-toggle:hover,
-.exit-toggle:hover {
+.lang-toggle:hover {
   background: var(--accent-hover);
+  transform: none;
+}
+
+.exit-toggle:hover {
+  background: var(--btn-bg-hover);
   transform: none;
 }
 
