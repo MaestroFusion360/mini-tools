@@ -72,6 +72,9 @@ export function applyTranslations() {
   setText("menu-news", t("news"));
   setText("menu-exit", t("exit"));
   setText("menu-about", t("about"));
+  setText("overflow-settings-title", t("settings"));
+  setText("settings-export-label", t("settingsExport"));
+  setText("settings-import-label", t("settingsImport"));
   setText("menu-github", t("github"));
   setText("menu-telegram", t("telegram"));
   setText("about-title", t("about"));
@@ -125,6 +128,11 @@ export function applyTranslations() {
   setText("paint-mirror-opt-horizontal", t("paintMirrorHorizontal"));
   setText("paint-mirror-opt-vertical", t("paintMirrorVertical"));
   setControlTooltip("paint-mirror-btn", t("paintMirror"));
+  setText("paint-filter-brightness-label", t("paintFilterBrightness"));
+  setText("paint-filter-contrast-label", t("paintFilterContrast"));
+  setText("paint-filter-saturation-label", t("paintFilterSaturation"));
+  setText("paint-filter-apply-btn", t("paintFilterApply"));
+  setText("paint-filter-reset-btn", t("paintFilterReset"));
   setControlTooltip("media-open-btn", t("mediaOpenFiles"));
   setControlTooltip("media-prev-btn", t("mediaPrev"));
   setControlTooltip("media-next-btn", t("mediaNext"));
@@ -133,6 +141,8 @@ export function applyTranslations() {
   setText("media-empty-state", t("mediaEmptyState"));
   setText("media-drop-hint", t("mediaDropHint"));
   setControlTooltip("overflow-menu-btn", t("menu"));
+  setControlTooltip("settings-export-btn", t("settingsExport"));
+  setControlTooltip("settings-import-btn", t("settingsImport"));
   setControlTooltip("about-close-btn", t("close"));
 
   queryAll('[data-i18n="back-btn"]').forEach((btn) => {

@@ -70,9 +70,7 @@ describe("converter modes", () => {
       updateConvUnits();
       expect(fromSelect.options.length).toBeGreaterThan(0);
       expect(toSelect.options.length).toBeGreaterThan(0);
-      expect(
-        document.getElementById("conv-presets")?.children.length,
-      ).toBeGreaterThan(0);
+      expect(document.getElementById("conv-presets")?.children.length).toBe(0);
     });
   });
 

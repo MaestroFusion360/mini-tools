@@ -1,8 +1,6 @@
 import { byId } from "../../core/dom.js";
 import {
   MAX_HISTORY,
-  MAX_ZOOM,
-  MIN_ZOOM,
   PAINT_PANELS,
   paintState,
 } from "./state.js";
@@ -602,37 +600,6 @@ function drawShape(shape, x1, y1, x2, y2) {
     drawArrow("right");
   }
   ctx.restore();
-}
-
-function splineStart(x, y) {
-  paintState.splineLastX = x;
-  paintState.splineLastY = y;
-  paintState.splineLastMidX = x;
-  paintState.splineLastMidY = y;
-}
-
-function splineStrokeTo(x, y) {
-  const ctx = getCtx();
-  if (!ctx) return;
-  const midX = (paintState.splineLastX + x) / 2;
-  const midY = (paintState.splineLastY + y) / 2;
-  ctx.save();
-  setupShapeStroke(ctx);
-  ctx.globalCompositeOperation = "source-over";
-  ctx.beginPath();
-  ctx.moveTo(paintState.splineLastMidX, paintState.splineLastMidY);
-  ctx.quadraticCurveTo(
-    paintState.splineLastX,
-    paintState.splineLastY,
-    midX,
-    midY,
-  );
-  ctx.stroke();
-  ctx.restore();
-  paintState.splineLastX = x;
-  paintState.splineLastY = y;
-  paintState.splineLastMidX = midX;
-  paintState.splineLastMidY = midY;
 }
 
 function drawSplineCurve(controlX, controlY) {

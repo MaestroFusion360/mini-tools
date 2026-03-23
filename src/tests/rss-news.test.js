@@ -5,6 +5,7 @@ import {
   handleRssImportFile,
   importRssFeeds,
   initRssNews,
+  markAllRssRead,
   onRssFeedChange,
   removeRssFeed,
 } from "../features/rss-news.js";
@@ -20,7 +21,15 @@ function mountRssDom() {
     <button id="rss-import-btn"></button>
     <button id="rss-export-btn"></button>
     <button id="rss-load-btn"></button>
+    <button id="rss-mark-all-btn"></button>
     <input id="rss-import-input" type="file" />
+    <select id="rss-view-mode">
+      <option value="all">All</option>
+      <option value="today">Today</option>
+      <option value="yesterday">Yesterday</option>
+      <option value="week">Week</option>
+      <option value="readLater">Read Later</option>
+    </select>
     <select id="rss-feeds"></select>
     <div id="rss-status"></div>
     <div id="rss-items"></div>
@@ -130,5 +139,21 @@ describe("rss news module", () => {
     const importSpy = vi.spyOn(input, "click");
     importRssFeeds();
     expect(importSpy).toHaveBeenCalledOnce();
+  });
+
+  it("toggles mark-all read/unread button behavior", async () => {
+    document.getElementById("rss-url").value = "https://example.com/feed.xml";
+    await addRssFeed();
+
+    const markAllBtn = document.getElementById("rss-mark-all-btn");
+    expect(markAllBtn?.textContent).toBe("rssMarkAllRead");
+
+    markAllRssRead();
+    expect(markAllBtn?.textContent).toBe("rssMarkAllUnread");
+    expect(FEATURE_RUNTIME_STATE.rssNews.readKeys.length).toBeGreaterThan(0);
+
+    markAllRssRead();
+    expect(markAllBtn?.textContent).toBe("rssMarkAllRead");
+    expect(FEATURE_RUNTIME_STATE.rssNews.readKeys.length).toBe(0);
   });
 });

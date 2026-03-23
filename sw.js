@@ -1,4 +1,4 @@
-const CACHE_NAME = "mobile-tools-v4";
+const CACHE_NAME = "mobile-tools-v5";
 
 // App shell files required to render the UI offline.
 const APP_SHELL_PATHS = [
@@ -71,6 +71,15 @@ function isAppShellRequest(request) {
   return APP_SHELL_ABSOLUTE.includes(request.url);
 }
 
+function isSourceAssetRequest(request) {
+  if (request.method !== "GET") return false;
+  const url = new URL(request.url);
+  return (
+    url.origin === self.location.origin &&
+    (url.pathname.startsWith("/src/") || url.pathname === "/sw.js")
+  );
+}
+
 async function networkFirst(request) {
   const cache = await caches.open(CACHE_NAME);
 
@@ -132,6 +141,12 @@ self.addEventListener("fetch", (event) => {
   if (!sameOrigin) return;
 
   if (isAppShellRequest(request)) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // For source files we prefer fresh network response to avoid stale UI/logic.
+  if (isSourceAssetRequest(request)) {
     event.respondWith(networkFirst(request));
     return;
   }

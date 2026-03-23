@@ -17,4 +17,8 @@ export const DEFAULT_RSS_FEEDS = [
     url: "https://habr.com/ru/rss/news/?fl=ru",
     title: "Habr Новости",
   },
+  {
+    url: "https://www.sport.ru/rssfeeds/football.rss",
+    title: "Sport.ru - Футбол",
+  }
 ];

@@ -340,11 +340,47 @@ function shouldIncludeItemByViewMode(item, itemGroup) {
   return true;
 }
 
+function getVisibleRssItemKeys(items = rssState.lastItems) {
+  if (!Array.isArray(items) || !items.length) return [];
+  const now = new Date();
+  return items
+    .slice(0, 100)
+    .filter((item) => {
+      const itemDate = parseRssDate(item?.pubDate);
+      const group = getItemGroup(itemDate, now);
+      return shouldIncludeItemByViewMode(item, group);
+    })
+    .map((item) => getRssItemKey(item))
+    .filter((key) => key);
+}
+
+function areAllVisibleRssItemsRead(items = rssState.lastItems) {
+  const keys = getVisibleRssItemKeys(items);
+  if (!keys.length) return false;
+  return keys.every((key) => rssState.readKeys.includes(key));
+}
+
+function renderMarkAllButton(items = rssState.lastItems) {
+  const button = byId("rss-mark-all-btn");
+  if (!button) return;
+  const hasVisibleItems = getVisibleRssItemKeys(items).length > 0;
+  const allRead = areAllVisibleRssItemsRead(items);
+  const label = allRead ? t("rssMarkAllUnread") : t("rssMarkAllRead");
+  button.textContent = label;
+  button.title = label;
+  button.setAttribute("aria-label", label);
+  button.disabled = !hasVisibleItems;
+}
+
 function renderRssItems(items = rssState.lastItems) {
   const holder = byId("rss-items");
-  if (!holder) return;
+  if (!holder) {
+    renderMarkAllButton(items);
+    return;
+  }
   if (!Array.isArray(items) || !items.length) {
     holder.textContent = t("rssNoItems");
+    renderMarkAllButton(items);
     return;
   }
 
@@ -388,10 +424,12 @@ function renderRssItems(items = rssState.lastItems) {
 
   if (!sections.length) {
     holder.textContent = t("rssNoItems");
+    renderMarkAllButton(items);
     return;
   }
 
   holder.replaceChildren(...sections);
+  renderMarkAllButton(items);
 }
 
 function installRssSwipeRead(card, key) {
@@ -579,10 +617,17 @@ export function onRssViewModeChange() {
 
 export function markAllRssRead() {
   ensureRssState();
-  if (!Array.isArray(rssState.lastItems) || !rssState.lastItems.length) return;
-  rssState.lastItems.forEach((item) => {
-    markRssItemReadByKey(getRssItemKey(item));
-  });
+  const keys = getVisibleRssItemKeys(rssState.lastItems);
+  if (!keys.length) return;
+  if (keys.every((key) => rssState.readKeys.includes(key))) {
+    const keySet = new Set(keys);
+    rssState.readKeys = rssState.readKeys.filter((key) => !keySet.has(key));
+    saveRssData();
+  } else {
+    keys.forEach((key) => {
+      markRssItemReadByKey(key);
+    });
+  }
   renderRssItems();
 }
 
@@ -681,7 +726,6 @@ function applyRssTranslations() {
   setIcon("rss-remove-btn", "i-folder-minus");
   setIcon("rss-import-btn", "i-file-up");
   setIcon("rss-export-btn", "i-file-down");
-  setIcon("rss-mark-all-btn", "i-check");
 
   const loadBtn = byId("rss-load-btn");
   if (loadBtn) {
@@ -710,6 +754,7 @@ function applyRssTranslations() {
   }
   const markAllBtn = byId("rss-mark-all-btn");
   if (markAllBtn) {
+    markAllBtn.textContent = markAllLabel;
     markAllBtn.title = markAllLabel;
     markAllBtn.setAttribute("aria-label", markAllLabel);
   }
@@ -725,6 +770,7 @@ function applyRssTranslations() {
   renderRssFeeds();
   renderRssViewMode();
   renderRssItems();
+  renderMarkAllButton();
   if (!byId("rss-status")?.textContent) {
     setRssStatus(t("rssReady"));
   }

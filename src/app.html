@@ -832,6 +832,15 @@
           </svg>
         </button>
         <select id="conv-to" onchange="convertUnit()"></select>
+        <button
+          id="conv-favorite-btn"
+          onclick="toggleConverterFavoritePreset()"
+          class="icon-btn converter-favorite-btn"
+          title="Add to favorites"
+          aria-label="Add to favorites"
+        >
+          <svg class="icon-svg btn-icon"><use href="#i-star"></use></svg>
+        </button>
       </div>
       <button
         class="primary"
@@ -1126,6 +1135,11 @@
         </summary>
         <div class="text-actions-groups">
           <div class="text-actions-row text-encoding-row">
+            <select id="text-save-type">
+              <option value="txt">TXT</option>
+              <option value="md">Markdown (.md)</option>
+              <option value="json">JSON</option>
+            </select>
             <select id="text-save-encoding">
               <option value="utf8">UTF-8 (default)</option>
               <option value="utf8bom">UTF-8 BOM</option>
@@ -1348,6 +1362,15 @@
           <option value="GBP">GBP</option>
           <option value="JPY">JPY</option>
         </select>
+        <button
+          id="cur-favorite-btn"
+          onclick="toggleCurrencyFavoritePreset()"
+          class="icon-btn converter-favorite-btn"
+          title="Add to favorites"
+          aria-label="Add to favorites"
+        >
+          <svg class="icon-svg btn-icon"><use href="#i-star"></use></svg>
+        </button>
       </div>
       <div class="currency-caption-row">
         <div class="small-text" id="cur-from-caption"></div>
@@ -1840,9 +1863,12 @@
       <div class="paint-panel is-hidden" id="paint-panel-filters">
         <div class="paint-toolbar paint-toolbar-grid paint-filters-grid">
           <label class="paint-range-control">
-            <span
+            <span class="paint-range-icon"
               ><svg class="icon-svg btn-icon"><use href="#i-sun-dim"></use></svg
             ></span>
+            <span class="paint-range-label" id="paint-filter-brightness-label"
+              >Brightness</span
+            >
             <input
               type="range"
               id="paint-filter-brightness"
@@ -1850,12 +1876,18 @@
               max="100"
               value="0"
             />
+            <span class="paint-range-value" id="paint-filter-brightness-value"
+              >0%</span
+            >
           </label>
           <label class="paint-range-control">
-            <span
+            <span class="paint-range-icon"
               ><svg class="icon-svg btn-icon">
                 <use href="#i-contrast"></use></svg
             ></span>
+            <span class="paint-range-label" id="paint-filter-contrast-label"
+              >Contrast</span
+            >
             <input
               type="range"
               id="paint-filter-contrast"
@@ -1863,11 +1895,17 @@
               max="100"
               value="0"
             />
+            <span class="paint-range-value" id="paint-filter-contrast-value"
+              >0%</span
+            >
           </label>
           <label class="paint-range-control">
-            <span
+            <span class="paint-range-icon"
               ><svg class="icon-svg btn-icon"><use href="#i-blend"></use></svg
             ></span>
+            <span class="paint-range-label" id="paint-filter-saturation-label"
+              >Saturation</span
+            >
             <input
               type="range"
               id="paint-filter-saturation"
@@ -1875,10 +1913,14 @@
               max="100"
               value="0"
             />
+            <span class="paint-range-value" id="paint-filter-saturation-value"
+              >0%</span
+            >
           </label>
           <button
             type="button"
             class="text-action-btn"
+            id="paint-filter-apply-btn"
             onclick="paintApplyFilters()"
           >
             Apply
@@ -1886,6 +1928,7 @@
           <button
             type="button"
             class="text-action-btn"
+            id="paint-filter-reset-btn"
             onclick="paintResetFilters()"
           >
             Reset
@@ -2530,15 +2573,6 @@
       </div>
       <div class="row rss-actions-row">
         <button
-          class="primary rss-action-btn"
-          id="rss-load-btn"
-          onclick="loadRssFeed()"
-          title="Load"
-          aria-label="Load"
-        >
-          <svg class="icon-svg btn-icon"><use href="#i-download"></use></svg>
-        </button>
-        <button
           class="text-action-btn rss-action-btn"
           id="rss-add-btn"
           onclick="addRssFeed()"
@@ -2578,15 +2612,6 @@
         >
           <svg class="icon-svg btn-icon"><use href="#i-file-down"></use></svg>
         </button>
-        <button
-          class="text-action-btn rss-action-btn"
-          id="rss-mark-all-btn"
-          onclick="markAllRssRead()"
-          title="Mark all as read"
-          aria-label="Mark all as read"
-        >
-          <svg class="icon-svg btn-icon"><use href="#i-check"></use></svg>
-        </button>
       </div>
       <input
         id="rss-import-input"
@@ -2605,6 +2630,13 @@
         </select>
       </div>
       <select id="rss-feeds" onchange="onRssFeedChange()"></select>
+      <button
+        class="primary rss-mark-all-wide"
+        id="rss-mark-all-btn"
+        onclick="markAllRssRead()"
+      >
+        Mark all as read
+      </button>
       <div class="small-text" id="rss-status"></div>
       <div id="rss-items"></div>
     </div>
@@ -2664,6 +2696,40 @@
       />
       <span id="overflow-menu-title">Mini tools</span>
     </div>
+    <section class="overflow-settings">
+      <h3 class="overflow-settings-title" id="overflow-settings-title">
+        Settings
+      </h3>
+      <div class="overflow-settings-row">
+        <button
+          type="button"
+          class="text-action-btn overflow-menu-item overflow-settings-btn"
+          id="settings-export-btn"
+          onclick="exportUserData()"
+          role="menuitem"
+        >
+          <svg class="icon-svg btn-icon"><use href="#i-file-down"></use></svg>
+          <span id="settings-export-label">Export</span>
+        </button>
+        <button
+          type="button"
+          class="text-action-btn overflow-menu-item overflow-settings-btn"
+          id="settings-import-btn"
+          onclick="importUserData()"
+          role="menuitem"
+        >
+          <svg class="icon-svg btn-icon"><use href="#i-file-up"></use></svg>
+          <span id="settings-import-label">Import</span>
+        </button>
+      </div>
+      <input
+        id="settings-import-input"
+        type="file"
+        accept=".json,application/json"
+        class="visually-hidden"
+        onchange="handleUserDataImportFile(event)"
+      />
+    </section>
     <section class="overflow-changelog">
       <h3 class="overflow-changelog-title" id="overflow-changelog-title">
         CHANGELOG

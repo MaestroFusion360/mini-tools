@@ -96,6 +96,46 @@ function previewFilters() {
   ctx.restore();
 }
 
+function resetFilterSliders() {
+  [
+    "paint-filter-brightness",
+    "paint-filter-contrast",
+    "paint-filter-saturation",
+  ].forEach((id) => {
+    const input = byId(id);
+    if (input) input.value = "0";
+  });
+}
+
+function updateFilterValueLabels() {
+  const pairs = [
+    ["paint-filter-brightness", "paint-filter-brightness-value"],
+    ["paint-filter-contrast", "paint-filter-contrast-value"],
+    ["paint-filter-saturation", "paint-filter-saturation-value"],
+  ];
+  pairs.forEach(([inputId, valueId]) => {
+    const input = byId(inputId);
+    const valueEl = byId(valueId);
+    if (!input || !valueEl) return;
+    const raw = Number(input.value);
+    const value = Number.isFinite(raw) ? Math.round(raw) : 0;
+    const prefix = value > 0 ? "+" : "";
+    valueEl.textContent = `${prefix}${value}%`;
+  });
+}
+
+function pushUndoFromFilterBase() {
+  const base = paintState.filterBaseImageData;
+  if (!base) return false;
+  const offscreen = makeOffscreenFromImageData(base);
+  const snapshot = offscreen.toDataURL("image/png");
+  if (!snapshot) return false;
+  paintState.undoStack.push(snapshot);
+  if (paintState.undoStack.length > MAX_HISTORY) paintState.undoStack.shift();
+  paintState.redoStack = [];
+  return true;
+}
+
 export function paintApplyFilters() {
   const ctx = getCtx();
   const canvas = getCanvas();
@@ -106,8 +146,15 @@ export function paintApplyFilters() {
     clearFilterBase();
     return;
   }
-  pushUndoState();
-  previewFilters();
+  // When sliders are moved, preview is already rendered from filterBaseImageData.
+  // Save original pre-filter image to undo and avoid a second apply pass.
+  const usedBaseSnapshot = pushUndoFromFilterBase();
+  if (!usedBaseSnapshot) {
+    pushUndoState();
+    previewFilters();
+  }
+  resetFilterSliders();
+  updateFilterValueLabels();
   clearFilterBase();
 }
 
@@ -117,14 +164,8 @@ export function paintResetFilters() {
   if (paintState.filterBaseImageData && ctx) {
     ctx.putImageData(paintState.filterBaseImageData, 0, 0);
   }
-  [
-    "paint-filter-brightness",
-    "paint-filter-contrast",
-    "paint-filter-saturation",
-  ].forEach((id) => {
-    const input = byId(id);
-    if (input) input.value = "0";
-  });
+  resetFilterSliders();
+  updateFilterValueLabels();
   clearFilterBase();
 }
 
@@ -275,7 +316,7 @@ export function paintSaveImage() {
   const link = document.createElement("a");
   const url = canvas.toDataURL("image/png");
   link.href = url;
-  link.download = "paint.png";
+  link.download = "image.png";
   document.body.append(link);
   link.click();
   link.remove();
@@ -512,6 +553,10 @@ export function initPaint() {
   if (input) {
     input.addEventListener("change", (event) => {
       const file = event.target?.files?.[0];
+      // Opening a new image should start with clean filter controls.
+      resetFilterSliders();
+      updateFilterValueLabels();
+      clearFilterBase();
       loadImageFile(file);
       input.value = "";
     });
@@ -524,8 +569,12 @@ export function initPaint() {
   ].forEach((id) => {
     const inputEl = byId(id);
     if (!inputEl) return;
-    inputEl.addEventListener("input", previewFilters);
+    inputEl.addEventListener("input", () => {
+      updateFilterValueLabels();
+      previewFilters();
+    });
   });
+  updateFilterValueLabels();
 
   const wrap = getCanvasWrap();
   if (wrap) {

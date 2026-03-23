@@ -2,6 +2,10 @@ export const STORAGE_KEYS = {
   theme: "theme",
   lang: "lang",
   lastPage: "lastPage",
+  calculatorData: "calculatorData",
+  budgetData: "budgetTrackerData",
+  converterPresets: "converterFavoritePresets",
+  currencyPresets: "currencyFavoritePresets",
   timeFormat: "timeFormat",
   worldTimeSaved: "worldTimeSaved",
   weatherMode: "weatherManualMode",
@@ -146,7 +150,9 @@ export function getStored(key, fallback = null) {
 export function setStored(key, value) {
   try {
     localStorage.setItem(key, value);
-  } catch {}
+  } catch {
+    // Ignore write errors (private mode, disabled storage, quota exceeded).
+  }
 }
 
 export function getStoredJson(key, fallback) {
@@ -162,5 +168,7 @@ export function getStoredJson(key, fallback) {
 export function setStoredJson(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
-  } catch {}
+  } catch {
+    // Ignore write errors (private mode, disabled storage, quota exceeded).
+  }
 }

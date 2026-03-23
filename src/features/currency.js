@@ -1,6 +1,11 @@
 import { byId, setText } from "../core/dom.js";
 import { getLanguage, registerTranslationApplier, t } from "../core/i18n.js";
-import { FEATURE_RUNTIME_STATE } from "../core/state.js";
+import {
+  FEATURE_RUNTIME_STATE,
+  STORAGE_KEYS,
+  getStoredJson,
+  setStoredJson,
+} from "../core/state.js";
 import { getLocale } from "../core/utils.js";
 import { CURRENCY_NAMES } from "../data/currency-names.js";
 
@@ -9,12 +14,8 @@ const BUILT_IN_RATES = { ...(currencyState.rates || { USD: 1 }) };
 const DEFAULT_FROM_CURRENCY = "USD";
 const DEFAULT_TO_CURRENCY = "EUR";
 const RATES_API_URL = "https://api.exchangerate-api.com/v4/latest/USD";
-const CURRENCY_PRESETS = [
-  ["RUB", "USD"],
-  ["RUB", "EUR"],
-  ["RUB", "TRY"],
-  ["RUB", "THB"],
-];
+const MAX_CURRENCY_FAVORITES = 16;
+let currencyFavoritePairs = [];
 let currencyInitialized = false;
 function ensureCurrencyState() {
   if (!currencyState || typeof currencyState !== "object") return;
@@ -30,6 +31,44 @@ function ensureCurrencyState() {
   if (typeof currencyState.ratesSourceText !== "string") {
     currencyState.ratesSourceText = "";
   }
+}
+
+function normalizeCurrencyFavoritePair(pair, codesSet = null) {
+  if (!pair || typeof pair !== "object") return null;
+  const from = safeRateCode(pair.from).toUpperCase();
+  const to = safeRateCode(pair.to).toUpperCase();
+  if (!from || !to || from === to) return null;
+  if (codesSet && (!codesSet.has(from) || !codesSet.has(to))) return null;
+  return { from, to };
+}
+
+function loadCurrencyFavoritePairs() {
+  const parsed = getStoredJson(STORAGE_KEYS.currencyPresets, []);
+  if (!Array.isArray(parsed)) {
+    currencyFavoritePairs = [];
+    return;
+  }
+  const dedup = [];
+  const seen = new Set();
+  parsed.forEach((item) => {
+    const normalized = normalizeCurrencyFavoritePair(item);
+    if (!normalized) return;
+    const key = `${normalized.from}->${normalized.to}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    dedup.push(normalized);
+  });
+  currencyFavoritePairs = dedup.slice(-MAX_CURRENCY_FAVORITES);
+}
+
+function saveCurrencyFavoritePairs() {
+  setStoredJson(STORAGE_KEYS.currencyPresets, currencyFavoritePairs);
+}
+
+function hasCurrencyFavoritePair(from, to) {
+  return currencyFavoritePairs.some(
+    (item) => item.from === from && item.to === to,
+  );
 }
 
 function safeRateCode(code) {
@@ -89,6 +128,7 @@ function populateCurrencySelects() {
     toSel.value = pickDefaultTo(codes, fromSel.value);
   }
   renderCurrencyCaptions();
+  renderCurrencyFavoriteButton(fromSel.value, toSel.value);
 }
 
 function renderCurrencyCaptions() {
@@ -117,8 +157,10 @@ function renderCurrencyPresets() {
   holder.innerHTML = "";
   const codes = new Set(Object.keys(currencyState.rates || {}));
 
-  CURRENCY_PRESETS.forEach(([from, to]) => {
-    if (!codes.has(from) || !codes.has(to)) return;
+  currencyFavoritePairs.forEach((pair) => {
+    const normalized = normalizeCurrencyFavoritePair(pair, codes);
+    if (!normalized) return;
+    const { from, to } = normalized;
     const button = document.createElement("button");
     button.type = "button";
     button.className = "preset-chip";
@@ -130,6 +172,20 @@ function renderCurrencyPresets() {
     });
     holder.append(button);
   });
+}
+
+function renderCurrencyFavoriteButton(fromCode, toCode) {
+  const favoriteBtn = byId("cur-favorite-btn");
+  if (!favoriteBtn) return;
+  const from = safeRateCode(fromCode).toUpperCase();
+  const to = safeRateCode(toCode).toUpperCase();
+  const isFavorite = hasCurrencyFavoritePair(from, to);
+  favoriteBtn.classList.toggle("active", isFavorite);
+  const label = isFavorite
+    ? t("currencyPresetRemove")
+    : t("currencyPresetAdd");
+  favoriteBtn.title = label;
+  favoriteBtn.setAttribute("aria-label", label);
 }
 
 function renderRatesSource() {
@@ -169,8 +225,14 @@ export async function loadRates(manual = false) {
     currencyState.ratesSourceText = "";
     if (status) status.textContent = t("ratesFallback");
   }
+  const availableCodes = new Set(Object.keys(currencyState.rates || {}));
+  currencyFavoritePairs = currencyFavoritePairs
+    .map((pair) => normalizeCurrencyFavoritePair(pair, availableCodes))
+    .filter((pair) => pair !== null);
+  saveCurrencyFavoritePairs();
   populateCurrencySelects();
   renderCurrencyPresets();
+  renderCurrencyFavoriteButton(byId("cur-from")?.value, byId("cur-to")?.value);
   renderRatesSource();
   convertCurrency();
 }
@@ -212,7 +274,35 @@ export function convertCurrency() {
   const usd = amt / fromRate;
   const res = usd * toRate;
   renderCurrencyCaptions();
+  renderCurrencyFavoriteButton(from, to);
   resultEl.textContent = `= ${res.toFixed(2)} ${to}`;
+}
+
+export function toggleCurrencyFavoritePreset() {
+  const fromSel = byId("cur-from");
+  const toSel = byId("cur-to");
+  if (!fromSel || !toSel) return;
+  const from = safeRateCode(fromSel.value).toUpperCase();
+  const to = safeRateCode(toSel.value).toUpperCase();
+  if (!from || !to || from === to) return;
+
+  const index = currencyFavoritePairs.findIndex(
+    (item) => item.from === from && item.to === to,
+  );
+  if (index >= 0) {
+    currencyFavoritePairs.splice(index, 1);
+  } else {
+    currencyFavoritePairs.push({ from, to });
+    if (currencyFavoritePairs.length > MAX_CURRENCY_FAVORITES) {
+      currencyFavoritePairs.splice(
+        0,
+        currencyFavoritePairs.length - MAX_CURRENCY_FAVORITES,
+      );
+    }
+  }
+  saveCurrencyFavoritePairs();
+  renderCurrencyPresets();
+  renderCurrencyFavoriteButton(from, to);
 }
 
 function applyCurrencyTranslations() {
@@ -221,11 +311,13 @@ function applyCurrencyTranslations() {
   populateCurrencySelects();
   renderCurrencyCaptions();
   renderCurrencyPresets();
+  renderCurrencyFavoriteButton(byId("cur-from")?.value, byId("cur-to")?.value);
   renderRatesSource();
 }
 
 export function initCurrency() {
   ensureCurrencyState();
+  loadCurrencyFavoritePairs();
   if (!currencyInitialized) {
     registerTranslationApplier(applyCurrencyTranslations);
     currencyInitialized = true;

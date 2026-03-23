@@ -239,6 +239,13 @@ npm install
 npm test
 ```
 
+Lint:
+
+```bash
+npm run lint
+npm run lint:fix
+```
+
 Watch mode:
 
 ```bash

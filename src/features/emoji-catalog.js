@@ -12,7 +12,7 @@ const emojiState = {
   items: [],
 };
 
-const EMOJI_DATA_URL = "./src/features/data/emoji-catalog.json";
+const EMOJI_DATA_URL = "./src/data/emoji-catalog.json";
 const TWEMOJI_BASE_URL =
   "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg";
 const EMOJI_FILTER_DEBOUNCE_MS = 120;

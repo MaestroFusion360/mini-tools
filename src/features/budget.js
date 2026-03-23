@@ -1,8 +1,9 @@
 import { byId, showAppToast } from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
+import { STORAGE_KEYS } from "../core/state.js";
 import { formatNumber, getLocale } from "../core/utils.js";
 
-const STORAGE_KEY = "budgetTrackerData";
+const STORAGE_KEY = STORAGE_KEYS.budgetData;
 const MAX_BUDGET_ITEMS = 500;
 const MAX_NOTE_LENGTH = 300;
 const BUDGET_CURRENCIES = ["USD", "EUR", "RUB"];
@@ -145,7 +146,9 @@ function saveBudgetState() {
         items: budgetState.items,
       }),
     );
-  } catch {}
+  } catch {
+    // Ignore write errors (private mode, disabled storage, quota exceeded).
+  }
 }
 
 function currencyFormat(value) {

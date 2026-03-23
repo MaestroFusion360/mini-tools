@@ -1,6 +1,30 @@
 {
   "entries": [
     {
+      "en": "Paint filters now show live percentage values next to each slider.",
+      "ru": "В фильтрах Paint теперь показываются текущие значения в процентах рядом с каждым слайдером."
+    },
+    {
+      "en": "Fixed repeated filter apply in Paint and reset filter values when opening a new image.",
+      "ru": "Исправлено повторное применение фильтров в Paint и добавлен сброс фильтров при открытии нового изображения."
+    },
+    {
+      "en": "Paint image export filename changed from paint.png to image.png.",
+      "ru": "Имя экспортируемого файла в Paint изменено с paint.png на image.png."
+    },
+    {
+      "en": "Added ESLint setup with npm scripts (lint/lint:fix) and cleaned existing warnings.",
+      "ru": "Добавлена настройка ESLint со скриптами npm (lint/lint:fix) и очищены существующие предупреждения."
+    },
+    {
+      "en": "Service Worker cache strategy updated for src files to avoid stale UI updates.",
+      "ru": "Обновлена стратегия кэширования Service Worker для файлов src, чтобы убрать устаревшие обновления UI."
+    },
+    {
+      "en": "Emoji catalog path fixed to use src/data/emoji-catalog.json.",
+      "ru": "Исправлен путь каталога emoji: теперь используется src/data/emoji-catalog.json."
+    },
+    {
       "en": "Todo + Notes with rich editor and drag-and-drop.",
       "ru": "Задачи и заметки с rich-редактором и drag-and-drop."
     },

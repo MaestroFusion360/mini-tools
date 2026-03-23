@@ -14,6 +14,7 @@ import {
   setStoredJson,
 } from "../core/state.js";
 import { formatDateTime, getLocale } from "../core/utils.js";
+import { WEATHER_CITY_PRESETS } from "../data/weather-city-presets.js";
 
 const weatherState = FEATURE_RUNTIME_STATE.weather;
 let weatherRequestSeq = 0;
@@ -43,38 +44,6 @@ function ensureWeatherState() {
   if (typeof weatherState.weatherInitialized !== "boolean") {
     weatherState.weatherInitialized = false;
   }
-}
-
-const WEATHER_CITY_PRESETS = [
-  { labelKey: "presetSaintPetersburg", lat: 59.9343, lon: 30.3351 },
-  { labelKey: "presetNewYork", lat: 40.7128, lon: -74.006 },
-  { labelKey: "presetWashington", lat: 38.9072, lon: -77.0369 },
-  { labelKey: "presetOttawa", lat: 45.4215, lon: -75.6972 },
-  { labelKey: "presetMexicoCity", lat: 19.4326, lon: -99.1332 },
-  { labelKey: "presetBuenosAires", lat: -34.6037, lon: -58.3816 },
-  { labelKey: "presetBrasilia", lat: -15.7939, lon: -47.8828 },
-  { labelKey: "presetLondon", lat: 51.5074, lon: -0.1278 },
-  { labelKey: "presetBerlin", lat: 52.52, lon: 13.405 },
-  { labelKey: "presetParis", lat: 48.8566, lon: 2.3522 },
-  { labelKey: "presetRome", lat: 41.9028, lon: 12.4964 },
-  { labelKey: "presetMadrid", lat: 40.4168, lon: -3.7038 },
-  { labelKey: "presetKyiv", lat: 50.4501, lon: 30.5234 },
-  { labelKey: "presetMoscow", lat: 55.7558, lon: 37.6173 },
-  { labelKey: "presetAnkara", lat: 39.9334, lon: 32.8597 },
-  { labelKey: "presetCairo", lat: 30.0444, lon: 31.2357 },
-  { labelKey: "presetDubai", lat: 25.2048, lon: 55.2708 },
-  { labelKey: "presetBangkok", lat: 13.7563, lon: 100.5018 },
-  { labelKey: "presetDelhi", lat: 28.6139, lon: 77.209 },
-  { labelKey: "presetBeijing", lat: 39.9042, lon: 116.4074 },
-  { labelKey: "presetSeoul", lat: 37.5665, lon: 126.978 },
-  { labelKey: "presetSingapore", lat: 1.3521, lon: 103.8198 },
-  { labelKey: "presetTokyo", lat: 35.6762, lon: 139.6503 },
-  { labelKey: "presetCanberra", lat: -35.2809, lon: 149.13 },
-  { labelKey: "presetWellington", lat: -41.2866, lon: 174.7756 },
-];
-
-function getWeatherUiText(en, ru) {
-  return getLanguage() === "ru" ? ru : en;
 }
 
 function getWeatherCodeLabel(code) {
@@ -430,7 +399,9 @@ export async function initWeather() {
         return;
       }
     }
-  } catch {}
+  } catch {
+    // Ignore permissions API errors and continue with geolocation request.
+  }
 
   navigator.geolocation.getCurrentPosition(
     async (pos) => {

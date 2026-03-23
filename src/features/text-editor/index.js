@@ -8,6 +8,11 @@ const TEXT_SAVE_ENCODING_OPTIONS = {
   cp1251: { label: "ANSI (CP1251)" },
   utf16le: { label: "UTF-16 LE" },
 };
+const TEXT_SAVE_FILE_TYPES = {
+  txt: { extension: "txt", mime: "text/plain" },
+  md: { extension: "md", mime: "text/markdown" },
+  json: { extension: "json", mime: "application/json" },
+};
 const CP1251_EXTRA_CHARS = {
   "\u0402": 0x80,
   "\u0403": 0x81,
@@ -126,7 +131,9 @@ function bindTextDragAndDrop() {
       try {
         input.value = await readDroppedFileAsText(file);
         analyzeText();
-      } catch {}
+      } catch {
+        // Ignore invalid dropped file content.
+      }
       return;
     }
 
@@ -145,6 +152,11 @@ function getTextWords(text) {
 function getSelectedTextSaveEncoding() {
   const selected = byId("text-save-encoding")?.value || "utf8";
   return TEXT_SAVE_ENCODING_OPTIONS[selected] ? selected : "utf8";
+}
+
+function getSelectedTextSaveType() {
+  const selected = byId("text-save-type")?.value || "txt";
+  return TEXT_SAVE_FILE_TYPES[selected] ? selected : "txt";
 }
 
 function getCp1251ByteLength(text) {
@@ -485,7 +497,7 @@ export function toTitleCaseText() {
     text
       .toLowerCase()
       .replace(
-        /(^|[\s([{"'\-])([A-Za-z\u0400-\u04FF])/g,
+        /(^|[\s([{"'-])([A-Za-z\u0400-\u04FF])/g,
         (_, p1, p2) => `${p1}${p2.toUpperCase()}`,
       ),
   );
@@ -712,7 +724,9 @@ export async function toggleTextInputFullscreen(force) {
             document.fullscreenElement &&
             wrap.contains(document.fullscreenElement),
           );
-      } catch {}
+      } catch {
+        // Fall back to CSS fullscreen mode.
+      }
     }
     textEditorState.textNativeFullscreenActive = nativeEntered;
     setTextInputFullscreenUi(true);
@@ -728,7 +742,9 @@ export async function toggleTextInputFullscreen(force) {
   ) {
     try {
       await document.exitFullscreen();
-    } catch {}
+    } catch {
+      // Ignore if fullscreen exit is blocked or already exited.
+    }
   }
   textEditorState.textNativeFullscreenActive = false;
   setTextInputFullscreenUi(false);
@@ -740,6 +756,7 @@ export function saveTextToFile() {
   if (!input) return;
 
   const encoding = getSelectedTextSaveEncoding();
+  const fileType = getSelectedTextSaveType();
   const bytes = getEncodedBytes(input.value, encoding);
   const mimeByEncoding = {
     utf8: "text/plain;charset=utf-8",
@@ -747,13 +764,17 @@ export function saveTextToFile() {
     cp1251: "text/plain;charset=windows-1251",
     utf16le: "text/plain;charset=utf-16le",
   };
+  const baseType = TEXT_SAVE_FILE_TYPES[fileType]?.mime || "text/plain";
   const blob = new Blob([bytes], {
-    type: mimeByEncoding[encoding] || "application/octet-stream",
+    type:
+      mimeByEncoding[encoding] ||
+      `${baseType};charset=utf-8` ||
+      "application/octet-stream",
   });
   const link = document.createElement("a");
   const objectUrl = URL.createObjectURL(blob);
   link.href = objectUrl;
-  link.download = "editor.txt";
+  link.download = `editor.${TEXT_SAVE_FILE_TYPES[fileType]?.extension || "txt"}`;
   document.body.append(link);
   link.click();
   link.remove();
@@ -783,7 +804,7 @@ function applyTextToolTranslations() {
   setControlTooltip("text-trim-btn", t("textTrim"));
   setControlTooltip("text-spaces-btn", t("textSpaces"));
   setControlTooltip("text-noempty-btn", t("textNoEmpty"));
-  setControlTooltip("text-save-btn", "Save");
+  setControlTooltip("text-save-btn", t("textSave"));
   setControlTooltip("text-find-btn", t("textFind"));
   setControlTooltip("text-replace-btn", t("textReplace"));
   setControlTooltip("text-replace-all-btn", t("textReplaceAll"));
@@ -795,9 +816,23 @@ function applyTextToolTranslations() {
   setText("text-tools-summary-label", "Editor tools");
 
   const encodingSelect = byId("text-save-encoding");
+  const typeSelect = byId("text-save-type");
+  if (typeSelect) {
+    typeSelect.title = t("textSaveTypeLabel");
+    typeSelect.setAttribute("aria-label", t("textSaveTypeLabel"));
+    const typeOptions = Array.from(typeSelect.options);
+    for (const option of typeOptions) {
+      if (option.value === "txt") option.textContent = t("textSaveTypeTxt");
+      if (option.value === "md") option.textContent = t("textSaveTypeMd");
+      if (option.value === "json") option.textContent = t("textSaveTypeJson");
+    }
+    if (!TEXT_SAVE_FILE_TYPES[typeSelect.value]) {
+      typeSelect.value = "txt";
+    }
+  }
   if (encodingSelect) {
-    encodingSelect.title = "Save encoding";
-    encodingSelect.setAttribute("aria-label", "Save encoding");
+    encodingSelect.title = t("textSaveEncodingLabel");
+    encodingSelect.setAttribute("aria-label", t("textSaveEncodingLabel"));
     const options = Array.from(encodingSelect.options);
     for (const option of options) {
       if (option.value === "utf8") option.textContent = "UTF-8 (default)";
@@ -842,6 +877,13 @@ export function initTextTools() {
   if (encodingSelect && encodingSelect.dataset.bound !== "1") {
     encodingSelect.dataset.bound = "1";
     encodingSelect.addEventListener("change", () => {
+      analyzeText();
+    });
+  }
+  const typeSelect = byId("text-save-type");
+  if (typeSelect && typeSelect.dataset.bound !== "1") {
+    typeSelect.dataset.bound = "1";
+    typeSelect.addEventListener("change", () => {
       analyzeText();
     });
   }

@@ -5,6 +5,7 @@ import {
   setText,
 } from "../core/dom.js";
 import { getLanguage, registerTranslationApplier, t } from "../core/i18n.js";
+import { STORAGE_KEYS, getStoredJson, setStoredJson } from "../core/state.js";
 import { formatNumber } from "../core/utils.js";
 
 const TYPE_KEYS = [
@@ -41,7 +42,9 @@ const DEFAULT_TYPE = "length";
 const DEFAULT_PRECISION = 6;
 const PRECISION_MIN = 2;
 const PRECISION_MAX = 12;
+const MAX_CONVERTER_FAVORITES_PER_TYPE = 12;
 let converterInitialized = false;
+let converterFavoritesByType = {};
 
 const IDS = {
   type: "conv-type",
@@ -377,11 +380,65 @@ function getElements() {
     to: byId(IDS.to),
     presets: byId(IDS.presets),
     result: byId(IDS.result),
+    favoriteBtn: byId("conv-favorite-btn"),
   };
 }
 
 function getTypeDefinition(type) {
   return UNIT_DEFS[type] || UNIT_DEFS[DEFAULT_TYPE];
+}
+
+function normalizeConverterFavoriteItem(type, item) {
+  if (!item || typeof item !== "object") return null;
+  const from = String(item.from || "").trim();
+  const to = String(item.to || "").trim();
+  const definition = getTypeDefinition(type);
+  if (!definition.units[from] || !definition.units[to] || from === to) {
+    return null;
+  }
+  return { from, to };
+}
+
+function loadConverterFavorites() {
+  const parsed = getStoredJson(STORAGE_KEYS.converterPresets, {});
+  if (!parsed || typeof parsed !== "object") {
+    converterFavoritesByType = {};
+    return;
+  }
+  const next = {};
+  Object.keys(UNIT_DEFS).forEach((type) => {
+    const sourceItems = Array.isArray(parsed[type]) ? parsed[type] : [];
+    const items = sourceItems
+      .map((item) => normalizeConverterFavoriteItem(type, item))
+      .filter((item) => item !== null);
+    const dedup = [];
+    const seen = new Set();
+    items.forEach((item) => {
+      const key = `${item.from}->${item.to}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      dedup.push(item);
+    });
+    if (dedup.length) {
+      next[type] = dedup.slice(0, MAX_CONVERTER_FAVORITES_PER_TYPE);
+    }
+  });
+  converterFavoritesByType = next;
+}
+
+function saveConverterFavorites() {
+  setStoredJson(STORAGE_KEYS.converterPresets, converterFavoritesByType);
+}
+
+function getConverterFavorites(type) {
+  const items = converterFavoritesByType[type];
+  return Array.isArray(items) ? items : [];
+}
+
+function hasConverterFavorite(type, from, to) {
+  return getConverterFavorites(type).some(
+    (item) => item.from === from && item.to === to,
+  );
 }
 
 function getCurrentType(elements) {
@@ -529,9 +586,7 @@ function renderConverterPresets(type) {
   if (!elements.presets || !elements.from || !elements.to) return;
   elements.presets.innerHTML = "";
 
-  const definition = getTypeDefinition(type);
-  definition.presets.forEach(([from, to]) => {
-    if (!definition.units[from] || !definition.units[to]) return;
+  getConverterFavorites(type).forEach(({ from, to }) => {
     const button = document.createElement("button");
     button.className = "preset-chip";
     button.type = "button";
@@ -543,6 +598,18 @@ function renderConverterPresets(type) {
     });
     elements.presets.append(button);
   });
+}
+
+function renderConverterFavoriteButton(type, from, to) {
+  const favoriteBtn = byId("conv-favorite-btn");
+  if (!favoriteBtn) return;
+  const isFavorite = hasConverterFavorite(type, from, to);
+  favoriteBtn.classList.toggle("active", isFavorite);
+  const label = isFavorite
+    ? t("converterPresetRemove")
+    : t("converterPresetAdd");
+  favoriteBtn.title = label;
+  favoriteBtn.setAttribute("aria-label", label);
 }
 
 function populateUnitSelects(elements, type) {
@@ -571,6 +638,7 @@ export function updateConvUnits() {
     applyTypeDefaults(elements, type);
   }
   renderConverterPresets(type);
+  renderConverterFavoriteButton(type, elements.from.value, elements.to.value);
   convertUnit();
 }
 
@@ -610,6 +678,31 @@ export function convertUnit() {
     precision,
   );
   renderConversionResult(elements, model);
+  renderConverterFavoriteButton(type, elements.from.value, elements.to.value);
+}
+
+export function toggleConverterFavoritePreset() {
+  const elements = getElements();
+  if (!elements.type || !elements.from || !elements.to) return;
+  const type = getCurrentType(elements);
+  const from = String(elements.from.value || "");
+  const to = String(elements.to.value || "");
+  if (!from || !to || from === to) return;
+
+  const list = getConverterFavorites(type).slice();
+  const index = list.findIndex((item) => item.from === from && item.to === to);
+  if (index >= 0) {
+    list.splice(index, 1);
+  } else {
+    list.push({ from, to });
+    if (list.length > MAX_CONVERTER_FAVORITES_PER_TYPE) {
+      list.splice(0, list.length - MAX_CONVERTER_FAVORITES_PER_TYPE);
+    }
+  }
+  converterFavoritesByType[type] = list;
+  saveConverterFavorites();
+  renderConverterPresets(type);
+  renderConverterFavoriteButton(type, from, to);
 }
 
 function applyConverterTranslations() {
@@ -623,6 +716,7 @@ function applyConverterTranslations() {
 }
 
 export function initConverter() {
+  loadConverterFavorites();
   if (!converterInitialized) {
     registerTranslationApplier(applyConverterTranslations);
     converterInitialized = true;

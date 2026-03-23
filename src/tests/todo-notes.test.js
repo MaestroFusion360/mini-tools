@@ -2,11 +2,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { FEATURE_RUNTIME_STATE } from "../core/state.js";
 import {
   addTodoItem,
-  addTodoNote,
   clearCompletedTodo,
   initTodoNotes,
   openTodoNote,
-  onTodoNotesInput,
   onTodoNotesSave,
   onTodoNotesInputKeydown,
   removeTodoNote,

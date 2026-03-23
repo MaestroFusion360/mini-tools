@@ -4,6 +4,11 @@
 
 ### Highlights
 
+- Paint:
+  - Added live `%` values for filter sliders.
+  - Fixed repeated filter apply behavior to prevent accidental double-processing.
+  - Filter values now reset automatically when opening a new image.
+  - Save filename changed to `image.png`.
 - Todo/Notes:
   - Added a shared search field with inline search/clear icons.
   - Search now filters both tasks and notes and persists between sessions.
@@ -17,6 +22,10 @@
 - Header/UI fixes:
   - Fixed overlap of Back button with burger menu in intermediate viewport widths.
   - Removed unwanted delete/clear button motion to avoid jumpy interactions.
+- Data/infra:
+  - Moved emoji catalog source to `src/data/emoji-catalog.json` and fixed loader path.
+  - Added ESLint setup (`eslint.config.js`, `npm run lint`, `npm run lint:fix`) and cleaned existing warnings.
+  - Updated Service Worker strategy for `src/*` files to prefer fresh network responses.
 
 ## v1.1.2 - 2026-03-23
 

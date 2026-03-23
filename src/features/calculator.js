@@ -1,9 +1,15 @@
 import { byId, setText } from "../core/dom.js";
 import { registerTranslationApplier, t } from "../core/i18n.js";
-import { FEATURE_RUNTIME_STATE } from "../core/state.js";
+import {
+  FEATURE_RUNTIME_STATE,
+  STORAGE_KEYS,
+  getStoredJson,
+  setStoredJson,
+} from "../core/state.js";
 
 const calcState = FEATURE_RUNTIME_STATE.calculator;
 const MAX_HISTORY_ITEMS = 200;
+const CALC_STORAGE_KEY = STORAGE_KEYS.calculatorData;
 
 const OPERATORS = {
   "+": { precedence: 1, associativity: "L" },
@@ -30,6 +36,40 @@ function ensureCalculatorState() {
   }
   if (typeof calcState.calcScientificMode !== "boolean") {
     calcState.calcScientificMode = false;
+  }
+}
+
+function saveCalculatorState() {
+  const history = Array.isArray(calcState.calcHistory)
+    ? calcState.calcHistory
+        .map((entry) => normalizeHistoryEntry(entry))
+        .filter((entry) => entry.expression || entry.result)
+        .slice(-MAX_HISTORY_ITEMS)
+    : [];
+  setStoredJson(CALC_STORAGE_KEY, {
+    calcHistory: history,
+    calcMemoryValue: Number.isFinite(calcState.calcMemoryValue)
+      ? calcState.calcMemoryValue
+      : 0,
+    calcScientificMode: Boolean(calcState.calcScientificMode),
+  });
+}
+
+function loadCalculatorState() {
+  const parsed = getStoredJson(CALC_STORAGE_KEY, null);
+  if (!parsed || typeof parsed !== "object") return;
+
+  if (Array.isArray(parsed.calcHistory)) {
+    calcState.calcHistory = parsed.calcHistory
+      .map((entry) => normalizeHistoryEntry(entry))
+      .filter((entry) => entry.expression || entry.result)
+      .slice(-MAX_HISTORY_ITEMS);
+  }
+  if (Number.isFinite(parsed.calcMemoryValue)) {
+    calcState.calcMemoryValue = parsed.calcMemoryValue;
+  }
+  if (typeof parsed.calcScientificMode === "boolean") {
+    calcState.calcScientificMode = parsed.calcScientificMode;
   }
 }
 
@@ -164,6 +204,7 @@ function pushHistoryEntry(expression, result) {
       calcState.calcHistory.length - MAX_HISTORY_ITEMS,
     );
   }
+  saveCalculatorState();
 }
 
 function isOperatorToken(token) {
@@ -537,6 +578,7 @@ export function toggleCalcMode(toggle = true) {
       calcState.calcScientificMode,
     );
   }
+  saveCalculatorState();
 }
 
 export function calcInput(ch) {
@@ -588,6 +630,7 @@ export function calcToggleSign() {
 
 export function calcMemoryClear() {
   calcState.calcMemoryValue = 0;
+  saveCalculatorState();
   renderCalcMemory();
 }
 
@@ -605,6 +648,7 @@ export function calcMemoryAdd() {
   const current = evaluateCurrentExpressionOrNull();
   if (current === null) return;
   calcState.calcMemoryValue += current;
+  saveCalculatorState();
   renderCalcMemory();
 }
 
@@ -612,6 +656,7 @@ export function calcMemorySubtract() {
   const current = evaluateCurrentExpressionOrNull();
   if (current === null) return;
   calcState.calcMemoryValue -= current;
+  saveCalculatorState();
   renderCalcMemory();
 }
 
@@ -619,11 +664,13 @@ export function calcRemoveHistoryAt(index) {
   if (!Number.isInteger(index)) return;
   if (index < 0 || index >= calcState.calcHistory.length) return;
   calcState.calcHistory.splice(index, 1);
+  saveCalculatorState();
   renderCalcHistory();
 }
 
 export function calcClearHistory() {
   calcState.calcHistory.length = 0;
+  saveCalculatorState();
   renderCalcHistory();
 }
 
@@ -759,6 +806,7 @@ function applyCalculatorTranslations() {
 
 export function initCalculator() {
   ensureCalculatorState();
+  loadCalculatorState();
   renderCalcDisplay();
   renderCalcHistory();
   renderCalcMemory();

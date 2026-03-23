@@ -29,6 +29,7 @@ import {
   convertUnit,
   initConverter,
   swapConvUnits,
+  toggleConverterFavoritePreset,
   updateConvUnits,
 } from "./features/converter.js";
 import {
@@ -36,6 +37,7 @@ import {
   initCurrency,
   loadRates,
   swapCurrencyUnits,
+  toggleCurrencyFavoritePreset,
 } from "./features/currency.js";
 import {
   initMediaPlayer,
@@ -106,6 +108,12 @@ import { applyTranslations, initI18n, toggleLanguage } from "./core/i18n.js";
 import { initChangelog } from "./core/changelog.js";
 import { initAppMeta } from "./core/app-meta.js";
 import { initAbout } from "./core/about.js";
+import {
+  exportUserData,
+  handleUserDataImportFile,
+  importUserData,
+  initUserDataTransfer,
+} from "./core/user-data-transfer.js";
 import {
   closeAboutDialog,
   closeOverflowMenu,
@@ -215,6 +223,7 @@ function exposeGlobals() {
     updateConvUnits,
     convertUnit,
     swapConvUnits,
+    toggleConverterFavoritePreset,
     toggleCalcMode,
     calcBackspace,
     calcInput,
@@ -245,6 +254,7 @@ function exposeGlobals() {
     loadRates,
     swapCurrencyUnits,
     convertCurrency,
+    toggleCurrencyFavoritePreset,
     paintOpenFileDialog,
     paintToggleFullscreen,
     paintTogglePanel,
@@ -310,6 +320,9 @@ function exposeGlobals() {
     clearBudgetForm,
     setBudgetFilter,
     clearBudgetEntries,
+    exportUserData,
+    importUserData,
+    handleUserDataImportFile,
   });
 }
 
@@ -341,6 +354,7 @@ async function initApp() {
   await initAppMeta();
   await initChangelog();
   initAbout();
+  initUserDataTransfer();
   exposeGlobals();
 
   initNavigation();
