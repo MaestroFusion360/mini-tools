@@ -13,6 +13,7 @@ import {
 function getDefaultPaintState() {
   return {
     drawing: false,
+    strokeUseBackColor: false,
     lastX: 0,
     lastY: 0,
     startX: 0,
@@ -31,6 +32,7 @@ function getDefaultPaintState() {
     activePanel: "",
     canvasReady: false,
     activeTool: "brush",
+    brushSize: 6,
     showFontPanel: false,
     selectionMode: false,
     selecting: false,
@@ -71,6 +73,7 @@ function mountPaintDom() {
       <button id="paint-panel-filters-btn"></button>
       <button id="paint-panel-shapes-btn"></button>
       <button id="paint-panel-zoom-btn"></button>
+      <button id="paint-tool-pen-btn"></button>
       <button id="paint-tool-brush-btn"></button>
       <button id="paint-tool-eraser-btn"></button>
       <button id="paint-tool-text-btn"></button>
@@ -198,7 +201,6 @@ describe("paint unit", () => {
   });
 
   it("toggles draw panel visibility and button state", () => {
-    paintTogglePanel("draw");
     expect(
       document
         .getElementById("paint-panel-draw")
@@ -221,6 +223,18 @@ describe("paint unit", () => {
         .getElementById("paint-panel-draw-btn")
         ?.getAttribute("aria-pressed"),
     ).toBe("false");
+
+    paintTogglePanel("draw");
+    expect(
+      document
+        .getElementById("paint-panel-draw")
+        ?.classList.contains("is-hidden"),
+    ).toBe(false);
+    expect(
+      document
+        .getElementById("paint-panel-draw-btn")
+        ?.getAttribute("aria-pressed"),
+    ).toBe("true");
   });
 
   it("updates active tool button for eraser", () => {
@@ -242,13 +256,34 @@ describe("paint unit", () => {
     ).toBe(false);
   });
 
+  it("sets pen tool and applies size 1 by default", () => {
+    paintSetTool("pen");
+    expect(FEATURE_RUNTIME_STATE.paint.activeTool).toBe("pen");
+    expect(document.getElementById("paint-size")?.value).toBe("1");
+    expect(
+      document
+        .getElementById("paint-tool-pen-btn")
+        ?.classList.contains("active"),
+    ).toBe(true);
+  });
+
+  it("restores previous brush size after switching from pen", () => {
+    const sizeInput = document.getElementById("paint-size");
+    if (!sizeInput) throw new Error("paint-size missing");
+    sizeInput.value = "9";
+    paintSetTool("pen");
+    expect(sizeInput.value).toBe("1");
+    paintSetTool("brush");
+    expect(sizeInput.value).toBe("9");
+  });
+
   it("changes zoom label on zoom in/out/reset", () => {
     expect(document.getElementById("paint-zoom-label")?.textContent).toBe(
       "100%",
     );
     paintZoomIn();
     expect(document.getElementById("paint-zoom-label")?.textContent).toBe(
-      "125%",
+      "110%",
     );
     paintZoomOut();
     expect(document.getElementById("paint-zoom-label")?.textContent).toBe(

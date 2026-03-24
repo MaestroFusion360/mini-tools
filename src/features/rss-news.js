@@ -16,6 +16,10 @@ let rssRequestSeq = 0;
 const RSS_SWIPE_READ_PX = 96;
 const RSS_SWIPE_MAX_PX = 180;
 const RSS_SWIPE_MAX_Y_DRIFT_PX = 42;
+const RSS_CACHE_DAYS = 7;
+const RSS_MAX_ITEMS_PER_FEED = 500;
+const RSS_MAX_TOTAL_ITEMS = 3000;
+const RSS_RENDER_LIMIT = 100;
 
 function ensureRssState() {
   if (!Array.isArray(rssState.feeds)) rssState.feeds = [];
@@ -25,6 +29,12 @@ function ensureRssState() {
   if (!Array.isArray(rssState.readLaterKeys)) rssState.readLaterKeys = [];
   if (!RSS_VIEW_MODES.includes(rssState.viewMode)) rssState.viewMode = "all";
   if (typeof rssState.initialized !== "boolean") rssState.initialized = false;
+  if (!rssState.itemsByKey || typeof rssState.itemsByKey !== "object") {
+    rssState.itemsByKey = {};
+  }
+  if (!rssState.feedItemKeys || typeof rssState.feedItemKeys !== "object") {
+    rssState.feedItemKeys = {};
+  }
 }
 
 function normalizeFeedEntry(entry) {
@@ -55,7 +65,7 @@ function upsertFeed(entry) {
     rssState.feeds.push(normalized);
     return;
   }
-  if (normalized.title && !rssState.feeds[index].title) {
+  if (normalized.title && normalized.title !== rssState.feeds[index].title) {
     rssState.feeds[index] = {
       ...rssState.feeds[index],
       title: normalized.title,
@@ -75,7 +85,7 @@ function applyDefaultFeedTitles() {
     if (!defaultTitle) return feed;
     return {
       ...feed,
-      title: defaultTitle,
+      title: feed.title || defaultTitle,
     };
   });
 }
@@ -87,6 +97,8 @@ function saveRssData() {
     readKeys: rssState.readKeys,
     readLaterKeys: rssState.readLaterKeys,
     viewMode: rssState.viewMode,
+    itemsByKey: rssState.itemsByKey,
+    feedItemKeys: rssState.feedItemKeys,
   });
 }
 
@@ -118,6 +130,14 @@ function loadRssData() {
   ) {
     rssState.viewMode = data.viewMode;
   }
+  if (data.itemsByKey && typeof data.itemsByKey === "object") {
+    rssState.itemsByKey = data.itemsByKey;
+  }
+  if (data.feedItemKeys && typeof data.feedItemKeys === "object") {
+    rssState.feedItemKeys = data.feedItemKeys;
+  }
+  purgeExpiredRssCache();
+  rssState.lastItems = getCachedItemsForFeed(rssState.activeFeed);
 }
 
 function setRssStatus(text) {
@@ -220,6 +240,166 @@ function getRssItemKey(item) {
   return `${String(item?.title || "").trim()}::${String(item?.pubDate || "").trim()}`;
 }
 
+function getNowTs() {
+  return Date.now();
+}
+
+function getRssCacheTtlMs() {
+  return RSS_CACHE_DAYS * 24 * 60 * 60 * 1000;
+}
+
+function isExpiredRssCachedItem(entry, nowTs = getNowTs()) {
+  const fetchedAt = Number(entry?.fetchedAt || 0);
+  if (!fetchedAt) return true;
+  return nowTs - fetchedAt > getRssCacheTtlMs();
+}
+
+function normalizeCachedRssItem(item, feedUrl) {
+  const key = getRssItemKey(item);
+  if (!key) return null;
+
+  return {
+    key,
+    feedUrl: String(feedUrl || "").trim(),
+    title: String(item?.title || "").trim(),
+    link: String(item?.link || "").trim(),
+    description: String(item?.description || "")
+      .trim()
+      .slice(0, 500),
+    pubDate: String(item?.pubDate || "").trim(),
+    fetchedAt: getNowTs(),
+  };
+}
+
+function purgeExpiredRssCache() {
+  ensureRssState();
+  const nowTs = getNowTs();
+  const validKeys = new Set();
+
+  Object.entries(rssState.feedItemKeys).forEach(([feedUrl, keys]) => {
+    if (!Array.isArray(keys)) {
+      rssState.feedItemKeys[feedUrl] = [];
+      return;
+    }
+
+    const filtered = keys.filter((key) => {
+      const normalizedKey = String(key || "").trim();
+      if (!normalizedKey) return false;
+      const entry = rssState.itemsByKey[normalizedKey];
+      if (!entry) return false;
+      if (isExpiredRssCachedItem(entry, nowTs)) return false;
+      validKeys.add(normalizedKey);
+      return true;
+    });
+
+    rssState.feedItemKeys[feedUrl] = filtered.slice(0, RSS_MAX_ITEMS_PER_FEED);
+  });
+
+  Object.keys(rssState.itemsByKey).forEach((key) => {
+    if (!validKeys.has(key)) {
+      delete rssState.itemsByKey[key];
+    }
+  });
+
+  const allEntries = Object.values(rssState.itemsByKey).sort(
+    (a, b) => Number(b?.fetchedAt || 0) - Number(a?.fetchedAt || 0),
+  );
+
+  const overflow = allEntries.slice(RSS_MAX_TOTAL_ITEMS);
+  if (overflow.length) {
+    const overflowKeys = new Set(overflow.map((x) => x.key));
+    overflow.forEach((x) => {
+      delete rssState.itemsByKey[x.key];
+    });
+
+    Object.keys(rssState.feedItemKeys).forEach((feedUrl) => {
+      rssState.feedItemKeys[feedUrl] = (
+        rssState.feedItemKeys[feedUrl] || []
+      ).filter((key) => !overflowKeys.has(key));
+    });
+  }
+
+  purgeOrphanedReadState();
+}
+
+function purgeOrphanedReadState() {
+  const validKeys = new Set(Object.keys(rssState.itemsByKey));
+  rssState.readKeys = rssState.readKeys.filter((key) => validKeys.has(key));
+  rssState.readLaterKeys = rssState.readLaterKeys.filter((key) =>
+    validKeys.has(key),
+  );
+}
+
+function getCachedItemsForFeed(feedUrl) {
+  const normalizedFeedUrl = normalizeFeedUrl(feedUrl);
+  if (!normalizedFeedUrl) return [];
+
+  purgeExpiredRssCache();
+  const keys = Array.isArray(rssState.feedItemKeys[normalizedFeedUrl])
+    ? rssState.feedItemKeys[normalizedFeedUrl]
+    : [];
+
+  return keys
+    .map((key) => rssState.itemsByKey[key])
+    .filter((entry) => entry && !isExpiredRssCachedItem(entry))
+    .sort((a, b) => {
+      const dateA = parseRssDate(a.pubDate)?.getTime() || 0;
+      const dateB = parseRssDate(b.pubDate)?.getTime() || 0;
+      if (dateB !== dateA) return dateB - dateA;
+      return Number(b.fetchedAt || 0) - Number(a.fetchedAt || 0);
+    })
+    .map((entry) => ({
+      title: entry.title,
+      link: entry.link,
+      description: entry.description,
+      pubDate: entry.pubDate,
+    }));
+}
+
+function mergeItemsIntoRssCache(feedUrl, items = []) {
+  ensureRssState();
+  const normalizedFeedUrl = normalizeFeedUrl(feedUrl);
+  if (!normalizedFeedUrl) return [];
+
+  const previousKeys = Array.isArray(rssState.feedItemKeys[normalizedFeedUrl])
+    ? rssState.feedItemKeys[normalizedFeedUrl]
+    : [];
+  const nextKeys = new Set(previousKeys);
+
+  items.forEach((item) => {
+    const entry = normalizeCachedRssItem(item, normalizedFeedUrl);
+    if (!entry) return;
+
+    const existing = rssState.itemsByKey[entry.key];
+    rssState.itemsByKey[entry.key] = existing
+      ? {
+          ...existing,
+          ...entry,
+          fetchedAt: existing.fetchedAt || entry.fetchedAt,
+        }
+      : entry;
+
+    nextKeys.add(entry.key);
+  });
+
+  const sortedKeys = Array.from(nextKeys)
+    .map((key) => rssState.itemsByKey[key])
+    .filter((x) => x && !isExpiredRssCachedItem(x))
+    .sort((a, b) => {
+      const dateA = parseRssDate(a.pubDate)?.getTime() || 0;
+      const dateB = parseRssDate(b.pubDate)?.getTime() || 0;
+      if (dateB !== dateA) return dateB - dateA;
+      return Number(b.fetchedAt || 0) - Number(a.fetchedAt || 0);
+    })
+    .slice(0, RSS_MAX_ITEMS_PER_FEED)
+    .map((x) => x.key);
+
+  rssState.feedItemKeys[normalizedFeedUrl] = sortedKeys;
+  purgeExpiredRssCache();
+  saveRssData();
+  return getCachedItemsForFeed(normalizedFeedUrl);
+}
+
 function isRssItemRead(item) {
   const key = getRssItemKey(item);
   if (!key) return false;
@@ -307,8 +487,24 @@ function buildItemCard(item, key) {
   readLaterBtn.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopPropagation();
-    toggleRssItemReadLaterByKey(key);
-    renderRssItems();
+    const itemKey = key || getRssItemKey(item);
+    if (!itemKey) return;
+    toggleRssItemReadLaterByKey(itemKey);
+
+    const savedNow = rssState.readLaterKeys.includes(itemKey);
+    readLaterBtn.classList.toggle("is-active", savedNow);
+    readLaterBtn.setAttribute("aria-pressed", savedNow ? "true" : "false");
+    readLaterBtn.title = savedNow
+      ? t("rssReadLaterRemove")
+      : t("rssReadLaterAdd");
+    readLaterBtn.setAttribute("aria-label", readLaterBtn.title);
+
+    // In Read Later mode, immediately re-render so the card appears/disappears.
+    if (rssState.viewMode === "readLater") {
+      renderRssItems(rssState.lastItems);
+      return;
+    }
+    renderMarkAllButton(rssState.lastItems);
   });
 
   titleRow.append(title, readLaterBtn);
@@ -336,7 +532,11 @@ function shouldIncludeItemByViewMode(item, itemGroup) {
   if (mode === "readLater") return isRssItemReadLater(item);
   if (mode === "today") return itemGroup === "today";
   if (mode === "yesterday") return itemGroup === "yesterday";
-  if (mode === "week") return itemGroup === "week";
+  if (mode === "week") {
+    return (
+      itemGroup === "today" || itemGroup === "yesterday" || itemGroup === "week"
+    );
+  }
   return true;
 }
 
@@ -344,7 +544,7 @@ function getVisibleRssItemKeys(items = rssState.lastItems) {
   if (!Array.isArray(items) || !items.length) return [];
   const now = new Date();
   return items
-    .slice(0, 100)
+    .slice(0, RSS_RENDER_LIMIT)
     .filter((item) => {
       const itemDate = parseRssDate(item?.pubDate);
       const group = getItemGroup(itemDate, now);
@@ -392,8 +592,9 @@ function renderRssItems(items = rssState.lastItems) {
     older: [],
   };
 
-  items.slice(0, 100).forEach((item) => {
+  items.slice(0, RSS_RENDER_LIMIT).forEach((item) => {
     const key = getRssItemKey(item);
+    if (!key) return;
     const itemDate = parseRssDate(item?.pubDate);
     const group = getItemGroup(itemDate, now);
     if (!shouldIncludeItemByViewMode(item, group)) return;
@@ -439,6 +640,16 @@ function installRssSwipeRead(card, key) {
   let tracking = false;
   let committed = false;
 
+  const isInteractiveTarget = (target) => {
+    const element = target instanceof Element ? target : null;
+    if (!element) return false;
+    return Boolean(
+      element.closest(
+        "button, a, input, select, textarea, [contenteditable='true']",
+      ),
+    );
+  };
+
   const setSwipeX = (value) => {
     const clamped = Math.max(0, Math.min(value, RSS_SWIPE_MAX_PX));
     currentX = clamped;
@@ -459,6 +670,7 @@ function installRssSwipeRead(card, key) {
   const onPointerDown = (event) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
     if (card.classList.contains("is-read")) return;
+    if (isInteractiveTarget(event.target)) return;
     startX = event.clientX;
     startY = event.clientY;
     committed = false;
@@ -535,30 +747,48 @@ export async function loadRssFeed(url = "") {
   const feedUrl = normalizeFeedUrl(
     url || rssState.activeFeed || byId("rss-url")?.value,
   );
+
   if (!feedUrl) {
     setRssStatus(t("rssInvalidUrl"));
     return;
   }
+
   rssState.activeFeed = feedUrl;
+
   const input = byId("rss-url");
   if (input) input.value = feedUrl;
-  setRssStatus(t("rssLoading"));
+
+  const cachedItems = getCachedItemsForFeed(feedUrl);
+  if (cachedItems.length) {
+    rssState.lastItems = cachedItems;
+    renderRssItems(cachedItems);
+    setRssStatus(`${t("rssLoaded")}: ${feedUrl}`);
+  } else {
+    setRssStatus(t("rssLoading"));
+  }
+
   try {
     const payload = await fetchRssFeed(feedUrl);
     if (requestId !== rssRequestSeq) return;
-    rssState.lastItems = payload.items;
+
+    const mergedItems = mergeItemsIntoRssCache(feedUrl, payload.items);
+    rssState.lastItems = mergedItems;
+
     upsertFeed({
       url: feedUrl,
       title: String(payload.feed?.title || "").trim(),
     });
+
     saveRssData();
     renderRssFeeds();
-    renderRssItems(payload.items);
+    renderRssItems(mergedItems);
     setRssStatus(`${t("rssLoaded")}: ${payload.feed?.title || feedUrl}`);
   } catch {
     if (requestId !== rssRequestSeq) return;
-    rssState.lastItems = [];
-    renderRssItems([]);
+
+    const fallbackItems = getCachedItemsForFeed(feedUrl);
+    rssState.lastItems = fallbackItems;
+    renderRssItems(fallbackItems);
     setRssStatus(t("rssLoadFailed"));
   }
 }
@@ -581,13 +811,28 @@ export async function addRssFeed() {
 export async function removeRssFeed() {
   ensureRssState();
   if (!rssState.activeFeed) return;
-  const keysToPurge = rssState.lastItems.map((item) => getRssItemKey(item));
+
+  const feedUrl = rssState.activeFeed;
+  const keysToPurge = Array.isArray(rssState.feedItemKeys[feedUrl])
+    ? rssState.feedItemKeys[feedUrl]
+    : [];
+
   purgeRssItemKeys(keysToPurge);
-  rssState.feeds = rssState.feeds.filter((x) => x.url !== rssState.activeFeed);
+
+  delete rssState.feedItemKeys[feedUrl];
+  keysToPurge.forEach((key) => {
+    delete rssState.itemsByKey[key];
+  });
+
+  rssState.feeds = rssState.feeds.filter((x) => x.url !== feedUrl);
   rssState.activeFeed = rssState.feeds[0]?.url || "";
+
+  purgeExpiredRssCache();
   saveRssData();
   renderRssFeeds();
+
   if (rssState.activeFeed) {
+    rssState.lastItems = getCachedItemsForFeed(rssState.activeFeed);
     await loadRssFeed(rssState.activeFeed);
   } else {
     const input = byId("rss-url");
@@ -633,12 +878,16 @@ export function markAllRssRead() {
 
 export function exportRssFeeds() {
   ensureRssState();
+  purgeExpiredRssCache();
   const payload = JSON.stringify(
     {
       feeds: rssState.feeds,
       activeFeed: rssState.activeFeed,
+      readKeys: rssState.readKeys,
       readLaterKeys: rssState.readLaterKeys,
       viewMode: rssState.viewMode,
+      itemsByKey: rssState.itemsByKey,
+      feedItemKeys: rssState.feedItemKeys,
     },
     null,
     2,
@@ -676,10 +925,26 @@ export async function handleRssImportFile(event) {
       !Array.isArray(parsed) && Array.isArray(parsed?.readLaterKeys)
         ? parsed.readLaterKeys.map((x) => String(x || "")).filter((x) => x)
         : [];
+    const importedReadKeys =
+      !Array.isArray(parsed) && Array.isArray(parsed?.readKeys)
+        ? parsed.readKeys.map((x) => String(x || "")).filter((x) => x)
+        : [];
     const importedViewMode =
       !Array.isArray(parsed) && typeof parsed?.viewMode === "string"
         ? parsed.viewMode
         : "all";
+    const importedItemsByKey =
+      !Array.isArray(parsed) &&
+      parsed?.itemsByKey &&
+      typeof parsed.itemsByKey === "object"
+        ? parsed.itemsByKey
+        : {};
+    const importedFeedItemKeys =
+      !Array.isArray(parsed) &&
+      parsed?.feedItemKeys &&
+      typeof parsed.feedItemKeys === "object"
+        ? parsed.feedItemKeys
+        : {};
 
     mergeRssFeeds(importedFeeds);
     if (importedActiveFeed && hasFeedUrl(importedActiveFeed)) {
@@ -693,6 +958,46 @@ export async function handleRssImportFile(event) {
       importedReadLater.forEach((x) => set.add(x));
       rssState.readLaterKeys = Array.from(set).slice(-1000);
     }
+    if (importedReadKeys.length) {
+      const set = new Set(rssState.readKeys);
+      importedReadKeys.forEach((x) => set.add(x));
+      rssState.readKeys = Array.from(set).slice(-1000);
+    }
+
+    Object.entries(importedItemsByKey).forEach(([key, value]) => {
+      const normalizedKey = String(key || "").trim();
+      if (!normalizedKey || !value || typeof value !== "object") return;
+      rssState.itemsByKey[normalizedKey] = {
+        ...value,
+        key: normalizedKey,
+      };
+    });
+
+    Object.entries(importedFeedItemKeys).forEach(([feedUrl, keys]) => {
+      const normalizedFeedUrl = normalizeFeedUrl(feedUrl);
+      if (!normalizedFeedUrl || !Array.isArray(keys)) return;
+      const prev = Array.isArray(rssState.feedItemKeys[normalizedFeedUrl])
+        ? rssState.feedItemKeys[normalizedFeedUrl]
+        : [];
+      const merged = new Set(prev);
+      keys
+        .map((x) => String(x || "").trim())
+        .filter((x) => x)
+        .forEach((x) => merged.add(x));
+      rssState.feedItemKeys[normalizedFeedUrl] = Array.from(merged)
+        .map((key) => rssState.itemsByKey[key])
+        .filter((x) => x && !isExpiredRssCachedItem(x))
+        .sort((a, b) => {
+          const dateA = parseRssDate(a.pubDate)?.getTime() || 0;
+          const dateB = parseRssDate(b.pubDate)?.getTime() || 0;
+          if (dateB !== dateA) return dateB - dateA;
+          return Number(b.fetchedAt || 0) - Number(a.fetchedAt || 0);
+        })
+        .slice(0, RSS_MAX_ITEMS_PER_FEED)
+        .map((x) => x.key);
+    });
+
+    purgeExpiredRssCache();
     if (RSS_VIEW_MODES.includes(importedViewMode)) {
       rssState.viewMode = importedViewMode;
     }
@@ -700,6 +1005,8 @@ export async function handleRssImportFile(event) {
     saveRssData();
     renderRssFeeds();
     renderRssViewMode();
+    rssState.lastItems = getCachedItemsForFeed(rssState.activeFeed);
+    renderRssItems();
     setRssStatus(`${t("rssImportDone")}: ${rssState.feeds.length}`);
     if (rssState.activeFeed) {
       await loadRssFeed(rssState.activeFeed);
@@ -790,6 +1097,7 @@ export function initRssNews() {
   }
   renderRssFeeds();
   renderRssViewMode();
+  rssState.lastItems = getCachedItemsForFeed(rssState.activeFeed);
   renderRssItems();
   if (!rssState.initialized) {
     registerTranslationApplier(applyRssTranslations);

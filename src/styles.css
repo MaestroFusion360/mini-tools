@@ -1832,7 +1832,7 @@ body.paint-page-active .container {
   z-index: 3;
   pointer-events: none;
   border: 1.5px dashed color-mix(in srgb, var(--accent) 75%, #ffffff);
-  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  background: transparent;
 }
 
 #page-paint.paint-fullscreen {
@@ -2559,12 +2559,42 @@ button.todo-remove-btn:hover {
   min-height: 32px;
   border-radius: 8px;
   flex: 0 0 32px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: none;
+}
+
+.rss-read-later-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--accent) 24%, var(--panel-strong));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: none;
+  z-index: 0;
+}
+
+.rss-read-later-btn .btn-icon {
+  position: relative;
+  z-index: 1;
+  transition: none;
 }
 
 .rss-read-later-btn.is-active {
   color: var(--accent);
   border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
   background: color-mix(in srgb, var(--accent) 16%, var(--panel-strong));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.rss-read-later-btn.is-active::before {
+  transform: scaleX(1);
+}
+
+.rss-read-later-btn.is-active .btn-icon {
+  transform: scale(1.08);
 }
 
 /* ===== QR Generator ===== */

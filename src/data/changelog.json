@@ -1,6 +1,10 @@
 {
   "entries": [
     {
+      "en": "Paint got Pencil + right-click BackColor, brush-size restore, default/hide draw-panel fixes, border-only selection; RSS cache upgraded with 7-day TTL, cleanup, limits, and fuller import/export restore.",
+      "ru": "В Paint добавлены Карандаш и рисование BackColor правой кнопкой, восстановление толщины кисти, правки показа/скрытия панели и рамка выделения без заливки; в RSS улучшен кэш (TTL 7 дней, очистка, лимиты, полный импорт/экспорт)."
+    },
+    {
       "en": "Exit button: fixed icon/text contrast in light theme (neutral button style restored).",
       "ru": "Exit button: fixed icon/text contrast in light theme (neutral button style restored)."
     },

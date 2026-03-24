@@ -201,6 +201,7 @@ function updateToolUi() {
   const showTextUi =
     tool === "text" &&
     (paintState.activePanel === "" || paintState.activePanel === "draw");
+  const penBtn = byId("paint-tool-pen-btn");
   const brushBtn = byId("paint-tool-brush-btn");
   const eraserBtn = byId("paint-tool-eraser-btn");
   const textBtn = byId("paint-tool-text-btn");
@@ -212,6 +213,11 @@ function updateToolUi() {
   const textStyleWrap = byId("paint-text-style-wrap");
   const textBoldBtn = byId("paint-text-bold-btn");
   const textItalicBtn = byId("paint-text-italic-btn");
+  if (penBtn) {
+    const active = tool === "pen";
+    penBtn.classList.toggle("active", active);
+    penBtn.setAttribute("aria-pressed", active ? "true" : "false");
+  }
   if (brushBtn) {
     const active = tool === "brush";
     brushBtn.classList.toggle("active", active);
@@ -312,7 +318,7 @@ function handlePaintFullscreenChange() {
 }
 
 function getTool() {
-  return paintState.activeTool || "brush";
+  return String(paintState.activeTool || "").trim();
 }
 
 function getSize() {
@@ -451,11 +457,13 @@ function drawStroke(x1, y1, x2, y2) {
   const ctx = getCtx();
   if (!ctx) return;
   const tool = getTool();
+  const useBackColorStroke =
+    paintState.strokeUseBackColor && (tool === "brush" || tool === "pen");
   ctx.save();
   ctx.lineWidth = getSize();
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
-  if (tool === "eraser") {
+  if (tool === "eraser" || useBackColorStroke) {
     ctx.globalCompositeOperation = "source-over";
     ctx.strokeStyle = getBackColor();
   } else {
@@ -662,6 +670,18 @@ function loadImageFile(file) {
       ctx.drawImage(img, 0, 0);
       syncResizeInputs();
     }
+    // Disable active tools after loading an image to prevent accidental strokes
+    // on touch devices before manual resize/tool selection.
+    paintState.activeTool = "";
+    paintState.activePanel = "";
+    paintState.shapeTool = "";
+    paintState.selectionMode = false;
+    paintState.selecting = false;
+    paintState.selection = null;
+    updatePanelUi();
+    updateToolUi();
+    updateShapeUi();
+    updateSelectionUi();
     URL.revokeObjectURL(objectUrl);
   };
   img.onerror = () => URL.revokeObjectURL(objectUrl);
@@ -670,18 +690,25 @@ function loadImageFile(file) {
 
 function onPointerDown(event) {
   const tool = getTool();
+  const isMouse = event.pointerType === "mouse";
+  const isPrimaryButton = event.button === 0;
+  const isSecondaryButton = event.button === 2;
+  if (isMouse && !isPrimaryButton && !isSecondaryButton) return;
   const { x, y } = getPointer(event);
   if (paintState.selectionMode) {
+    if (!isPrimaryButton) return;
     paintState.selecting = true;
     paintState.selection = { x, y, w: 0, h: 0 };
     updateSelectionUi();
     return;
   }
   if (tool === "pipette") {
+    if (!isPrimaryButton) return;
     pickCanvasColor(x, y);
     return;
   }
   if (tool === "fill") {
+    if (!isPrimaryButton) return;
     pushUndoState();
     floodFillAt(x, y);
     return;
@@ -719,6 +746,7 @@ function onPointerDown(event) {
     shapeTool === "arrow-left" ||
     shapeTool === "arrow-right"
   ) {
+    if (!isPrimaryButton) return;
     const ctx = getCtx();
     const canvas = getCanvas();
     if (!ctx || !canvas) return;
@@ -735,9 +763,14 @@ function onPointerDown(event) {
     return;
   }
   if (tool === "text") {
+    if (!isPrimaryButton) return;
     placeText(x, y);
     return;
   }
+  if (!tool) return;
+  if (tool !== "brush" && tool !== "pen" && !isPrimaryButton) return;
+  paintState.strokeUseBackColor = isSecondaryButton;
+  event.preventDefault();
   pushUndoState();
   paintState.drawing = true;
   paintState.lastX = x;
@@ -868,6 +901,7 @@ function stopDrawing(event) {
   }
   clearShapeBase();
   paintState.drawing = false;
+  paintState.strokeUseBackColor = false;
 }
 
 function updatePanelUi() {

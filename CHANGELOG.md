@@ -1,4 +1,18 @@
 # Changelog
+<!-- markdownlint-disable MD024 -->
+## v1.1.0 - 2026-03-24
+
+### Added
+
+- Paint: added `Pencil` tool (Lucide icon) with default size `1`.
+- Paint: for `Pencil/Brush`, left mouse button uses `Color`, right mouse button uses `BackColor`.
+
+### Changed
+
+- Paint: `Brush` size is now restored after switching back from `Pencil`.
+- Paint: draw panel is visible by default on init, but auto-hides after opening an image with tools reset.
+- Paint: selection overlay updated to border-only (no fill).
+- RSS News: upgraded local cache model (`itemsByKey` + `feedItemKeys`) with 7-day TTL, cleanup, limits, and fuller import/export restore behavior.
 
 ## v1.0.9 - 2026-03-23
 

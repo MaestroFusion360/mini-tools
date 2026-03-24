@@ -5,7 +5,7 @@
 
 **Mobile Tools** was created as a lightweight offline-first app so you can keep useful daily tools in one place, fast and distraction-free, even with unstable internet.
 
-Current app version: **1.0.9**
+Current app version: **1.1.0**
 
 ---
 

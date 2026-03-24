@@ -9,7 +9,7 @@ import {
   onRssFeedChange,
   removeRssFeed,
 } from "../features/rss-news.js";
-import { FEATURE_RUNTIME_STATE } from "../core/state.js";
+import { FEATURE_RUNTIME_STATE, STORAGE_KEYS } from "../core/state.js";
 
 function mountRssDom() {
   document.body.innerHTML = `
@@ -61,14 +61,21 @@ function installRssFetchMock() {
   );
 }
 
+function resetRssRuntimeState() {
+  FEATURE_RUNTIME_STATE.rssNews.feeds = [];
+  FEATURE_RUNTIME_STATE.rssNews.activeFeed = "";
+  FEATURE_RUNTIME_STATE.rssNews.lastItems = [];
+  FEATURE_RUNTIME_STATE.rssNews.readKeys = [];
+  FEATURE_RUNTIME_STATE.rssNews.readLaterKeys = [];
+  FEATURE_RUNTIME_STATE.rssNews.itemsByKey = {};
+  FEATURE_RUNTIME_STATE.rssNews.feedItemKeys = {};
+  FEATURE_RUNTIME_STATE.rssNews.initialized = false;
+}
+
 describe("rss news module", () => {
   beforeEach(() => {
     localStorage.clear();
-    FEATURE_RUNTIME_STATE.rssNews.feeds = [];
-    FEATURE_RUNTIME_STATE.rssNews.activeFeed = "";
-    FEATURE_RUNTIME_STATE.rssNews.lastItems = [];
-    FEATURE_RUNTIME_STATE.rssNews.readKeys = [];
-    FEATURE_RUNTIME_STATE.rssNews.initialized = false;
+    resetRssRuntimeState();
     vi.stubGlobal("URL", {
       ...URL,
       createObjectURL: vi.fn(() => "blob:rss"),
@@ -155,5 +162,81 @@ describe("rss news module", () => {
     markAllRssRead();
     expect(markAllBtn?.textContent).toBe("rssMarkAllRead");
     expect(FEATURE_RUNTIME_STATE.rssNews.readKeys.length).toBe(0);
+  });
+
+  it("stores feed cache maps in localStorage", async () => {
+    document.getElementById("rss-url").value = "https://example.com/feed.xml";
+    await addRssFeed();
+
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.rssNewsData));
+    expect(stored?.itemsByKey).toBeTruthy();
+    expect(stored?.feedItemKeys).toBeTruthy();
+    expect(
+      Array.isArray(stored.feedItemKeys["https://example.com/feed.xml"]),
+    ).toBe(true);
+    expect(stored.feedItemKeys["https://example.com/feed.xml"].length).toBe(2);
+  });
+
+  it("purges expired cached items older than 7 days on init", () => {
+    localStorage.clear();
+    resetRssRuntimeState();
+    mountRssDom();
+    installRssFetchMock();
+
+    const oldTs = Date.now() - 8 * 24 * 60 * 60 * 1000;
+    localStorage.setItem(
+      STORAGE_KEYS.rssNewsData,
+      JSON.stringify({
+        feeds: [{ url: "https://example.com/feed.xml", title: "Old Feed" }],
+        activeFeed: "https://example.com/feed.xml",
+        readKeys: [],
+        readLaterKeys: [],
+        viewMode: "all",
+        itemsByKey: {
+          "https://old.example.com/1": {
+            key: "https://old.example.com/1",
+            feedUrl: "https://example.com/feed.xml",
+            title: "Old Item",
+            link: "https://old.example.com/1",
+            description: "Old",
+            pubDate: "2020-01-01 00:00:00",
+            fetchedAt: oldTs,
+          },
+        },
+        feedItemKeys: {
+          "https://example.com/feed.xml": ["https://old.example.com/1"],
+        },
+      }),
+    );
+
+    initRssNews();
+    expect(
+      FEATURE_RUNTIME_STATE.rssNews.itemsByKey["https://old.example.com/1"],
+    ).toBeUndefined();
+    expect(
+      FEATURE_RUNTIME_STATE.rssNews.feedItemKeys["https://example.com/feed.xml"]
+        ?.length || 0,
+    ).toBe(0);
+  });
+
+  it("clears removed feed cache entries", async () => {
+    document.getElementById("rss-url").value = "https://example.com/feed.xml";
+    await addRssFeed();
+
+    expect(
+      FEATURE_RUNTIME_STATE.rssNews.itemsByKey["https://example.com/1"],
+    ).toBeTruthy();
+
+    await removeRssFeed();
+
+    expect(
+      FEATURE_RUNTIME_STATE.rssNews.feedItemKeys[
+        "https://example.com/feed.xml"
+      ],
+    ).toBeUndefined();
+    expect(
+      FEATURE_RUNTIME_STATE.rssNews.itemsByKey["https://example.com/1"]
+        ?.feedUrl,
+    ).not.toBe("https://example.com/feed.xml");
   });
 });

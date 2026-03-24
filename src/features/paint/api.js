@@ -6,6 +6,8 @@ import {
   PAINT_PANELS,
   paintState,
 } from "./state.js";
+
+const ZOOM_STEP = 0.1;
 import {
   applyRasterTransform,
   buildFilterString,
@@ -193,8 +195,29 @@ export function paintSelectShape(shape) {
 }
 
 export function paintSetTool(tool) {
-  if (!["brush", "eraser", "text", "pipette", "fill"].includes(tool)) return;
+  if (!["pen", "brush", "eraser", "text", "pipette", "fill"].includes(tool)) {
+    return;
+  }
+  const sizeInput = byId("paint-size");
+  const previousTool = paintState.activeTool;
+  const currentSize = Number(sizeInput?.value || 0);
+  if (
+    previousTool === "brush" &&
+    Number.isFinite(currentSize) &&
+    currentSize > 0
+  ) {
+    paintState.brushSize = currentSize;
+  }
+
   paintState.activeTool = tool;
+  if (tool === "pen") {
+    if (sizeInput) sizeInput.value = "1";
+  } else if (tool === "brush" && previousTool === "pen" && sizeInput) {
+    const brushSize = Number(paintState.brushSize || 6);
+    sizeInput.value = String(
+      Number.isFinite(brushSize) && brushSize > 0 ? Math.round(brushSize) : 6,
+    );
+  }
   clearSelectionIfAny();
   if (paintState.shapeTool) {
     paintState.shapeTool = "";
@@ -242,13 +265,13 @@ export function paintToggleSelectionTool() {
 
 export function paintZoomIn() {
   clearSelectionIfAny();
-  paintState.zoom = Math.min(MAX_ZOOM, paintState.zoom + 0.25);
+  paintState.zoom = Math.min(MAX_ZOOM, paintState.zoom + ZOOM_STEP);
   updateZoomUi();
 }
 
 export function paintZoomOut() {
   clearSelectionIfAny();
-  paintState.zoom = Math.max(MIN_ZOOM, paintState.zoom - 0.25);
+  paintState.zoom = Math.max(MIN_ZOOM, paintState.zoom - ZOOM_STEP);
   updateZoomUi();
 }
 
@@ -541,6 +564,9 @@ export function initPaint() {
   const canvas = getCanvas();
   if (!canvas || paintState.canvasReady) return;
   paintState.canvasReady = true;
+  if (!PAINT_PANELS.includes(paintState.activePanel)) {
+    paintState.activePanel = "draw";
+  }
   fillBackground();
   syncResizeInputs();
 
@@ -548,6 +574,9 @@ export function initPaint() {
   canvas.addEventListener("pointermove", onPointerMove);
   canvas.addEventListener("pointerup", stopDrawing);
   canvas.addEventListener("pointerleave", stopDrawing);
+  canvas.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+  });
 
   const input = byId("paint-open-input");
   if (input) {

@@ -45,6 +45,7 @@ export const FEATURE_RUNTIME_STATE = {
   },
   paint: {
     drawing: false,
+    strokeUseBackColor: false,
     lastX: 0,
     lastY: 0,
     startX: 0,
@@ -63,6 +64,7 @@ export const FEATURE_RUNTIME_STATE = {
     activePanel: "",
     canvasReady: false,
     activeTool: "brush",
+    brushSize: 6,
     showFontPanel: false,
     selectionMode: false,
     selecting: false,

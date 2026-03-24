@@ -99,6 +99,7 @@ export function applyTranslations() {
   setControlTooltip("paint-panel-crop-btn", t("paintCrop"));
   setControlTooltip("paint-panel-rotate-btn", t("paintRotate"));
   setControlTooltip("paint-panel-mirror-btn", t("paintMirror"));
+  setControlTooltip("paint-tool-pen-btn", t("paintToolPen"));
   setControlTooltip("paint-tool-brush-btn", t("paintToolBrush"));
   setControlTooltip("paint-tool-eraser-btn", t("paintToolEraser"));
   setControlTooltip("paint-tool-text-btn", t("paintToolText"));

@@ -1615,6 +1615,16 @@
           <button
             type="button"
             class="text-action-btn toolbar-icon-btn"
+            id="paint-tool-pen-btn"
+            onclick="paintSetTool('pen')"
+            title="Pen"
+            aria-label="Pen"
+          >
+            <svg class="icon-svg btn-icon"><use href="#i-pen"></use></svg>
+          </button>
+          <button
+            type="button"
+            class="text-action-btn toolbar-icon-btn"
             id="paint-tool-brush-btn"
             onclick="paintSetTool('brush')"
             title="Brush"
@@ -2649,7 +2659,7 @@
 </div>
 
 <footer class="app-footer" aria-label="Application footer">
-  <small id="app-footer-text">© 2026 MaestroFusion360 · v1.0.9</small>
+  <small id="app-footer-text">© 2026 MaestroFusion360 · v1.1.0</small>
 </footer>
 
 <button
